@@ -1,0 +1,71 @@
+# Architecture
+
+Rentiva is a classic (non-FSE) PHP theme with one rule at its center:
+**Rentiva owns presentation; the booking plugin owns rentable items,
+pricing, and availability; WooCommerce owns orders and payments.** A
+template that computes a price or an availability decision is a bug — see
+docs/booking-integration.md for the full ownership split.
+
+## Routing
+
+| Request | Template |
+|---|---|
+| `/` | `front-page.php` (always wins) |
+| Single `rbfw_item` | `templates/single/single-rbfw.php` (picked up automatically by the plugin's own template-resolution — see docs/booking-integration.md) |
+| `rbfw_item` archive | `archive-rbfw_item.php` |
+| `rbfw_item_caregory` term | `taxonomy-rbfw_item_caregory.php` |
+| `rbfw_item_location` term | `taxonomy-rbfw_item_location.php` |
+| Everything else | `page.php` / `single.php` (via `index.php` fallback) / `search.php` / `404.php` |
+
+## Bootstrap order (`functions.php`)
+
+```
+helpers → setup → enqueue → template-functions → template-hooks
+  → integrations/booking-plugin → integrations/woocommerce → integrations/elementor
+  → demo-import/sample-data → demo-import/importer → admin/admin
+```
+
+Order matters: helpers before anything that calls them, setup before
+enqueue, integrations after the shared render layer (`template-functions.php`)
+so they can reuse it, admin last since it's admin-only.
+
+## The shared render layer
+
+`inc/template-functions.php` is the single funnel every classic PHP
+template, Elementor widget, and AJAX handler renders through —
+`rentiva_rental_grid()`, `rentiva_the_star_rating()`, `rentiva_primary_nav()`,
+etc. Nothing duplicates markup by hand-copying a template-part's HTML
+elsewhere; everything calls the same function or `get_template_part()`.
+
+## Homepage sections
+
+`front-page.php` renders a filterable, ordered list of section slugs
+(`rentiva_home_sections`), each mapping to `template-parts/home/{slug}.php`:
+hero → trust-strip → categories → popular-rentals → promo-banner →
+how-it-works → why-rentiva → testimonial → final-cta. The same 9 sections
+are also available as Elementor widgets (docs/elementor.md) for building
+other pages — the real homepage does not use Elementor itself, for
+guaranteed performance and pixel fidelity to the design.
+
+## Single-item page
+
+`templates/single/single-rbfw.php` owns the page chrome (breadcrumb,
+gallery/info/specs/about/pickup/reviews column, sticky booking sidebar,
+mobile bottom bar, similar items) and pulls each section from
+`template-parts/item/*.php`. The interactive booking form itself is the
+plugin's own, unmodified — see docs/booking-integration.md.
+
+## Assets
+
+`inc/enqueue.php` registers every stylesheet/script up front, then
+conditionally enqueues only what the current template needs (front page,
+archive/taxonomy, single item, WooCommerce pages). Nothing loads globally
+that isn't needed on every page — see the file's `rentiva_enqueue_assets()`
+for the exact conditions.
+
+## Design tokens
+
+`theme.json` locks the color palette, two font families (Plus Jakarta Sans
+for display, Inter for body), and a fixed font-size/spacing scale — matching
+the approved mockup design exactly. `assets/css/variables.css` mirrors the
+same tokens as CSS custom properties for the theme's own (non-block) markup.

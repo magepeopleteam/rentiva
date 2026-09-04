@@ -1,0 +1,1145 @@
+# Copyright (C) 2026 Rentiva Team
+# This file is distributed under the GNU General Public License v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Rentiva 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/rentiva\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-09-03T06:38:55+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: rentiva\n"
+
+#. Theme Name of the theme
+#: style.css
+#: inc/integrations/elementor.php:36
+msgid "Rentiva"
+msgstr ""
+
+#. Theme URI of the theme
+#. Author URI of the theme
+#: style.css
+msgid "https://rentiva.example.com"
+msgstr ""
+
+#. Description of the theme
+#: style.css
+msgid "Rentiva is a premium equipment & vehicle rental marketplace WordPress theme — bikes, scooters, cameras, camping gear, water sports and outdoor equipment, all through one reusable rental-item card system, a premium rental archive, a single-item booking page, and a full set of Elementor widgets (required) for every homepage section. Rentiva is presentation-only: rentable items, pricing, availability and checkout are handled by Booking and Rental Manager for WooCommerce (required) and WooCommerce; Rentiva never stores or calculates booking data itself."
+msgstr ""
+
+#. Author of the theme
+#: style.css
+msgid "Rentiva Team"
+msgstr ""
+
+#: 404.php:17
+msgid "This page took a wrong turn."
+msgstr ""
+
+#: 404.php:19
+msgid "The page you're looking for doesn't exist or has moved."
+msgstr ""
+
+#: 404.php:24
+msgid "Back to home"
+msgstr ""
+
+#: 404.php:27
+msgid "Browse rentals"
+msgstr ""
+
+#: archive-rbfw_item.php:41
+msgid "Browse Rentals"
+msgstr ""
+
+#: archive-rbfw_item.php:42
+#: template-parts/home/categories.php:54
+msgid "Find the right equipment for your next adventure."
+msgstr ""
+
+#: archive-rbfw_item.php:46
+#: searchform.php:20
+msgid "Search"
+msgstr ""
+
+#: archive-rbfw_item.php:47
+msgid "Search rentals…"
+msgstr ""
+
+#: archive-rbfw_item.php:50
+#: taxonomy-rbfw_item_caregory.php:38
+#: template-parts/home/hero.php:77
+msgid "Category"
+msgstr ""
+
+#: archive-rbfw_item.php:52
+msgid "All categories"
+msgstr ""
+
+#: archive-rbfw_item.php:68
+msgid "Filter"
+msgstr ""
+
+#: archive-rbfw_item.php:85
+msgid "Previous"
+msgstr ""
+
+#: archive-rbfw_item.php:86
+msgid "Next"
+msgstr ""
+
+#: comments.php:30
+msgid "Reviews"
+msgstr ""
+
+#. translators: %s: number of comments
+#: comments.php:34
+#, php-format
+msgid "%s comment"
+msgid_plural "%s comments"
+msgstr[0] ""
+msgstr[1] ""
+
+#: comments.php:58
+msgid "Comments are closed."
+msgstr ""
+
+#: comments.php:64
+msgid "Write a review"
+msgstr ""
+
+#: comments.php:64
+msgid "Leave a comment"
+msgstr ""
+
+#: comments.php:65
+msgid "Submit review"
+msgstr ""
+
+#: comments.php:65
+msgid "Post comment"
+msgstr ""
+
+#: comments.php:66
+msgid "Your review"
+msgstr ""
+
+#: comments.php:66
+msgid "Comment"
+msgstr ""
+
+#: header.php:21
+msgid "Skip to content"
+msgstr ""
+
+#: inc/admin/category-image-metabox.php:31
+#: inc/admin/category-image-metabox.php:55
+msgid "Category image"
+msgstr ""
+
+#: inc/admin/category-image-metabox.php:35
+#: inc/admin/category-image-metabox.php:64
+#: inc/admin/theme-settings.php:175
+msgid "Select image"
+msgstr ""
+
+#: inc/admin/category-image-metabox.php:36
+#: inc/admin/category-image-metabox.php:65
+#: inc/admin/theme-settings.php:176
+msgid "Remove"
+msgstr ""
+
+#: inc/admin/category-image-metabox.php:38
+#: inc/admin/category-image-metabox.php:67
+msgid "Shown on the homepage \"Explore What You Need\" category tile."
+msgstr ""
+
+#: inc/admin/category-image-metabox.php:121
+#: inc/admin/theme-settings.php:152
+msgid "Select an image"
+msgstr ""
+
+#: inc/admin/setup-wizard.php:49
+msgid "Welcome to Rentiva!"
+msgstr ""
+
+#. translators: %s: comma-separated list of missing required plugins
+#: inc/admin/setup-wizard.php:55
+#, php-format
+msgid "Rentiva works best with: %s. Please install and activate them from the Plugins screen."
+msgstr ""
+
+#: inc/admin/setup-wizard.php:63
+msgid "Open Rentiva Settings"
+msgstr ""
+
+#: inc/admin/setup-wizard.php:69
+msgid "Import demo content"
+msgstr ""
+
+#: inc/admin/theme-settings.php:21
+#: inc/admin/theme-settings.php:22
+#: inc/admin/theme-settings.php:204
+msgid "Rentiva Settings"
+msgstr ""
+
+#: inc/admin/theme-settings.php:205
+msgid "Override the homepage copy, images, colors and integration behavior. Anything left blank falls back to the built-in design defaults."
+msgstr ""
+
+#: inc/admin/theme-settings.php:210
+msgid "Hero"
+msgstr ""
+
+#: inc/admin/theme-settings.php:213
+msgid "Eyebrow"
+msgstr ""
+
+#: inc/admin/theme-settings.php:217
+#: inc/admin/theme-settings.php:258
+msgid "Headline"
+msgstr ""
+
+#: inc/admin/theme-settings.php:221
+msgid "Subheading"
+msgstr ""
+
+#: inc/admin/theme-settings.php:225
+#: inc/admin/theme-settings.php:266
+msgid "Background photo"
+msgstr ""
+
+#: inc/admin/theme-settings.php:230
+msgid "Trust Strip"
+msgstr ""
+
+#. translators: %d: stat position, 1-4
+#: inc/admin/theme-settings.php:238
+#, php-format
+msgid "Stat %d"
+msgstr ""
+
+#: inc/admin/theme-settings.php:251
+msgid "Promo Banner"
+msgstr ""
+
+#: inc/admin/theme-settings.php:254
+msgid "Badge text"
+msgstr ""
+
+#: inc/admin/theme-settings.php:262
+msgid "Text"
+msgstr ""
+
+#: inc/admin/theme-settings.php:271
+msgid "Why Rentiva"
+msgstr ""
+
+#: inc/admin/theme-settings.php:274
+msgid "Photo"
+msgstr ""
+
+#: inc/admin/theme-settings.php:279
+msgid "Testimonial"
+msgstr ""
+
+#: inc/admin/theme-settings.php:282
+msgid "Quote"
+msgstr ""
+
+#: inc/admin/theme-settings.php:286
+msgid "Name"
+msgstr ""
+
+#: inc/admin/theme-settings.php:290
+msgid "Role"
+msgstr ""
+
+#: inc/admin/theme-settings.php:294
+msgid "Avatar"
+msgstr ""
+
+#: inc/admin/theme-settings.php:299
+msgid "Footer & Social"
+msgstr ""
+
+#: inc/admin/theme-settings.php:302
+msgid "Tagline"
+msgstr ""
+
+#: inc/admin/theme-settings.php:313
+msgid "Colors"
+msgstr ""
+
+#: inc/admin/theme-settings.php:317
+#: inc/setup.php:37
+#: template-parts/header/site-header.php:17
+msgid "Primary"
+msgstr ""
+
+#: inc/admin/theme-settings.php:318
+msgid "Primary (hover)"
+msgstr ""
+
+#: inc/admin/theme-settings.php:319
+#: inc/setup.php:31
+msgid "Background"
+msgstr ""
+
+#: inc/admin/theme-settings.php:331
+msgid "Integrations"
+msgstr ""
+
+#: inc/admin/theme-settings.php:334
+msgid "Single item layout"
+msgstr ""
+
+#: inc/admin/theme-settings.php:337
+msgid "Rentiva design (recommended)"
+msgstr ""
+
+#: inc/admin/theme-settings.php:338
+msgid "Plugin's own bundled design"
+msgstr ""
+
+#: inc/admin/theme-settings.php:342
+msgid "\"List Your Item\" link"
+msgstr ""
+
+#: inc/admin/theme-settings.php:346
+msgid "Default pickup hours"
+msgstr ""
+
+#: inc/demo-import/importer.php:23
+msgid "You are not allowed to do this."
+msgstr ""
+
+#: inc/demo-import/importer.php:50
+msgid "Install and activate Booking and Rental Manager for WooCommerce before importing demo content."
+msgstr ""
+
+#: inc/demo-import/importer.php:54
+msgid "Demo content imported."
+msgstr ""
+
+#: inc/demo-import/importer.php:126
+msgid "Specifications"
+msgstr ""
+
+#: inc/demo-import/importer.php:132
+#: template-parts/item/about.php:24
+msgid "What's Included"
+msgstr ""
+
+#: inc/integrations/booking-plugin.php:81
+msgid "Hourly / Single Day"
+msgstr ""
+
+#: inc/integrations/booking-plugin.php:82
+msgid "Appointment"
+msgstr ""
+
+#: inc/integrations/booking-plugin.php:83
+msgid "Multi-Day"
+msgstr ""
+
+#: inc/integrations/booking-plugin.php:84
+msgid "Equipment"
+msgstr ""
+
+#: inc/integrations/booking-plugin.php:85
+msgid "Dress"
+msgstr ""
+
+#: inc/integrations/booking-plugin.php:86
+#: inc/integrations/booking-plugin.php:91
+msgid "Rental"
+msgstr ""
+
+#: inc/integrations/booking-plugin.php:87
+msgid "Resort / Room"
+msgstr ""
+
+#: inc/integrations/booking-plugin.php:88
+msgid "Multi-Item"
+msgstr ""
+
+#: inc/integrations/booking-plugin.php:244
+msgid "/ booking"
+msgstr ""
+
+#: inc/integrations/booking-plugin.php:250
+#: inc/integrations/booking-plugin.php:291
+#: inc/template-functions.php:154
+#: inc/template-functions.php:166
+#: inc/template-functions.php:178
+#: inc/template-functions.php:190
+#: template-parts/cards/rental-card.php:35
+msgid "/ day"
+msgstr ""
+
+#: inc/integrations/booking-plugin.php:251
+#: inc/integrations/booking-plugin.php:292
+msgid "/ hour"
+msgstr ""
+
+#: inc/integrations/booking-plugin.php:252
+#: inc/integrations/booking-plugin.php:293
+msgid "/ week"
+msgstr ""
+
+#: inc/integrations/booking-plugin.php:253
+#: inc/integrations/booking-plugin.php:294
+msgid "/ month"
+msgstr ""
+
+#: inc/integrations/booking-plugin.php:342
+msgid "Refundable security deposit required"
+msgstr ""
+
+#. translators: %s: percentage value
+#: inc/integrations/booking-plugin.php:348
+#, php-format
+msgid "%s%% refundable deposit"
+msgstr ""
+
+#. translators: %s: formatted amount
+#: inc/integrations/booking-plugin.php:355
+#, php-format
+msgid "%s refundable deposit"
+msgstr ""
+
+#: inc/integrations/booking-plugin.php:402
+msgid "Available"
+msgstr ""
+
+#: inc/integrations/booking-plugin.php:403
+msgid "Limited availability"
+msgstr ""
+
+#: inc/integrations/booking-plugin.php:404
+msgid "Currently unavailable"
+msgstr ""
+
+#: inc/integrations/elementor.php:88
+msgid "Rentiva: Hero"
+msgstr ""
+
+#: inc/integrations/elementor.php:95
+msgid "Rentiva: Trust Strip"
+msgstr ""
+
+#: inc/integrations/elementor.php:102
+msgid "Rentiva: Categories"
+msgstr ""
+
+#: inc/integrations/elementor.php:109
+msgid "Rentiva: Popular Rentals"
+msgstr ""
+
+#: inc/integrations/elementor.php:116
+msgid "Rentiva: Promo Banner"
+msgstr ""
+
+#: inc/integrations/elementor.php:123
+msgid "Rentiva: How It Works"
+msgstr ""
+
+#: inc/integrations/elementor.php:130
+msgid "Rentiva: Why Rentiva"
+msgstr ""
+
+#: inc/integrations/elementor.php:137
+msgid "Rentiva: Testimonial"
+msgstr ""
+
+#: inc/integrations/elementor.php:144
+msgid "Rentiva: Final CTA"
+msgstr ""
+
+#: inc/setup.php:32
+msgid "Foreground"
+msgstr ""
+
+#: inc/setup.php:33
+msgid "Card"
+msgstr ""
+
+#: inc/setup.php:34
+msgid "Muted"
+msgstr ""
+
+#: inc/setup.php:35
+msgid "Muted Foreground"
+msgstr ""
+
+#: inc/setup.php:36
+msgid "Border"
+msgstr ""
+
+#: inc/setup.php:38
+msgid "Primary Dark"
+msgstr ""
+
+#: inc/setup.php:67
+msgid "Primary Navigation"
+msgstr ""
+
+#: inc/setup.php:68
+msgid "Footer — Explore"
+msgstr ""
+
+#: inc/setup.php:69
+msgid "Footer — Company"
+msgstr ""
+
+#: inc/setup.php:70
+msgid "Footer — Support"
+msgstr ""
+
+#: inc/setup.php:71
+msgid "Mobile Navigation (optional override)"
+msgstr ""
+
+#: inc/template-functions.php:58
+#: template-parts/item/breadcrumb.php:17
+msgid "Home"
+msgstr ""
+
+#: inc/template-functions.php:62
+#: template-parts/home/final-cta.php:19
+#: template-parts/home/hero.php:52
+#: template-parts/home/promo-banner.php:33
+msgid "Explore Rentals"
+msgstr ""
+
+#: inc/template-functions.php:66
+#: inc/template-functions.php:401
+msgid "How It Works"
+msgstr ""
+
+#: inc/template-functions.php:70
+#: inc/template-functions.php:400
+msgid "About"
+msgstr ""
+
+#: inc/template-functions.php:146
+msgid "Explorer X1"
+msgstr ""
+
+#: inc/template-functions.php:147
+msgid "Mountain Bike"
+msgstr ""
+
+#: inc/template-functions.php:152
+#: inc/template-functions.php:164
+msgid "Dhaka"
+msgstr ""
+
+#: inc/template-functions.php:158
+msgid "Urban Cruiser"
+msgstr ""
+
+#: inc/template-functions.php:159
+msgid "City Bike"
+msgstr ""
+
+#: inc/template-functions.php:170
+msgid "Trail Master"
+msgstr ""
+
+#: inc/template-functions.php:171
+msgid "Adventure Bike"
+msgstr ""
+
+#: inc/template-functions.php:176
+msgid "Chittagong"
+msgstr ""
+
+#: inc/template-functions.php:182
+msgid "Weekend Pro"
+msgstr ""
+
+#: inc/template-functions.php:183
+msgid "Hybrid Bike"
+msgstr ""
+
+#: inc/template-functions.php:188
+msgid "Sylhet"
+msgstr ""
+
+#. translators: %s: rating out of 5
+#: inc/template-functions.php:302
+#, php-format
+msgid "Rated %s out of 5"
+msgstr ""
+
+#: inc/template-functions.php:322
+msgid "Your rating"
+msgstr ""
+
+#: inc/template-functions.php:324
+msgid "Select a rating"
+msgstr ""
+
+#: inc/template-functions.php:392
+msgid "Bikes"
+msgstr ""
+
+#: inc/template-functions.php:393
+#: template-parts/home/categories.php:40
+#: template-parts/home/hero.php:27
+msgid "Scooters"
+msgstr ""
+
+#: inc/template-functions.php:394
+#: template-parts/home/categories.php:40
+#: template-parts/home/hero.php:27
+msgid "Camping"
+msgstr ""
+
+#: inc/template-functions.php:395
+msgid "Sports Equipment"
+msgstr ""
+
+#: inc/template-functions.php:402
+msgid "Contact"
+msgstr ""
+
+#: inc/template-functions.php:407
+msgid "FAQ"
+msgstr ""
+
+#: inc/template-functions.php:408
+msgid "Terms"
+msgstr ""
+
+#: inc/template-functions.php:409
+msgid "Privacy"
+msgstr ""
+
+#. translators: %s: search query
+#: search.php:20
+#, php-format
+msgid "Search results for: %s"
+msgstr ""
+
+#: searchform.php:16
+msgid "Search for:"
+msgstr ""
+
+#: searchform.php:18
+msgid "Search…"
+msgstr ""
+
+#: taxonomy-rbfw_item_location.php:34
+msgid "Location"
+msgstr ""
+
+#: template-parts/cards/empty-state.php:16
+msgid "No rentals found"
+msgstr ""
+
+#: template-parts/cards/empty-state.php:17
+msgid "Try a different category, location, or date range."
+msgstr ""
+
+#: template-parts/cards/rental-card.php:57
+#: template-parts/item/gallery.php:32
+msgid "Save to favorites"
+msgstr ""
+
+#: template-parts/cards/rental-card.php:87
+msgid "View Details"
+msgstr ""
+
+#: template-parts/content/content-none.php:13
+msgid "Nothing found"
+msgstr ""
+
+#: template-parts/content/content-none.php:16
+msgid "Nothing matched your search. Try different keywords."
+msgstr ""
+
+#: template-parts/content/content-none.php:21
+msgid "It looks like nothing has been published here yet."
+msgstr ""
+
+#: template-parts/content/content.php:34
+msgid "Read more"
+msgstr ""
+
+#: template-parts/footer/site-footer.php:30
+msgid "Rent smarter. Explore further."
+msgstr ""
+
+#: template-parts/footer/site-footer.php:42
+msgid "Explore"
+msgstr ""
+
+#: template-parts/footer/site-footer.php:47
+msgid "Company"
+msgstr ""
+
+#: template-parts/footer/site-footer.php:52
+msgid "Support"
+msgstr ""
+
+#. translators: 1: current year, 2: site name
+#: template-parts/footer/site-footer.php:62
+#, php-format
+msgid "© %1$s %2$s. All rights reserved."
+msgstr ""
+
+#: template-parts/header/site-header.php:23
+#: template-parts/header/site-header.php:42
+msgid "Sign In"
+msgstr ""
+
+#: template-parts/header/site-header.php:26
+#: template-parts/header/site-header.php:45
+#: template-parts/home/final-cta.php:22
+msgid "List Your Item"
+msgstr ""
+
+#: template-parts/header/site-header.php:31
+msgid "Menu"
+msgstr ""
+
+#: template-parts/home/categories.php:40
+#: template-parts/home/hero.php:27
+msgid "Bicycles"
+msgstr ""
+
+#: template-parts/home/categories.php:40
+#: template-parts/home/hero.php:27
+msgid "Cameras"
+msgstr ""
+
+#: template-parts/home/categories.php:40
+#: template-parts/home/hero.php:27
+msgid "Water Sports"
+msgstr ""
+
+#: template-parts/home/categories.php:40
+#: template-parts/home/hero.php:27
+msgid "Outdoor Gear"
+msgstr ""
+
+#: template-parts/home/categories.php:53
+msgid "Explore What You Need"
+msgstr ""
+
+#: template-parts/home/categories.php:57
+msgid "View all categories"
+msgstr ""
+
+#: template-parts/home/final-cta.php:15
+msgid "Ready to explore?"
+msgstr ""
+
+#: template-parts/home/final-cta.php:16
+msgid "Find your perfect rental and start your next adventure."
+msgstr ""
+
+#: template-parts/home/hero.php:14
+msgid "RENT • RIDE • EXPLORE"
+msgstr ""
+
+#: template-parts/home/hero.php:15
+msgid "Rent. Ride. Explore."
+msgstr ""
+
+#: template-parts/home/hero.php:16
+msgid "Premium bikes, gear and equipment — ready whenever you are."
+msgstr ""
+
+#: template-parts/home/hero.php:55
+msgid "List Your Equipment"
+msgstr ""
+
+#: template-parts/home/hero.php:65
+msgid "Where"
+msgstr ""
+
+#: template-parts/home/hero.php:66
+msgid "Choose location"
+msgstr ""
+
+#: template-parts/home/hero.php:69
+msgid "Pickup"
+msgstr ""
+
+#: template-parts/home/hero.php:73
+msgid "Return"
+msgstr ""
+
+#: template-parts/home/hero.php:85
+msgid "Find Rentals"
+msgstr ""
+
+#: template-parts/home/how-it-works.php:15
+msgid "Find"
+msgstr ""
+
+#: template-parts/home/how-it-works.php:16
+msgid "Discover the perfect equipment near you."
+msgstr ""
+
+#: template-parts/home/how-it-works.php:20
+msgid "Book"
+msgstr ""
+
+#: template-parts/home/how-it-works.php:21
+msgid "Choose your dates and reserve in seconds."
+msgstr ""
+
+#: template-parts/home/how-it-works.php:25
+msgid "Enjoy"
+msgstr ""
+
+#: template-parts/home/how-it-works.php:26
+msgid "Pick it up and start your adventure."
+msgstr ""
+
+#: template-parts/home/how-it-works.php:33
+msgid "Rent in 3 Simple Steps"
+msgstr ""
+
+#: template-parts/home/popular-rentals.php:18
+msgid "Popular Rentals"
+msgstr ""
+
+#: template-parts/home/popular-rentals.php:19
+msgid "Highly rated equipment ready for your next adventure."
+msgstr ""
+
+#: template-parts/home/popular-rentals.php:22
+msgid "View all rentals"
+msgstr ""
+
+#: template-parts/home/promo-banner.php:13
+msgid "WEEKEND SPECIAL · UP TO 20% OFF"
+msgstr ""
+
+#: template-parts/home/promo-banner.php:14
+msgid "Your next adventure starts here."
+msgstr ""
+
+#: template-parts/home/promo-banner.php:15
+msgid "Discover premium equipment from trusted local owners."
+msgstr ""
+
+#: template-parts/home/testimonial.php:12
+msgid "The easiest rental experience I've ever had. The bike was perfect and the entire process took less than two minutes."
+msgstr ""
+
+#: template-parts/home/testimonial.php:13
+msgid "Daniel Morgan"
+msgstr ""
+
+#: template-parts/home/testimonial.php:14
+msgid "Weekend Traveler"
+msgstr ""
+
+#: template-parts/home/trust-strip.php:16
+msgid "10,000+"
+msgstr ""
+
+#: template-parts/home/trust-strip.php:16
+msgid "rentals completed"
+msgstr ""
+
+#: template-parts/home/trust-strip.php:17
+msgid "4.9/5"
+msgstr ""
+
+#: template-parts/home/trust-strip.php:17
+msgid "average rating"
+msgstr ""
+
+#: template-parts/home/trust-strip.php:18
+msgid "100%"
+msgstr ""
+
+#: template-parts/home/trust-strip.php:18
+msgid "verified equipment"
+msgstr ""
+
+#: template-parts/home/trust-strip.php:19
+msgid "Secure"
+msgstr ""
+
+#: template-parts/home/trust-strip.php:19
+msgid "booking guaranteed"
+msgstr ""
+
+#: template-parts/home/why-rentiva.php:16
+msgid "Verified Equipment"
+msgstr ""
+
+#: template-parts/home/why-rentiva.php:17
+msgid "Every item is reviewed and quality checked."
+msgstr ""
+
+#: template-parts/home/why-rentiva.php:20
+msgid "Flexible Booking"
+msgstr ""
+
+#: template-parts/home/why-rentiva.php:21
+msgid "Choose the dates and rental period that work for you."
+msgstr ""
+
+#: template-parts/home/why-rentiva.php:24
+msgid "Transparent Pricing"
+msgstr ""
+
+#: template-parts/home/why-rentiva.php:25
+msgid "No confusing fees or hidden surprises."
+msgstr ""
+
+#: template-parts/home/why-rentiva.php:28
+msgid "Secure Payments"
+msgstr ""
+
+#: template-parts/home/why-rentiva.php:29
+msgid "Simple and secure checkout."
+msgstr ""
+
+#: template-parts/home/why-rentiva.php:44
+msgid "WHY RENTIVA"
+msgstr ""
+
+#: template-parts/home/why-rentiva.php:46
+msgid "Everything you need for a better rental."
+msgstr ""
+
+#: template-parts/home/why-rentiva.php:64
+msgid "Learn More"
+msgstr ""
+
+#: template-parts/item/about.php:18
+msgid "About this rental"
+msgstr ""
+
+#: template-parts/item/booking-card.php:21
+msgid "Rent this item"
+msgstr ""
+
+#: template-parts/item/booking-card.php:30
+msgid "Secure booking"
+msgstr ""
+
+#: template-parts/item/booking-card.php:34
+msgid "Free cancellation"
+msgstr ""
+
+#: template-parts/item/breadcrumb.php:16
+msgid "Breadcrumb"
+msgstr ""
+
+#: template-parts/item/breadcrumb.php:19
+msgid "Rentals"
+msgstr ""
+
+#: template-parts/item/gallery.php:36
+msgid "Gallery view"
+msgstr ""
+
+#. translators: %d: number of photos
+#: template-parts/item/gallery.php:46
+#, php-format
+msgid "%d Photo"
+msgid_plural "%d Photos"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: review count
+#: template-parts/item/info.php:36
+#: template-parts/item/reviews.php:28
+#, php-format
+msgid "%d review"
+msgid_plural "%d reviews"
+msgstr[0] ""
+msgstr[1] ""
+
+#: template-parts/item/mobile-booking-bar.php:23
+msgid "Reserve Now"
+msgstr ""
+
+#: template-parts/item/pickup-location.php:25
+msgid "Available daily 8:00 AM – 8:00 PM"
+msgstr ""
+
+#: template-parts/item/pickup-location.php:29
+msgid "Pickup Location"
+msgstr ""
+
+#: template-parts/item/pickup-location.php:40
+msgid "Get Directions"
+msgstr ""
+
+#: template-parts/item/reviews.php:17
+msgid "What renters say"
+msgstr ""
+
+#: template-parts/item/reviews.php:23
+msgid "out of 5"
+msgstr ""
+
+#: template-parts/item/similar-items.php:21
+msgid "You might also like"
+msgstr ""
+
+#: template-parts/item/specs.php:23
+msgid "Key Specifications"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Background"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Foreground"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Card"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Muted"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Muted Foreground"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Border"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Primary"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Primary Dark"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Dark"
+msgstr ""
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Dark Fade"
+msgstr ""
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Dark Fade Diagonal"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Plus Jakarta Sans"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Inter"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Small"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Medium"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Large"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Extra Large"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Heading 3"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Heading 2"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Heading 1"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Hero"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "1"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "2"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "3"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "4"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "5"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "6"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "7"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "8"
+msgstr ""

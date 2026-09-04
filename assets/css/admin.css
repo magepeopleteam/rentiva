@@ -1,0 +1,24 @@
+/**
+ * Rentiva Settings screen (wp-admin) — small layout helpers only; everything
+ * else inherits core wp-admin form-table styling.
+ */
+
+.rentiva-settings .title {
+	margin-top: 2rem;
+}
+
+.rentiva-image-field {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.rentiva-image-field__preview img {
+	display: block;
+	border-radius: 4px;
+	border: 1px solid #dcdcde;
+}
+
+.rentiva-color-field {
+	font-family: monospace;
+}

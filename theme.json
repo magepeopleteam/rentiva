@@ -1,0 +1,137 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"settings": {
+		"appearanceTools": true,
+		"layout": {
+			"contentSize": "1240px",
+			"wideSize": "1440px"
+		},
+		"useRootPaddingAwareAlignments": true,
+		"color": {
+			"custom": false,
+			"customGradient": false,
+			"customDuotone": false,
+			"defaultPalette": false,
+			"defaultGradients": false,
+			"palette": [
+				{ "slug": "background", "name": "Background", "color": "#F9F8F5" },
+				{ "slug": "foreground", "name": "Foreground", "color": "#141414" },
+				{ "slug": "card", "name": "Card", "color": "#FFFFFF" },
+				{ "slug": "muted", "name": "Muted", "color": "#F3F0EB" },
+				{ "slug": "muted-foreground", "name": "Muted Foreground", "color": "#7A7670" },
+				{ "slug": "border", "name": "Border", "color": "#E8E4DC" },
+				{ "slug": "primary", "name": "Primary", "color": "#1B5E3B" },
+				{ "slug": "primary-dark", "name": "Primary Dark", "color": "#154D2E" },
+				{ "slug": "dark", "name": "Dark", "color": "#141414" }
+			],
+			"gradients": [
+				{
+					"slug": "dark-fade",
+					"name": "Dark Fade",
+					"gradient": "linear-gradient(180deg, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.08) 38%, rgba(0,0,0,0.52) 72%, rgba(0,0,0,0.82) 100%)"
+				},
+				{
+					"slug": "dark-fade-diagonal",
+					"name": "Dark Fade Diagonal",
+					"gradient": "linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 70%)"
+				}
+			]
+		},
+		"typography": {
+			"customFontSize": false,
+			"fontFamilies": [
+				{
+					"slug": "display",
+					"name": "Plus Jakarta Sans",
+					"fontFamily": "'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif"
+				},
+				{
+					"slug": "sans",
+					"name": "Inter",
+					"fontFamily": "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif"
+				}
+			],
+			"fontSizes": [
+				{ "slug": "small", "name": "Small", "size": "0.875rem" },
+				{ "slug": "medium", "name": "Medium", "size": "1rem" },
+				{ "slug": "large", "name": "Large", "size": "1.25rem" },
+				{ "slug": "x-large", "name": "Extra Large", "size": "1.5rem" },
+				{ "slug": "heading-3", "name": "Heading 3", "size": "clamp(1.75rem, 1.55rem + 1vw, 2.25rem)" },
+				{ "slug": "heading-2", "name": "Heading 2", "size": "clamp(2.125rem, 1.7rem + 2.1vw, 3rem)" },
+				{ "slug": "heading-1", "name": "Heading 1", "size": "clamp(2.75rem, 2rem + 3.5vw, 4.25rem)" },
+				{ "slug": "hero", "name": "Hero", "size": "clamp(3.5rem, 1.6rem + 8vw, 7.5rem)" }
+			]
+		},
+		"spacing": {
+			"customSpacingSize": false,
+			"units": [ "px", "rem", "%", "vh", "vw" ],
+			"spacingScale": {
+				"steps": 0
+			},
+			"spacingSizes": [
+				{ "slug": "10", "name": "1", "size": "0.5rem" },
+				{ "slug": "20", "name": "2", "size": "1rem" },
+				{ "slug": "30", "name": "3", "size": "1.5rem" },
+				{ "slug": "40", "name": "4", "size": "2rem" },
+				{ "slug": "50", "name": "5", "size": "3rem" },
+				{ "slug": "60", "name": "6", "size": "4rem" },
+				{ "slug": "70", "name": "7", "size": "5rem" },
+				{ "slug": "80", "name": "8", "size": "6rem" }
+			]
+		},
+		"border": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		},
+		"custom": {
+			"radius": {
+				"small": "0.75rem",
+				"medium": "1rem",
+				"large": "1.5rem",
+				"xl": "2rem",
+				"pill": "999px"
+			},
+			"shadow": {
+				"card": "0 1px 2px rgba(20,20,20,0.04), 0 8px 24px rgba(20,20,20,0.06)",
+				"card-hover": "0 4px 10px rgba(20,20,20,0.07), 0 20px 40px rgba(20,20,20,0.12)",
+				"floating": "0 20px 60px rgba(20,20,20,0.18)"
+			}
+		}
+	},
+	"styles": {
+		"color": {
+			"background": "var(--wp--preset--color--background)",
+			"text": "var(--wp--preset--color--foreground)"
+		},
+		"typography": {
+			"fontFamily": "var(--wp--preset--font-family--sans)",
+			"lineHeight": "1.6"
+		},
+		"elements": {
+			"heading": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--display)",
+					"fontWeight": "800",
+					"letterSpacing": "-0.03em"
+				}
+			},
+			"button": {
+				"color": {
+					"background": "var(--wp--preset--color--primary)",
+					"text": "var(--wp--preset--color--card)"
+				},
+				"border": {
+					"radius": "999px"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var(--wp--preset--color--primary)"
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,51 @@
+/**
+ * Final CTA — light section with two soft radial-gradient accents.
+ */
+
+.rentiva-final-cta {
+	position: relative;
+	background-color: var(--rentiva-secondary);
+	overflow: hidden;
+	text-align: center;
+	padding-block: 7rem;
+}
+
+.rentiva-final-cta__glow {
+	position: absolute;
+	inset: 0;
+	opacity: 0.1;
+	background-image:
+		radial-gradient(circle at 20% 50%, var(--rentiva-primary) 0%, transparent 60%),
+		radial-gradient(circle at 80% 50%, var(--rentiva-primary) 0%, transparent 60%);
+}
+
+.rentiva-final-cta__inner {
+	position: relative;
+	z-index: 1;
+}
+
+.rentiva-final-cta h2 {
+	margin-bottom: 1rem;
+}
+
+.rentiva-final-cta__inner .rentiva-lead {
+	margin-bottom: 2.5rem;
+}
+
+.rentiva-final-cta__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+}
+
+.rentiva-final-cta .btn--outline {
+	border-color: var(--rentiva-foreground);
+}
+
+.rentiva-final-cta .btn--outline:hover {
+	background-color: var(--rentiva-foreground);
+	color: #FFFFFF;
+	border-color: var(--rentiva-foreground);
+}

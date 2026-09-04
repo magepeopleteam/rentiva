@@ -1,0 +1,392 @@
+/**
+ * Single rental-item page: breadcrumb, gallery, info, specs, about,
+ * pickup location, reviews, similar items. The sticky booking card and the
+ * embedded plugin form live in booking.css.
+ */
+
+.rentiva-breadcrumb {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+	padding-block: 1.5rem;
+	font-size: var(--rentiva-text-xs);
+	color: var(--rentiva-muted-foreground);
+}
+
+.rentiva-breadcrumb a:hover {
+	color: var(--rentiva-primary);
+}
+
+.rentiva-breadcrumb__current {
+	color: var(--rentiva-foreground);
+}
+
+.rentiva-single-item {
+	padding-block: 1rem 3rem;
+}
+
+.rentiva-single-item__grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 3rem;
+}
+
+@media (min-width: 1024px) {
+	.rentiva-single-item__grid {
+		grid-template-columns: 2fr 1fr;
+		gap: 3rem;
+	}
+}
+
+.rentiva-item-section {
+	margin-top: 3rem;
+	padding-top: 3rem;
+	border-top: 1px solid var(--rentiva-border);
+}
+
+/* Gallery ------------------------------------------------------------- */
+
+.rentiva-gallery__main {
+	position: relative;
+	border-radius: var(--rentiva-radius-lg);
+	overflow: hidden;
+	aspect-ratio: 16 / 10;
+	background-color: #d8d4cc;
+	margin-bottom: 1rem;
+}
+
+.rentiva-gallery__image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.rentiva-gallery__image--placeholder {
+	display: block;
+	background: radial-gradient(circle at 40% 30%, #3a7a54 0%, #1B5E3B 55%, #123b26 100%);
+}
+
+.rentiva-gallery__actions {
+	position: absolute;
+	top: 1rem;
+	right: 1rem;
+	display: flex;
+	gap: 0.5rem;
+}
+
+.rentiva-gallery__actions .rentiva-icon-btn {
+	width: 2.25rem;
+	height: 2.25rem;
+	backdrop-filter: blur(8px);
+}
+
+.rentiva-gallery__count {
+	position: absolute;
+	bottom: 1rem;
+	left: 1rem;
+	padding: 0.4rem 0.85rem;
+	border-radius: var(--rentiva-radius-pill);
+	background-color: rgba(0, 0, 0, 0.5);
+	color: #FFFFFF;
+	font-size: var(--rentiva-text-xs);
+	font-weight: 500;
+	backdrop-filter: blur(8px);
+}
+
+.rentiva-gallery__thumbs {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	gap: 0.75rem;
+}
+
+.rentiva-gallery__thumb {
+	aspect-ratio: 1;
+	border-radius: var(--rentiva-radius-sm);
+	overflow: hidden;
+	border: 2.5px solid transparent;
+	opacity: 0.7;
+	transition: opacity var(--rentiva-transition), border-color var(--rentiva-transition);
+}
+
+.rentiva-gallery__thumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.rentiva-gallery__thumb.is-active,
+.rentiva-gallery__thumb:hover {
+	opacity: 1;
+	border-color: var(--rentiva-primary);
+}
+
+/* Info ------------------------------------------------------------------ */
+
+.rentiva-item-info {
+	margin-top: 2.5rem;
+}
+
+.rentiva-item-info__badge {
+	margin-bottom: 1rem;
+	letter-spacing: 0.1em;
+}
+
+.rentiva-item-info__title {
+	margin-bottom: 1rem;
+	line-height: 1.2;
+}
+
+.rentiva-item-info__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1rem;
+	margin-bottom: 1rem;
+}
+
+.rentiva-item-info__location {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	font-size: var(--rentiva-text-sm);
+	color: var(--rentiva-muted-foreground);
+}
+
+.rentiva-item-info__description {
+	color: var(--rentiva-muted-foreground);
+	margin-bottom: 1.5rem;
+}
+
+.rentiva-item-info__pills {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-bottom: 1.5rem;
+}
+
+.rentiva-item-info__price {
+	display: flex;
+	align-items: baseline;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+}
+
+.rentiva-item-info__price-amount {
+	font-family: var(--rentiva-font-display);
+	font-size: var(--rentiva-text-4xl);
+	font-weight: 800;
+}
+
+.rentiva-item-info__price-unit {
+	color: var(--rentiva-muted-foreground);
+}
+
+/* Specs ------------------------------------------------------------------ */
+
+.rentiva-item-specs__grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 1rem;
+}
+
+@media (min-width: 768px) {
+	.rentiva-item-specs__grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+.rentiva-item-specs__cell {
+	padding: 1rem;
+	border-radius: var(--rentiva-radius-lg);
+	background-color: var(--rentiva-card);
+	border: 1px solid var(--rentiva-border);
+}
+
+.rentiva-item-specs__label {
+	font-size: var(--rentiva-text-xs);
+	color: var(--rentiva-muted-foreground);
+	margin-bottom: 0.25rem;
+}
+
+.rentiva-item-specs__value {
+	font-family: var(--rentiva-font-display);
+	font-size: var(--rentiva-text-sm);
+	font-weight: 600;
+}
+
+/* About / included --------------------------------------------------------- */
+
+.rentiva-item-about__content {
+	color: var(--rentiva-muted-foreground);
+	margin-bottom: 2rem;
+}
+
+.rentiva-item-about__subheading {
+	font-family: var(--rentiva-font-display);
+	font-weight: 600;
+	margin-bottom: 1rem;
+}
+
+.rentiva-item-about__included {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 0.75rem;
+}
+
+.rentiva-item-about__included-item {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	font-size: var(--rentiva-text-sm);
+}
+
+.rentiva-checklist__icon--sm {
+	width: 1.5rem;
+	height: 1.5rem;
+	flex-shrink: 0;
+}
+
+.rentiva-checklist__icon--sm svg {
+	width: 10px;
+	height: 10px;
+}
+
+/* Pickup location ----------------------------------------------------------- */
+
+.rentiva-item-pickup__card {
+	padding: 1.5rem;
+	border: 1px solid var(--rentiva-border);
+}
+
+.rentiva-item-pickup__map {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 160px;
+	border-radius: var(--rentiva-radius-sm);
+	background-color: var(--rentiva-secondary);
+	color: var(--rentiva-foreground);
+	opacity: 0.4;
+	margin-bottom: 1rem;
+}
+
+.rentiva-item-pickup__map svg {
+	width: 40px;
+	height: 40px;
+}
+
+.rentiva-item-pickup__footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
+.rentiva-item-pickup__address {
+	font-family: var(--rentiva-font-display);
+	font-weight: 600;
+	font-size: var(--rentiva-text-sm);
+}
+
+.rentiva-item-pickup__hours {
+	font-size: var(--rentiva-text-xs);
+	color: var(--rentiva-muted-foreground);
+	margin-top: 0.25rem;
+}
+
+/* Reviews ------------------------------------------------------------------ */
+
+.rentiva-item-reviews__summary {
+	display: flex;
+	align-items: center;
+	gap: 1.5rem;
+	padding: 1.5rem;
+	border: 1px solid var(--rentiva-border);
+	margin-bottom: 1.5rem;
+}
+
+.rentiva-item-reviews__score {
+	text-align: center;
+}
+
+.rentiva-item-reviews__score-value {
+	font-family: var(--rentiva-font-display);
+	font-size: var(--rentiva-text-4xl);
+	font-weight: 800;
+	line-height: 1;
+}
+
+.rentiva-comments__list {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	list-style: none;
+	margin: 0 0 1.5rem;
+	padding: 0;
+}
+
+.rentiva-review {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.75rem;
+	padding: 1.25rem;
+	border-radius: var(--rentiva-radius-lg);
+	background-color: var(--rentiva-card);
+	border: 1px solid var(--rentiva-border);
+}
+
+.rentiva-review__avatar img {
+	border-radius: 50%;
+	width: 40px;
+	height: 40px;
+	object-fit: cover;
+}
+
+.rentiva-review__body {
+	flex: 1;
+}
+
+.rentiva-review__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-bottom: 0.25rem;
+}
+
+.rentiva-review__name {
+	font-family: var(--rentiva-font-display);
+	font-weight: 600;
+	font-size: var(--rentiva-text-sm);
+}
+
+.rentiva-review__date {
+	font-size: var(--rentiva-text-xs);
+	color: var(--rentiva-muted-foreground);
+}
+
+.rentiva-review__text {
+	margin-top: 0.5rem;
+	font-size: var(--rentiva-text-sm);
+	color: var(--rentiva-muted-foreground);
+	line-height: 1.6;
+}
+
+.rentiva-comments .comment-form p {
+	margin-bottom: 1rem;
+}
+
+.rentiva-comments .comment-form textarea,
+.rentiva-comments .comment-form select,
+.rentiva-comments .comment-form input[type="text"],
+.rentiva-comments .comment-form input[type="email"],
+.rentiva-comments .comment-form input[type="url"] {
+	width: 100%;
+	padding: 0.75rem 1rem;
+	border: 1.5px solid var(--rentiva-border);
+	border-radius: var(--rentiva-radius-sm);
+	background-color: var(--rentiva-card);
+}

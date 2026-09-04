@@ -1,0 +1,9 @@
+/**
+ * "Popular Rentals" section-specific spacing. The card/grid styles
+ * themselves live in components.css so they're shared with the archive
+ * page and Similar Rentals without duplication.
+ */
+
+.rentiva-popular-rentals {
+	scroll-margin-top: var(--rentiva-header-height-lg);
+}

@@ -1,0 +1,24 @@
+/*
+Theme Name: Rentiva
+Theme URI: https://rentiva.example.com
+Author: Rentiva Team
+Author URI: https://rentiva.example.com
+Description: Rentiva is a premium equipment & vehicle rental marketplace WordPress theme — bikes, scooters, cameras, camping gear, water sports and outdoor equipment, all through one reusable rental-item card system, a premium rental archive, a single-item booking page, and a full set of Elementor widgets (required) for every homepage section. Rentiva is presentation-only: rentable items, pricing, availability and checkout are handled by Booking and Rental Manager for WooCommerce (required) and WooCommerce; Rentiva never stores or calculates booking data itself.
+Version: 1.0.0
+Requires at least: 6.4
+Tested up to: 6.7
+Requires PHP: 7.4
+Requires Plugins: elementor, booking-and-rental-manager-for-woocommerce, woocommerce
+License: GNU General Public License v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: rentiva
+Domain Path: /languages
+Tags: e-commerce, booking, rental, bikes, equipment-rental, block-patterns, custom-logo, custom-menu, editor-style, featured-images, full-width-template, rtl-language-support, threaded-comments, translation-ready, wide-blocks
+
+Rentiva is distributed under the terms of the GNU General Public License v2 or later.
+This theme bundles no third-party code beyond what is credited in docs/customization.md.
+
+This stylesheet intentionally stays minimal — WordPress requires a style.css header block
+to recognize a theme, and all real styling for Rentiva lives in assets/css/ and is loaded
+conditionally by inc/enqueue.php so pages never pay for CSS they don't use.
+*/

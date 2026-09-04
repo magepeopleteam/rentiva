@@ -1,0 +1,129 @@
+/**
+ * Dark 5-column site footer — matches the mockup's homepage footer section
+ * exactly (brand+socials spanning 2 cols, 3 link columns, copyright bar).
+ */
+
+.site-footer {
+	background-color: var(--rentiva-dark);
+	color: #FFFFFF;
+	padding: 4rem 0 2rem;
+}
+
+.site-footer__grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 3rem;
+	margin-bottom: 3rem;
+}
+
+@media (min-width: 1024px) {
+	.site-footer__grid {
+		grid-template-columns: 1.8fr 1fr 1fr 1fr;
+	}
+}
+
+@media (min-width: 900px) and (max-width: 1023.98px) {
+	.site-footer__grid {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+@media (max-width: 540px) {
+	.site-footer__grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+.site-footer__logo {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 1rem;
+}
+
+.site-footer__mark {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	border-radius: var(--rentiva-radius-sm);
+	background-color: var(--rentiva-primary);
+	flex-shrink: 0;
+}
+
+.site-footer__logo-text {
+	font-family: var(--rentiva-font-display);
+	font-size: 1.25rem;
+	font-weight: 700;
+	color: #FFFFFF;
+}
+
+.site-footer__tagline {
+	font-size: var(--rentiva-text-sm);
+	color: rgba(255, 255, 255, 0.5);
+	margin-bottom: 1.5rem;
+}
+
+.site-footer__socials {
+	display: flex;
+	gap: 0.75rem;
+}
+
+.site-footer__social {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.25rem;
+	height: 2.25rem;
+	border-radius: 50%;
+	background-color: rgba(255, 255, 255, 0.08);
+	color: rgba(255, 255, 255, 0.6);
+	transition: background-color var(--rentiva-transition), color var(--rentiva-transition);
+}
+
+.site-footer__social:hover {
+	background-color: var(--rentiva-primary);
+	color: #FFFFFF;
+}
+
+.site-footer__heading {
+	font-family: var(--rentiva-font-sans);
+	font-size: var(--rentiva-text-xs);
+	font-weight: 700;
+	letter-spacing: 0.15em;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 0.4);
+	margin-bottom: 1.25rem;
+}
+
+.rentiva-footer__links {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.rentiva-footer__links a {
+	font-size: var(--rentiva-text-sm);
+	color: rgba(255, 255, 255, 0.6);
+	transition: color var(--rentiva-transition);
+}
+
+.rentiva-footer__links a:hover {
+	color: #FFFFFF;
+}
+
+.site-footer__bottom {
+	padding-top: 2rem;
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1rem;
+}
+
+.site-footer__copyright {
+	font-size: var(--rentiva-text-xs);
+	color: rgba(255, 255, 255, 0.35);
+}

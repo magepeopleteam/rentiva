@@ -1,0 +1,435 @@
+/**
+ * Shared primitives reused across every section/template-part: buttons,
+ * badges, inputs, cards, icon buttons and the star-rating display.
+ */
+
+/* Buttons --------------------------------------------------------------- */
+
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	font-family: var(--rentiva-font-sans);
+	font-size: var(--rentiva-text-sm);
+	font-weight: 600;
+	line-height: 1;
+	padding: 0.85rem 1.6rem;
+	border-radius: var(--rentiva-radius-pill);
+	border: 1px solid transparent;
+	transition: background-color var(--rentiva-transition), color var(--rentiva-transition), border-color var(--rentiva-transition), transform var(--rentiva-transition);
+	white-space: nowrap;
+}
+
+.btn:active {
+	transform: translateY(1px);
+}
+
+.btn--primary {
+	background-color: var(--rentiva-primary);
+	color: var(--rentiva-primary-foreground);
+	box-shadow: 0 4px 20px rgba(27, 94, 59, 0.35);
+}
+
+.btn--primary:hover {
+	background-color: var(--rentiva-primary-dark);
+	color: var(--rentiva-primary-foreground);
+	transform: translateY(-2px);
+}
+
+.btn--glass {
+	background-color: rgba(255, 255, 255, 0.12);
+	color: #FFFFFF;
+	border-color: rgba(255, 255, 255, 0.22);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+}
+
+.btn--glass:hover {
+	background-color: rgba(255, 255, 255, 0.22);
+}
+
+.btn--white {
+	background-color: #FFFFFF;
+	color: var(--rentiva-foreground);
+}
+
+.btn--white:hover {
+	background-color: var(--rentiva-secondary);
+}
+
+.btn--outline {
+	background-color: transparent;
+	border-color: var(--rentiva-border);
+	color: var(--rentiva-foreground);
+}
+
+.btn--outline:hover {
+	border-color: var(--rentiva-primary);
+	color: var(--rentiva-primary);
+}
+
+.btn--outline-white {
+	background-color: transparent;
+	border-color: rgba(255, 255, 255, 0.35);
+	color: #FFFFFF;
+}
+
+.btn--outline-white:hover {
+	background-color: rgba(255, 255, 255, 0.1);
+	border-color: #FFFFFF;
+}
+
+.btn--ghost {
+	background-color: transparent;
+	color: var(--rentiva-foreground);
+	padding-inline: 0.25rem;
+}
+
+.btn--ghost:hover {
+	color: var(--rentiva-primary);
+}
+
+.btn--block {
+	width: 100%;
+}
+
+.btn--lg {
+	padding: 1.05rem 2.25rem;
+	font-size: var(--rentiva-text-base);
+}
+
+.btn[disabled],
+.btn.is-disabled {
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+/* Badges / pills ---------------------------------------------------------- */
+
+.rentiva-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	font-size: var(--rentiva-text-xs);
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	padding: 0.4rem 0.85rem;
+	border-radius: var(--rentiva-radius-pill);
+	background-color: var(--rentiva-secondary);
+	color: var(--rentiva-foreground);
+}
+
+.rentiva-badge--primary {
+	background-color: var(--rentiva-chip-bg);
+	color: var(--rentiva-primary);
+}
+
+.rentiva-badge--dark {
+	background-color: rgba(20, 20, 20, 0.55);
+	color: #FFFFFF;
+	backdrop-filter: blur(6px);
+}
+
+.rentiva-badge--on-media {
+	background-color: rgba(255, 255, 255, 0.16);
+	color: #FFFFFF;
+	backdrop-filter: blur(6px);
+	border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* Inputs ------------------------------------------------------------------ */
+
+.rentiva-field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+}
+
+.rentiva-field__label {
+	font-size: var(--rentiva-text-xs);
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--rentiva-muted-foreground);
+}
+
+.rentiva-input,
+.rentiva-select {
+	width: 100%;
+	min-width: 0;
+	background: transparent;
+	border: 0;
+	padding: 0;
+	font-family: var(--rentiva-font-sans);
+	font-size: var(--rentiva-text-base);
+	font-weight: 600;
+	color: var(--rentiva-foreground);
+}
+
+.rentiva-input::placeholder {
+	color: var(--rentiva-muted-foreground);
+	font-weight: 400;
+}
+
+.rentiva-input:focus,
+.rentiva-select:focus {
+	outline: none;
+}
+
+/* Cards --------------------------------------------------------------- */
+
+.rentiva-card {
+	background-color: var(--rentiva-card);
+	border-radius: var(--rentiva-radius-lg);
+	box-shadow: var(--rentiva-shadow-card);
+	transition: box-shadow var(--rentiva-transition), transform var(--rentiva-transition);
+}
+
+.rentiva-card--hover:hover {
+	box-shadow: var(--rentiva-shadow-card-hover);
+	transform: translateY(-4px);
+}
+
+/* Icon buttons (wishlist heart, gallery grid toggle, etc.) --------------- */
+
+.rentiva-icon-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.5rem;
+	height: 2.5rem;
+	border-radius: 50%;
+	background-color: rgba(255, 255, 255, 0.92);
+	color: var(--rentiva-foreground);
+	box-shadow: var(--rentiva-shadow-card);
+	transition: background-color var(--rentiva-transition), color var(--rentiva-transition), transform var(--rentiva-transition);
+}
+
+.rentiva-icon-btn:hover {
+	transform: scale(1.06);
+}
+
+.rentiva-icon-btn.is-active {
+	color: var(--rentiva-like);
+}
+
+.rentiva-icon-btn.is-active svg {
+	fill: currentColor;
+}
+
+/* Plain pills (feature tags, secondary price) ----------------------------- */
+
+.rentiva-pill {
+	display: inline-flex;
+	align-items: center;
+	font-size: var(--rentiva-text-xs);
+	font-weight: 500;
+	padding: 0.4rem 0.85rem;
+	border-radius: var(--rentiva-radius-pill);
+	background-color: var(--rentiva-secondary);
+	color: var(--rentiva-foreground);
+}
+
+.rentiva-pill--muted {
+	color: var(--rentiva-muted-foreground);
+	font-weight: 500;
+	font-size: var(--rentiva-text-sm);
+}
+
+/* Star rating ------------------------------------------------------------ */
+
+.rentiva-rating {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	font-size: var(--rentiva-text-sm);
+	font-weight: 600;
+}
+
+.rentiva-rating__stars {
+	display: inline-flex;
+	gap: 0.15rem;
+	color: var(--rentiva-star);
+}
+
+.rentiva-rating__count {
+	color: var(--rentiva-muted-foreground);
+	font-weight: 400;
+}
+
+/* Checklist rows (Why Rentiva / What's Included) -------------------------- */
+
+.rentiva-checklist {
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+
+.rentiva-checklist__item {
+	display: flex;
+	align-items: flex-start;
+	gap: 1rem;
+}
+
+.rentiva-checklist__icon {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	border-radius: 50%;
+	background-color: var(--rentiva-chip-bg);
+	color: var(--rentiva-primary);
+}
+
+/* Rental item card + grid (Popular Rentals / archive / Similar Rentals) --- */
+
+.rentiva-rental-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+	.rentiva-rental-grid--3,
+	.rentiva-rental-grid--4 {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (min-width: 1024px) {
+	.rentiva-rental-grid--3 {
+		grid-template-columns: repeat(3, 1fr);
+	}
+	.rentiva-rental-grid--4 {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}
+
+.rentiva-rental-card {
+	position: relative;
+	overflow: hidden;
+	border: 1px solid var(--rentiva-border);
+}
+
+.rentiva-rental-card__media {
+	position: relative;
+	display: block;
+	height: 220px;
+	overflow: hidden;
+}
+
+.rentiva-rental-card--compact .rentiva-rental-card__media {
+	height: 170px;
+}
+
+.rentiva-rental-card__image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 500ms ease;
+}
+
+.rentiva-rental-card__image--placeholder {
+	display: block;
+	background: linear-gradient(135deg, #e4e0d6 0%, #cfc9bb 100%);
+}
+
+.rentiva-rental-card:hover .rentiva-rental-card__image {
+	transform: scale(1.06);
+}
+
+.rentiva-rental-card__badge {
+	position: absolute;
+	top: 0.75rem;
+	left: 0.75rem;
+	max-width: calc(100% - 4rem);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-family: var(--rentiva-font-sans);
+	font-size: var(--rentiva-text-xs);
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	padding: 0.35rem 0.7rem;
+	border-radius: var(--rentiva-radius-pill);
+	background-color: var(--rentiva-primary);
+	color: #FFFFFF;
+}
+
+.rentiva-rental-card__like {
+	position: absolute;
+	top: 0.75rem;
+	right: 0.75rem;
+	width: 2rem;
+	height: 2rem;
+	backdrop-filter: blur(8px);
+}
+
+.rentiva-rental-card__like svg {
+	width: 16px;
+	height: 16px;
+}
+
+.rentiva-rental-card__body {
+	padding: 1rem;
+}
+
+.rentiva-rental-card__title {
+	font-family: var(--rentiva-font-display);
+	font-weight: 600;
+	font-size: var(--rentiva-text-base);
+	margin-bottom: 0.5rem;
+}
+
+.rentiva-rental-card__title a:hover {
+	color: var(--rentiva-primary);
+}
+
+.rentiva-rental-card .rentiva-rating {
+	margin-bottom: 0.5rem;
+}
+
+.rentiva-rental-card__location {
+	display: flex;
+	align-items: center;
+	gap: 0.3rem;
+	color: var(--rentiva-muted-foreground);
+	font-size: var(--rentiva-text-xs);
+	margin-bottom: 1rem;
+}
+
+.rentiva-rental-card__footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+}
+
+.rentiva-rental-card__price-value {
+	font-family: var(--rentiva-font-display);
+	font-size: var(--rentiva-text-xl);
+	font-weight: 700;
+}
+
+.rentiva-rental-card__price-unit {
+	font-size: var(--rentiva-text-sm);
+	color: var(--rentiva-muted-foreground);
+}
+
+.rentiva-rental-card__cta {
+	padding: 0.6rem 1.1rem;
+	border-radius: var(--rentiva-radius-sm);
+}
+
+/* Empty state -------------------------------------------------------------- */
+
+.rentiva-empty-state {
+	text-align: center;
+	padding: 4rem 1.5rem;
+	border: 1px dashed var(--rentiva-border);
+	border-radius: var(--rentiva-radius-lg);
+	color: var(--rentiva-muted-foreground);
+}

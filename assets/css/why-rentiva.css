@@ -1,0 +1,53 @@
+/**
+ * "Why Rentiva" — 2-col image + checklist.
+ */
+
+.rentiva-why-rentiva__grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 3rem;
+	align-items: center;
+}
+
+@media (min-width: 1024px) {
+	.rentiva-why-rentiva__grid {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 5rem;
+	}
+}
+
+.rentiva-why-rentiva__media {
+	border-radius: var(--rentiva-radius-xl);
+	overflow: hidden;
+	aspect-ratio: 4 / 5;
+	background-color: #d8d4cc;
+}
+
+.rentiva-why-rentiva__image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.rentiva-why-rentiva__image--placeholder {
+	background: radial-gradient(circle at 40% 30%, #3a7a54 0%, #1B5E3B 55%, #123b26 100%);
+}
+
+.rentiva-why-rentiva__title {
+	margin-bottom: 2.5rem;
+	line-height: 1.15;
+}
+
+.rentiva-why-rentiva__feature-title {
+	display: block;
+	font-family: var(--rentiva-font-display);
+	font-weight: 600;
+	margin-bottom: 0.25rem;
+}
+
+.rentiva-why-rentiva__feature-desc {
+	display: block;
+	font-size: var(--rentiva-text-sm);
+	color: var(--rentiva-muted-foreground);
+	line-height: 1.6;
+}

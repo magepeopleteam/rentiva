@@ -1,0 +1,246 @@
+/**
+ * Fixed site header — transparent-over-media on the homepage hero, solid
+ * everywhere else, matching mockup/src/components/Header.tsx exactly
+ * (including the scrollY > 40 solid-on-scroll threshold applied by
+ * assets/js/header-scroll.js).
+ */
+
+.site-header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 50;
+	transition: background-color var(--rentiva-transition), border-color var(--rentiva-transition), box-shadow var(--rentiva-transition), backdrop-filter var(--rentiva-transition);
+	background-color: transparent;
+	border-bottom: 1px solid transparent;
+	box-shadow: none;
+}
+
+.site-header.is-scrolled,
+body:not(.rentiva-header-on-media) .site-header {
+	background-color: rgba(249, 248, 245, 0.97);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border-bottom-color: var(--rentiva-border);
+	box-shadow: var(--rentiva-shadow-header);
+}
+
+.site-header__inner {
+	max-width: var(--rentiva-container);
+	margin-inline: auto;
+	padding-inline: 1.25rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: var(--rentiva-header-height);
+}
+
+@media (min-width: 641px) {
+	.site-header__inner {
+		padding-inline: 2rem;
+	}
+}
+
+@media (min-width: 1025px) {
+	.site-header__inner {
+		padding-inline: var(--rentiva-gutter-lg);
+		height: var(--rentiva-header-height-lg);
+	}
+}
+
+/* Logo -------------------------------------------------------------- */
+
+.site-header__logo {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.site-header__mark {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	border-radius: var(--rentiva-radius-sm);
+	background-color: var(--rentiva-primary);
+	flex-shrink: 0;
+}
+
+.site-header__logo-text {
+	font-family: var(--rentiva-font-display);
+	font-size: 1.25rem;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	color: #FFFFFF;
+	transition: color var(--rentiva-transition);
+}
+
+.site-header.is-scrolled .site-header__logo-text,
+body:not(.rentiva-header-on-media) .site-header__logo-text {
+	color: var(--rentiva-foreground);
+}
+
+/* Desktop nav --------------------------------------------------------- */
+
+.site-header__nav {
+	display: none;
+	align-items: center;
+	gap: 2.5rem;
+}
+
+@media (min-width: 768px) {
+	.site-header__nav {
+		display: flex;
+	}
+}
+
+.site-header__nav a {
+	font-family: var(--rentiva-font-sans);
+	font-size: var(--rentiva-text-sm);
+	font-weight: 500;
+	color: rgba(255, 255, 255, 0.9);
+	transition: color var(--rentiva-transition);
+	position: relative;
+}
+
+.site-header__nav a:hover,
+.site-header__nav a.is-current {
+	color: #FFFFFF;
+}
+
+.site-header.is-scrolled .site-header__nav a,
+body:not(.rentiva-header-on-media) .site-header__nav a {
+	color: var(--rentiva-foreground);
+}
+
+.site-header.is-scrolled .site-header__nav a:hover,
+.site-header.is-scrolled .site-header__nav a.is-current,
+body:not(.rentiva-header-on-media) .site-header__nav a:hover,
+body:not(.rentiva-header-on-media) .site-header__nav a.is-current {
+	color: var(--rentiva-primary);
+}
+
+/* Mega menu (only triggers for parents with 9+ children — rentiva_mark_multi_column_menu_items()) */
+
+.site-header__nav li.has-multi-column {
+	position: static;
+}
+
+.site-header__nav .sub-menu {
+	display: none;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	margin-top: 1rem;
+	padding: 1.5rem;
+	min-width: 220px;
+	background-color: var(--rentiva-card);
+	border-radius: var(--rentiva-radius);
+	box-shadow: var(--rentiva-shadow-floating);
+}
+
+.site-header__nav li:hover > .sub-menu,
+.site-header__nav li:focus-within > .sub-menu {
+	display: grid;
+	gap: 0.5rem 2rem;
+}
+
+.site-header__nav .sub-menu a {
+	color: var(--rentiva-foreground) !important;
+	white-space: nowrap;
+}
+
+.site-header__nav li.has-multi-column.menu-columns-2 > .sub-menu { grid-template-columns: repeat(2, 1fr); }
+.site-header__nav li.has-multi-column.menu-columns-3 > .sub-menu { grid-template-columns: repeat(3, 1fr); }
+
+/* Actions -------------------------------------------------------------- */
+
+.site-header__actions {
+	display: none;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+	.site-header__actions {
+		display: flex;
+	}
+}
+
+.site-header__text-btn {
+	font-family: var(--rentiva-font-sans);
+	font-size: var(--rentiva-text-sm);
+	font-weight: 500;
+	color: rgba(255, 255, 255, 0.9);
+	padding: 0.5rem 1rem;
+	border-radius: var(--rentiva-radius-pill);
+	transition: color var(--rentiva-transition);
+}
+
+.site-header.is-scrolled .site-header__text-btn,
+body:not(.rentiva-header-on-media) .site-header__text-btn {
+	color: var(--rentiva-foreground);
+}
+
+/* Mobile hamburger ------------------------------------------------------- */
+
+.site-header__toggle {
+	display: inline-flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	padding: 0.5rem;
+}
+
+@media (min-width: 768px) {
+	.site-header__toggle {
+		display: none;
+	}
+}
+
+.site-header__toggle span {
+	display: block;
+	width: 1.25rem;
+	height: 2px;
+	border-radius: 2px;
+	background-color: #FFFFFF;
+	transition: background-color var(--rentiva-transition);
+}
+
+.site-header.is-scrolled .site-header__toggle span,
+body:not(.rentiva-header-on-media) .site-header__toggle span {
+	background-color: var(--rentiva-foreground);
+}
+
+.site-header__mobile-menu {
+	display: none;
+	flex-direction: column;
+	gap: 1rem;
+	padding: 1rem 1.5rem 1.5rem;
+	background-color: rgba(249, 248, 245, 0.98);
+}
+
+.site-header__mobile-menu.is-open {
+	display: flex;
+}
+
+@media (min-width: 768px) {
+	.site-header__mobile-menu {
+		display: none !important;
+	}
+}
+
+.site-header__mobile-menu a {
+	font-family: var(--rentiva-font-sans);
+	font-size: var(--rentiva-text-sm);
+	font-weight: 500;
+	color: var(--rentiva-foreground);
+}
+
+.site-header__mobile-actions {
+	display: flex;
+	gap: 0.75rem;
+	padding-top: 0.75rem;
+	border-top: 1px solid var(--rentiva-border);
+}

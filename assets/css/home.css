@@ -1,0 +1,55 @@
+/**
+ * Homepage-only glue styles: the trust-strip section (small enough that it
+ * doesn't warrant its own registered stylesheet) and the top offset that
+ * makes room for the hero's overlapping search panel.
+ */
+
+.rentiva-trust-strip {
+	padding-top: 3rem;
+}
+
+/* Matches the search panel's own single-row breakpoint (hero.css) — only
+ * there is the panel short enough for the -5rem hero overlap to clear
+ * safely with this much top padding. */
+@media (min-width: 901px) {
+	.rentiva-trust-strip {
+		padding-top: 9rem;
+	}
+}
+
+.rentiva-trust-strip__row {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 1.5rem;
+	padding-block: 2.5rem;
+	border-top: 1px solid var(--rentiva-border);
+	border-bottom: 1px solid var(--rentiva-border);
+}
+
+@media (min-width: 1024px) {
+	.rentiva-trust-strip__row {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}
+
+.rentiva-trust-strip__item {
+	text-align: center;
+}
+
+.rentiva-trust-strip__value {
+	font-family: var(--rentiva-font-display);
+	font-size: var(--rentiva-text-2xl);
+	font-weight: 700;
+	margin-bottom: 0.25rem;
+}
+
+@media (min-width: 1024px) {
+	.rentiva-trust-strip__value {
+		font-size: var(--rentiva-text-3xl);
+	}
+}
+
+.rentiva-trust-strip__label {
+	font-size: var(--rentiva-text-sm);
+	color: var(--rentiva-muted-foreground);
+}

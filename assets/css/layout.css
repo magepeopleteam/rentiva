@@ -1,0 +1,138 @@
+/**
+ * Containers, section rhythm, and grid utilities shared by every
+ * template-part in the theme.
+ */
+
+.site-main {
+	padding-top: var(--rentiva-header-height);
+}
+
+@media (min-width: 1024px) {
+	.site-main {
+		padding-top: var(--rentiva-header-height-lg);
+	}
+}
+
+body.rentiva-front-page .site-main {
+	padding-top: 0;
+}
+
+.rentiva-container {
+	max-width: var(--rentiva-container);
+	margin-inline: auto;
+	padding-inline: 1.25rem;
+}
+
+@media (min-width: 641px) {
+	.rentiva-container {
+		padding-inline: 2rem;
+	}
+}
+
+@media (min-width: 1025px) {
+	.rentiva-container {
+		padding-inline: var(--rentiva-gutter-lg);
+	}
+}
+
+.rentiva-container--content {
+	max-width: var(--rentiva-container-content);
+}
+
+.rentiva-container--narrow {
+	max-width: var(--rentiva-container-narrow);
+}
+
+.rentiva-section {
+	padding-block: 5rem;
+}
+
+.rentiva-section--tight {
+	padding-block: 3rem;
+}
+
+.rentiva-section--lg {
+	padding-block: 7rem;
+}
+
+.rentiva-section--flush-top {
+	padding-top: 0;
+}
+
+.rentiva-section--dark {
+	background-color: var(--rentiva-dark);
+	color: #FFFFFF;
+}
+
+.rentiva-section--muted {
+	background-color: var(--rentiva-secondary);
+}
+
+.rentiva-section-head {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 1.5rem;
+	margin-bottom: 2.5rem;
+}
+
+.rentiva-section-head__title {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.rentiva-grid {
+	display: grid;
+	gap: 1.5rem;
+}
+
+.rentiva-grid--2 {
+	grid-template-columns: repeat(2, 1fr);
+}
+
+.rentiva-grid--3 {
+	grid-template-columns: repeat(3, 1fr);
+}
+
+.rentiva-grid--4 {
+	grid-template-columns: repeat(4, 1fr);
+}
+
+.rentiva-grid--6 {
+	grid-template-columns: repeat(6, 1fr);
+}
+
+.rentiva-flex {
+	display: flex;
+}
+
+.rentiva-flex--center {
+	align-items: center;
+}
+
+.rentiva-flex--between {
+	justify-content: space-between;
+}
+
+.rentiva-flex--wrap {
+	flex-wrap: wrap;
+}
+
+.rentiva-gap-1 { gap: 0.5rem; }
+.rentiva-gap-2 { gap: 1rem; }
+.rentiva-gap-3 { gap: 1.5rem; }
+.rentiva-gap-4 { gap: 2rem; }
+
+.rentiva-visually-scroll {
+	display: flex;
+	gap: 1.25rem;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	padding-bottom: 0.5rem;
+	-webkit-overflow-scrolling: touch;
+}
+
+.rentiva-visually-scroll::-webkit-scrollbar {
+	height: 6px;
+}

@@ -1,0 +1,65 @@
+/**
+ * Rentals archive / category / location listing pages.
+ */
+
+.rentiva-archive-header {
+	padding-block: 3rem 2rem;
+	border-bottom: 1px solid var(--rentiva-border);
+	margin-bottom: 2.5rem;
+}
+
+.rentiva-archive-header h1 {
+	margin-block: 0.5rem 0.5rem;
+}
+
+.rentiva-archive-filters {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: end;
+	gap: 1rem;
+	margin-top: 2rem;
+	padding: 1.25rem;
+	background-color: var(--rentiva-card);
+	border: 1px solid var(--rentiva-border);
+	border-radius: var(--rentiva-radius);
+}
+
+.rentiva-archive-filters__field {
+	flex: 1;
+	min-width: 180px;
+}
+
+.rentiva-archive-filters__submit {
+	flex-shrink: 0;
+}
+
+.rentiva-archive__pagination {
+	display: flex;
+	justify-content: center;
+	gap: 0.5rem;
+	margin-top: 3rem;
+}
+
+.rentiva-archive__pagination .page-numbers {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 2.5rem;
+	height: 2.5rem;
+	padding-inline: 0.5rem;
+	border-radius: var(--rentiva-radius-sm);
+	border: 1px solid var(--rentiva-border);
+	font-size: var(--rentiva-text-sm);
+	font-weight: 500;
+}
+
+.rentiva-archive__pagination .page-numbers.current {
+	background-color: var(--rentiva-primary);
+	border-color: var(--rentiva-primary);
+	color: #FFFFFF;
+}
+
+.rentiva-archive__pagination .page-numbers:not(.current):not(.dots):hover {
+	border-color: var(--rentiva-primary);
+	color: var(--rentiva-primary);
+}

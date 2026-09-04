@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+@import 'tailwindcss';
+
+@theme inline {
+  --color-background: #F9F8F5;
+  --color-foreground: #141414;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #141414;
+  --color-primary: #1B5E3B;
+  --color-primary-foreground: #FFFFFF;
+  --color-secondary: #F3F0EB;
+  --color-secondary-foreground: #141414;
+  --color-muted: #F3F0EB;
+  --color-muted-foreground: #7A7670;
+  --color-accent: #1B5E3B;
+  --color-accent-foreground: #FFFFFF;
+  --color-border: #E8E4DC;
+  --color-ring: #1B5E3B;
+  --radius: 1rem;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #F9F8F5;
+  color: #141414;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Hide scrollbar but allow scrolling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #D8D4CC;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B8B4AC;
+}

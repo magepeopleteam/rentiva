@@ -1,0 +1,66 @@
+/**
+ * Full-width "Weekend Special" promo banner.
+ */
+
+.rentiva-promo-banner {
+	position: relative;
+	width: 100%;
+	height: 560px;
+	overflow: hidden;
+}
+
+.rentiva-promo-banner__media {
+	position: absolute;
+	inset: 0;
+	background-color: #1c1c1c;
+}
+
+.rentiva-promo-banner__image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	opacity: 0.65;
+}
+
+.rentiva-promo-banner__image--placeholder {
+	opacity: 1;
+	background: radial-gradient(circle at 70% 30%, #2a6b47 0%, #142014 70%);
+}
+
+.rentiva-promo-banner__gradient {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.2) 70%);
+}
+
+.rentiva-promo-banner__inner {
+	position: relative;
+	z-index: 1;
+	height: 100%;
+	display: flex;
+	align-items: center;
+}
+
+.rentiva-promo-banner__content {
+	max-width: 42rem;
+}
+
+.rentiva-promo-banner__badge {
+	margin-bottom: 2rem;
+	background-color: var(--rentiva-primary);
+	color: #FFFFFF;
+}
+
+.rentiva-promo-banner__title {
+	font-size: clamp(2.5rem, 6vw, 5rem);
+	line-height: 1;
+	color: #FFFFFF;
+	margin-bottom: 1.5rem;
+}
+
+.rentiva-promo-banner__text {
+	font-family: var(--rentiva-font-sans);
+	font-size: var(--rentiva-text-lg);
+	color: rgba(255, 255, 255, 0.8);
+	margin-bottom: 2rem;
+}

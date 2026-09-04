@@ -1,0 +1,16 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Dependencies (mockup/ is a Figma Make React export — not built/shipped at runtime)
+node_modules/
+dist/
+build/
+
+# Logs
+*.log
+
+# WordPress debug artifacts
+debug.log

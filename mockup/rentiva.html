@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rentiva — Rent. Ride. Explore.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── RESET & BASE ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: #F9F8F5;
+      color: #141414;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+    }
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; border: none; background: none; font-family: inherit; }
+    select, input { font-family: inherit; }
+    ul { list-style: none; }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #D8D4CC; border-radius: 3px; }
+
+    /* ── TOKENS ── */
+    :root {
+      --bg: #F9F8F5;
+      --fg: #141414;
+      --green: #1B5E3B;
+      --green-dark: #154d2e;
+      --green-light: #6EE7A0;
+      --green-tint: #E8F5EE;
+      --muted: #7A7670;
+      --border: #E8E4DC;
+      --card: #FFFFFF;
+      --radius-lg: 1.25rem;
+      --radius-xl: 1.5rem;
+      --radius-pill: 999px;
+    }
+
+    /* ── UTILITIES ── */
+    .container { max-width: 1440px; margin: 0 auto; padding: 0 3rem; }
+    @media (max-width: 1024px) { .container { padding: 0 2rem; } }
+    @media (max-width: 640px)  { .container { padding: 0 1.25rem; } }
+
+    .section-heading {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 4vw, 3rem);
+      letter-spacing: -0.02em;
+      color: var(--fg);
+    }
+    .section-sub {
+      font-size: 1rem;
+      color: var(--muted);
+      margin-top: 0.75rem;
+    }
+    .eyebrow {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--green);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      padding: 1rem 2rem;
+      border-radius: var(--radius-pill);
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(27,94,59,0.35);
+    }
+    .btn-primary:hover { background: var(--green-dark); transform: translateY(-2px); }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 0.9375rem;
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(255,255,255,0.22);
+      backdrop-filter: blur(12px);
+      transition: background 0.2s;
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.22); }
+    .btn-dark {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: transparent;
+      color: var(--fg);
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      padding: 0.9rem 2rem;
+      border-radius: var(--radius-pill);
+      border: 1.5px solid var(--fg);
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-dark:hover { background: var(--fg); color: #fff; }
+
+    /* ── HEADER ── */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+    header.scrolled {
+      background: rgba(249,248,245,0.96);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 12px rgba(0,0,0,0.06);
+      backdrop-filter: blur(12px);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 5rem;
+    }
+    .logo { display: flex; align-items: center; gap: 0.6rem; }
+    .logo-mark {
+      width: 2rem; height: 2rem;
+      background: var(--green);
+      border-radius: 0.5rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-text {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      color: #fff;
+      transition: color 0.3s;
+    }
+    header.scrolled .logo-text { color: var(--fg); }
+    nav { display: flex; align-items: center; gap: 2.5rem; }
+    nav a {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.88);
+      transition: color 0.2s;
+    }
+    nav a:hover { color: #fff; }
+    header.scrolled nav a { color: var(--fg); }
+    header.scrolled nav a:hover { color: var(--green); }
+    .nav-actions { display: flex; align-items: center; gap: 0.75rem; }
+    .btn-signin {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.88);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-pill);
+      transition: color 0.2s;
+    }
+    header.scrolled .btn-signin { color: var(--fg); }
+    .btn-list {
+      font-size: 0.875rem;
+      font-weight: 600;
+      background: var(--green);
+      color: #fff;
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius-pill);
+      transition: background 0.2s;
+    }
+    .btn-list:hover { background: var(--green-dark); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; padding: 0.5rem; cursor: pointer; }
+    .hamburger span { width: 22px; height: 2px; background: #fff; border-radius: 2px; transition: background 0.3s; }
+    header.scrolled .hamburger span { background: var(--fg); }
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1.25rem 1.25rem 1.5rem;
+      background: rgba(249,248,245,0.98);
+      border-top: 1px solid var(--border);
+    }
+    .mobile-menu a { font-size: 0.9375rem; font-weight: 500; color: var(--fg); }
+    .mobile-menu .mobile-actions { display: flex; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid var(--border); flex-wrap: wrap; }
+    .mobile-menu.open { display: flex; }
+
+    @media (max-width: 768px) {
+      nav, .nav-actions { display: none; }
+      .hamburger { display: flex; }
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-color: #0d1a14;
+    }
+    .hero-bg img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center;
+      opacity: 0.72;
+    }
+    .hero-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(8,20,14,0.62) 0%,
+        rgba(8,20,14,0.05) 32%,
+        rgba(8,20,14,0.38) 60%,
+        rgba(8,20,14,0.88) 100%
+      );
+    }
+    .hero-tint {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 10% 90%, rgba(27,94,59,0.35) 0%, transparent 70%);
+    }
+    .hero-badges {
+      position: absolute;
+      right: 4rem;
+      top: 7.5rem;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .badge-glass {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,0.11);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+    .badge-icon {
+      width: 2.25rem; height: 2.25rem;
+      border-radius: 0.625rem;
+      background: var(--green);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .badge-glass .badge-val {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: #fff;
+      line-height: 1;
+    }
+    .badge-glass .badge-lbl {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.6);
+      margin-top: 0.2rem;
+    }
+    .badge-live {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1rem;
+      border-radius: var(--radius-lg);
+      background: rgba(27,94,59,0.75);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(27,94,59,0.5);
+    }
+    .pulse-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #6EE7A0;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.85); }
+    }
+    .badge-live span { font-size: 0.75rem; font-weight: 600; color: #fff; }
+
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 7rem 1.5rem 5rem;
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1.25rem;
+      border-radius: var(--radius-pill);
+      background: rgba(27,94,59,0.55);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(27,94,59,0.7);
+      margin-bottom: 2rem;
+    }
+    .hero-eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: #6EE7A0; }
+    .hero-eyebrow span {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: rgba(255,255,255,0.9);
+    }
+    .hero-h1 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: clamp(3.2rem, 9.5vw, 8rem);
+      letter-spacing: -0.035em;
+      line-height: 0.9;
+      color: #fff;
+      text-shadow: 0 2px 40px rgba(0,0,0,0.4);
+      max-width: 1000px;
+      margin-bottom: 1.5rem;
+    }
+    .hero-h1 .accent { color: #6EE7A0; }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: rgba(255,255,255,0.75);
+      line-height: 1.65;
+      max-width: 28rem;
+      text-shadow: 0 1px 12px rgba(0,0,0,0.3);
+      margin-bottom: 2.5rem;
+    }
+    .hero-ctas { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 1rem; }
+    .scroll-indicator {
+      position: absolute;
+      bottom: 9rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .scroll-pill {
+      width: 1.25rem; height: 2rem;
+      border-radius: var(--radius-pill);
+      border: 1.5px solid rgba(255,255,255,0.35);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 5px;
+    }
+    .scroll-pip {
+      width: 4px; height: 8px;
+      border-radius: var(--radius-pill);
+      background: #fff;
+      animation: scrollBounce 1.8s ease-in-out infinite;
+    }
+    @keyframes scrollBounce {
+      0%, 100% { transform: translateY(0); opacity: 1; }
+      50% { transform: translateY(5px); opacity: 0.4; }
+    }
+
+    /* ── SEARCH PANEL ── */
+    .search-wrap {
+      position: relative;
+      z-index: 20;
+      display: flex;
+      justify-content: center;
+      padding: 0 1.25rem;
+      margin-bottom: -5rem;
+    }
+    .search-panel {
+      width: 100%;
+      max-width: 1100px;
+      background: #fff;
+      border-radius: var(--radius-xl);
+      padding: 1.75rem 2rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 32px 100px rgba(0,0,0,0.28), 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .search-label-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .search-label-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+    .search-label-text {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+    }
+    .search-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr auto;
+      gap: 0.75rem;
+      align-items: end;
+    }
+    .field-group { display: flex; flex-direction: column; gap: 0.5rem; }
+    .field-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      color: #B0ACA6;
+    }
+    .field-input-wrap { position: relative; }
+    .field-icon {
+      position: absolute;
+      left: 0.875rem;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--muted);
+    }
+    .field-input, .field-select {
+      width: 100%;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--fg);
+      background: #F9F8F5;
+      border: 1.5px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 0.875rem 1rem 0.875rem 2.5rem;
+      outline: none;
+      transition: border-color 0.2s;
+      appearance: none;
+    }
+    .field-input:focus, .field-select:focus { border-color: var(--green); }
+    .field-input::placeholder { color: #B0ACA6; }
+    .search-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: var(--green);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 0.9375rem;
+      padding: 0.875rem 1.5rem;
+      border-radius: 0.75rem;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(27,94,59,0.4);
+      transition: background 0.2s, transform 0.2s;
+      height: 100%;
+    }
+    .search-btn:hover { background: var(--green-dark); transform: translateY(-1px); }
+
+    @media (max-width: 900px) {
+      .search-grid { grid-template-columns: 1fr 1fr; }
+      .search-btn { width: 100%; }
+    }
+    @media (max-width: 540px) {
+      .search-grid { grid-template-columns: 1fr; }
+      .search-panel { padding: 1.25rem; }
+      .hero-badges { display: none; }
+    }
+
+    /* ── TRUST STRIP ── */
+    .trust-section {
+      padding-top: 9rem;
+    }
+    .trust-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      padding: 2.5rem 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .trust-item { text-align: center; }
+    .trust-val {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      color: var(--fg);
+    }
+    .trust-lbl { font-size: 0.875rem; color: var(--muted); margin-top: 0.25rem; }
+    @media (max-width: 640px) { .trust-grid { grid-template-columns: 1fr 1fr; } }
+
+    /* ── SECTION LAYOUT ── */
+    .section { padding: 5rem 0; }
+    .section-lg { padding: 7rem 0; }
+    .section-header { margin-bottom: 3rem; }
+    .section-header-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .view-all {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--green);
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+    .view-all:hover { opacity: 0.7; }
+
+    /* ── CATEGORY CARDS ── */
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 1rem;
+    }
+    .cat-card {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      height: 240px;
+      cursor: pointer;
+      background: #D0CCC4;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .cat-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.18); }
+    .cat-card img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+    .cat-card:hover img { transform: scale(1.08); }
+    .cat-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.08) 60%);
+    }
+    .cat-foot {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 1rem;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+    .cat-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #fff;
+    }
+    .cat-arrow {
+      width: 1.75rem; height: 1.75rem;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .cat-card:hover .cat-arrow { background: var(--green); transform: translateX(3px); }
+
+    @media (max-width: 1024px) { .cat-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 640px)  { .cat-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    /* ── RENTAL CARDS ── */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+    .rental-card {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .rental-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.12); }
+    .rental-img-wrap {
+      position: relative;
+      height: 220px;
+      overflow: hidden;
+      background: #D0CCC4;
+    }
+    .rental-img-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+    .rental-card:hover .rental-img-wrap img { transform: scale(1.06); }
+    .rental-badge {
+      position: absolute;
+      top: 0.75rem; left: 0.75rem;
+      background: var(--green);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 0.3rem 0.75rem;
+      border-radius: var(--radius-pill);
+    }
+    .heart-btn {
+      position: absolute;
+      top: 0.75rem; right: 0.75rem;
+      width: 2rem; height: 2rem;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.2s;
+    }
+    .heart-btn:hover { transform: scale(1.1); }
+    .heart-btn.liked svg { fill: #EF4444; stroke: #EF4444; }
+    .rental-body { padding: 1rem; }
+    .rental-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--fg);
+      margin-bottom: 0.375rem;
+    }
+    .rental-meta { display: flex; align-items: center; gap: 0.375rem; margin-bottom: 0.5rem; }
+    .stars { display: flex; gap: 2px; }
+    .rating-val { font-size: 0.75rem; font-weight: 600; color: var(--fg); }
+    .rating-count { font-size: 0.75rem; color: var(--muted); }
+    .rental-loc { display: flex; align-items: center; gap: 0.375rem; margin-bottom: 1rem; }
+    .rental-loc span { font-size: 0.75rem; color: var(--muted); }
+    .rental-foot { display: flex; align-items: center; justify-content: space-between; }
+    .rental-price { }
+    .rental-price strong {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--fg);
+    }
+    .rental-price span { font-size: 0.8rem; color: var(--muted); }
+    .btn-view {
+      background: var(--green);
+      color: #fff;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: 0.625rem;
+      transition: background 0.2s;
+    }
+    .btn-view:hover { background: var(--green-dark); }
+
+    @media (max-width: 1024px) { .product-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 540px)  { .product-grid { grid-template-columns: 1fr; } }
+
+    /* ── PROMO BANNER ── */
+    .promo {
+      position: relative;
+      height: 560px;
+      overflow: hidden;
+      background: #111;
+    }
+    .promo img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0.65;
+    }
+    .promo-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.18) 70%);
+    }
+    .promo-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+    }
+    .promo-inner { max-width: 48rem; }
+    .promo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--green);
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-pill);
+      margin-bottom: 1.75rem;
+    }
+    .promo-h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      letter-spacing: -0.025em;
+      line-height: 0.95;
+      color: #fff;
+      margin-bottom: 1.5rem;
+    }
+    .promo-sub { font-size: 1.125rem; color: rgba(255,255,255,0.78); margin-bottom: 2rem; }
+    .btn-white {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: #fff;
+      color: var(--fg);
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      padding: 1rem 2rem;
+      border-radius: var(--radius-pill);
+      transition: background 0.2s;
+    }
+    .btn-white:hover { background: #F3F0EB; }
+
+    /* ── HOW IT WORKS ── */
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+      position: relative;
+    }
+    .how-grid::before, .how-grid::after {
+      content: '';
+      position: absolute;
+      top: 2rem;
+      height: 1px;
+      background: var(--border);
+    }
+    .how-grid::before { left: calc(33.33% + 2rem); width: calc(33.33% - 4rem); }
+    .how-grid::after  { left: calc(66.66% + 2rem); width: calc(33.33% - 4rem); }
+    .how-step { }
+    .how-num-box {
+      width: 4rem; height: 4rem;
+      border-radius: 1rem;
+      background: var(--green);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    .how-num {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: #fff;
+    }
+    .how-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--fg);
+      margin-bottom: 0.75rem;
+    }
+    .how-desc { font-size: 1rem; color: var(--muted); line-height: 1.6; }
+    @media (max-width: 768px) {
+      .how-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .how-grid::before, .how-grid::after { display: none; }
+    }
+
+    /* ── WHY RENTIVA ── */
+    .why-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    .why-img {
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      aspect-ratio: 4/5;
+      background: #D0CCC4;
+    }
+    .why-img img { width: 100%; height: 100%; object-fit: cover; }
+    .why-eyebrow {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      color: var(--green);
+      margin-bottom: 1.25rem;
+    }
+    .why-h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      color: var(--fg);
+      margin-bottom: 2.5rem;
+    }
+    .why-features { display: flex; flex-direction: column; gap: 2rem; margin-bottom: 2.5rem; }
+    .why-feature { display: flex; align-items: flex-start; gap: 1rem; }
+    .why-check {
+      width: 2rem; height: 2rem;
+      border-radius: 50%;
+      background: var(--green-tint);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.125rem;
+    }
+    .why-feature-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      color: var(--fg);
+      margin-bottom: 0.25rem;
+    }
+    .why-feature-desc { font-size: 0.875rem; color: var(--muted); line-height: 1.6; }
+    .link-green {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--green);
+      transition: opacity 0.2s;
+    }
+    .link-green:hover { opacity: 0.7; }
+    @media (max-width: 900px) { .why-grid { grid-template-columns: 1fr; gap: 2.5rem; } }
+
+    /* ── TESTIMONIAL ── */
+    .testimonial {
+      background: #141414;
+      padding: 5rem 0;
+    }
+    .testimonial-inner {
+      max-width: 52rem;
+      margin: 0 auto;
+      text-align: center;
+      padding: 0 1.5rem;
+    }
+    .stars-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 1.5rem; }
+    .testimonial blockquote {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.4rem, 3vw, 2.375rem);
+      letter-spacing: -0.015em;
+      line-height: 1.25;
+      color: #fff;
+      margin-bottom: 2.5rem;
+    }
+    .testimonial-author { display: flex; align-items: center; justify-content: center; gap: 1rem; }
+    .testimonial-avatar {
+      width: 3rem; height: 3rem;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #555;
+    }
+    .testimonial-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .author-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      color: #fff;
+      text-align: left;
+    }
+    .author-role { font-size: 0.75rem; color: rgba(255,255,255,0.5); text-align: left; }
+
+    /* ── FINAL CTA ── */
+    .final-cta {
+      position: relative;
+      padding: 7rem 0;
+      background: #F3F0EB;
+      overflow: hidden;
+    }
+    .cta-glow {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 50% 60% at 15% 50%, rgba(27,94,59,0.1) 0%, transparent 70%),
+                  radial-gradient(ellipse 50% 60% at 85% 50%, rgba(27,94,59,0.1) 0%, transparent 70%);
+    }
+    .final-cta-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 42rem;
+      margin: 0 auto;
+      text-align: center;
+      padding: 0 1.5rem;
+    }
+    .cta-h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      letter-spacing: -0.025em;
+      color: var(--fg);
+      margin-bottom: 1rem;
+    }
+    .cta-sub { font-size: 1rem; color: var(--muted); margin-bottom: 2.5rem; }
+    .cta-btns { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 1rem; }
+
+    /* ── FOOTER ── */
+    footer { background: #141414; padding: 4rem 0 2rem; }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1.8fr 1fr 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+    .footer-logo { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; }
+    .footer-tagline { font-size: 0.875rem; color: rgba(255,255,255,0.5); margin-bottom: 1.5rem; line-height: 1.6; }
+    .social-row { display: flex; gap: 0.75rem; }
+    .social-btn {
+      width: 2.25rem; height: 2.25rem;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.6);
+      transition: background 0.2s, color 0.2s;
+    }
+    .social-btn:hover { background: var(--green); color: #fff; }
+    .footer-col-head {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 1.25rem;
+    }
+    .footer-links { display: flex; flex-direction: column; gap: 0.75rem; }
+    .footer-links a {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.6);
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: #fff; }
+    .footer-bottom {
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-copy { font-size: 0.75rem; color: rgba(255,255,255,0.3); }
+
+    @media (max-width: 900px) { .footer-top { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 540px) { .footer-top { grid-template-columns: 1fr; } }
+
+    /* ── STAR SVG HELPER ── */
+    .star-filled { fill: #F59E0B; }
+    .star-empty  { fill: #E8E4DC; }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════
+     HEADER
+════════════════════════════════════════════ -->
+<header id="site-header">
+  <div class="container">
+    <div class="nav-inner">
+
+      <!-- Logo -->
+      <a href="#" class="logo">
+        <div class="logo-mark">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M3 9C3 9 6 5 9 5C12 5 15 9 15 9C15 9 12 13 9 13C6 13 3 9 3 9Z" fill="white" fill-opacity="0.9"/>
+            <circle cx="9" cy="9" r="2.5" fill="white"/>
+          </svg>
+        </div>
+        <span class="logo-text">Rentiva</span>
+      </a>
+
+      <!-- Desktop nav -->
+      <nav>
+        <a href="#">Home</a>
+        <a href="#">Explore Rentals</a>
+        <a href="#">How It Works</a>
+        <a href="#">About</a>
+      </nav>
+
+      <!-- Desktop actions -->
+      <div class="nav-actions">
+        <button class="btn-signin">Sign In</button>
+        <a href="#" class="btn-list">List Your Item</a>
+      </div>
+
+      <!-- Hamburger -->
+      <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="#">Home</a>
+    <a href="#">Explore Rentals</a>
+    <a href="#">How It Works</a>
+    <a href="#">About</a>
+    <div class="mobile-actions">
+      <button class="btn-signin" style="color:#141414">Sign In</button>
+      <a href="#" class="btn-list">List Your Item</a>
+    </div>
+  </div>
+</header>
+
+
+<!-- ════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════ -->
+<section class="hero">
+
+  <!-- Background -->
+  <div class="hero-bg">
+    <img src="https://images.unsplash.com/photo-1476041800959-2f6bb412c8ce?w=1920&h=1200&fit=crop&auto=format&q=90"
+         alt="Aerial view of cyclist on winding mountain road" />
+    <div class="hero-gradient"></div>
+    <div class="hero-tint"></div>
+  </div>
+
+  <!-- Floating badges (desktop) -->
+  <div class="hero-badges">
+    <div class="badge-glass">
+      <div class="badge-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="#F59E0B">
+          <path d="M8 1l1.85 3.74L14 5.72l-3 2.92.71 4.12L8 10.77l-3.71 1.99.71-4.12-3-2.92 4.15-.98L8 1z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="badge-val">4.9 / 5</div>
+        <div class="badge-lbl">Top Rated</div>
+      </div>
+    </div>
+    <div class="badge-glass">
+      <div class="badge-icon" style="background:rgba(27,94,59,0.8)">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.5">
+          <rect x="2" y="7" width="12" height="7" rx="2"/>
+          <path d="M5 7V5a3 3 0 016 0v2"/>
+        </svg>
+      </div>
+      <div>
+        <div class="badge-val">10,000+</div>
+        <div class="badge-lbl">Rentals Done</div>
+      </div>
+    </div>
+    <div class="badge-live">
+      <div class="pulse-dot"></div>
+      <span>Available Now</span>
+    </div>
+  </div>
+
+  <!-- Hero content -->
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <div class="dot"></div>
+      <span>RENT • RIDE • EXPLORE</span>
+    </div>
+    <h1 class="hero-h1">
+      Rent. Ride.<br><span class="accent">Explore.</span>
+    </h1>
+    <p class="hero-sub">
+      Premium bikes, gear and equipment —<br>ready whenever you are.
+    </p>
+    <div class="hero-ctas">
+      <a href="#" class="btn-primary">Explore Rentals</a>
+      <a href="#" class="btn-outline">
+        List Your Equipment
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M2.5 7h9M8 3.5l3.5 3.5-3.5 3.5"/>
+        </svg>
+      </a>
+    </div>
+    <div class="scroll-indicator">
+      <div class="scroll-pill"><div class="scroll-pip"></div></div>
+    </div>
+  </div>
+
+  <!-- Search panel -->
+  <div class="search-wrap">
+    <div class="search-panel">
+      <div class="search-label-row">
+        <div class="search-label-dot"></div>
+        <span class="search-label-text">FIND YOUR RENTAL</span>
+      </div>
+      <div class="search-grid">
+        <!-- Where -->
+        <div class="field-group">
+          <label class="field-label">WHERE</label>
+          <div class="field-input-wrap">
+            <svg class="field-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M7 1C5.07 1 3.5 2.57 3.5 4.5c0 2.77 3.5 6.5 3.5 6.5s3.5-3.73 3.5-6.5C10.5 2.57 8.93 1 7 1z"/>
+              <circle cx="7" cy="4.5" r="1.2"/>
+            </svg>
+            <input class="field-input" type="text" placeholder="Choose location" />
+          </div>
+        </div>
+        <!-- Pickup -->
+        <div class="field-group">
+          <label class="field-label">PICKUP</label>
+          <div class="field-input-wrap">
+            <svg class="field-icon" width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="1" y="2" width="11" height="10" rx="2"/>
+              <path d="M1 5h11M4 1v2M9 1v2"/>
+            </svg>
+            <input class="field-input" type="text" value="Sep 12, 2026" />
+          </div>
+        </div>
+        <!-- Return -->
+        <div class="field-group">
+          <label class="field-label">RETURN</label>
+          <div class="field-input-wrap">
+            <svg class="field-icon" width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="1" y="2" width="11" height="10" rx="2"/>
+              <path d="M1 5h11M4 1v2M9 1v2"/>
+            </svg>
+            <input class="field-input" type="text" value="Sep 14, 2026" />
+          </div>
+        </div>
+        <!-- Category -->
+        <div class="field-group">
+          <label class="field-label">CATEGORY</label>
+          <div class="field-input-wrap">
+            <svg class="field-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M2 4h10M2 7h7M2 10h5"/>
+            </svg>
+            <select class="field-select">
+              <option>Bicycles</option>
+              <option>Scooters</option>
+              <option>Camping</option>
+              <option>Cameras</option>
+              <option>Water Sports</option>
+              <option>Outdoor Gear</option>
+            </select>
+          </div>
+        </div>
+        <!-- Button -->
+        <button class="search-btn">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="2">
+            <circle cx="7" cy="7" r="5"/><path d="M11 11l3 3"/>
+          </svg>
+          Find Rentals
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     TRUST STRIP
+════════════════════════════════════════════ -->
+<section class="trust-section">
+  <div class="container">
+    <div class="trust-grid">
+      <div class="trust-item">
+        <div class="trust-val">10,000+</div>
+        <div class="trust-lbl">rentals completed</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-val">4.9 / 5</div>
+        <div class="trust-lbl">average rating</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-val">100%</div>
+        <div class="trust-lbl">verified equipment</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-val">Secure</div>
+        <div class="trust-lbl">booking guaranteed</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     EXPLORE CATEGORIES
+════════════════════════════════════════════ -->
+<section class="section-lg">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-header-row">
+        <div>
+          <h2 class="section-heading">Explore What You Need</h2>
+          <p class="section-sub">Find the right equipment for your next adventure.</p>
+        </div>
+        <a href="#" class="view-all">
+          View all categories
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2.5 7h9M8 3.5l3.5 3.5-3.5 3.5"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="cat-grid">
+      <!-- Bicycles -->
+      <div class="cat-card">
+        <img src="https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=600&h=700&fit=crop&auto=format&q=80" alt="Bicycles" />
+        <div class="cat-overlay"></div>
+        <div class="cat-foot">
+          <span class="cat-name">Bicycles</span>
+          <div class="cat-arrow">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M2 6h8M7 3l3 3-3 3"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <!-- Scooters -->
+      <div class="cat-card">
+        <img src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=600&h=700&fit=crop&auto=format&q=80" alt="Scooters" />
+        <div class="cat-overlay"></div>
+        <div class="cat-foot">
+          <span class="cat-name">Scooters</span>
+          <div class="cat-arrow">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M2 6h8M7 3l3 3-3 3"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <!-- Camping -->
+      <div class="cat-card">
+        <img src="https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=600&h=700&fit=crop&auto=format&q=80" alt="Camping" />
+        <div class="cat-overlay"></div>
+        <div class="cat-foot">
+          <span class="cat-name">Camping</span>
+          <div class="cat-arrow">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M2 6h8M7 3l3 3-3 3"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <!-- Cameras -->
+      <div class="cat-card">
+        <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&h=700&fit=crop&auto=format&q=80" alt="Cameras" />
+        <div class="cat-overlay"></div>
+        <div class="cat-foot">
+          <span class="cat-name">Cameras</span>
+          <div class="cat-arrow">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M2 6h8M7 3l3 3-3 3"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <!-- Water Sports -->
+      <div class="cat-card">
+        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&h=700&fit=crop&auto=format&q=80" alt="Water Sports" />
+        <div class="cat-overlay"></div>
+        <div class="cat-foot">
+          <span class="cat-name">Water Sports</span>
+          <div class="cat-arrow">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M2 6h8M7 3l3 3-3 3"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <!-- Outdoor Gear -->
+      <div class="cat-card">
+        <img src="https://images.unsplash.com/photo-1551632811-561732d1e306?w=600&h=700&fit=crop&auto=format&q=80" alt="Outdoor Gear" />
+        <div class="cat-overlay"></div>
+        <div class="cat-foot">
+          <span class="cat-name">Outdoor Gear</span>
+          <div class="cat-arrow">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M2 6h8M7 3l3 3-3 3"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     FEATURED RENTALS
+════════════════════════════════════════════ -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-header-row">
+        <div>
+          <h2 class="section-heading">Popular Rentals</h2>
+          <p class="section-sub">Highly rated equipment ready for your next adventure.</p>
+        </div>
+        <a href="#" class="view-all">
+          View all rentals
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2.5 7h9M8 3.5l3.5 3.5-3.5 3.5"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="product-grid">
+
+      <!-- Card 1 -->
+      <div class="rental-card">
+        <div class="rental-img-wrap">
+          <img src="https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=600&h=500&fit=crop&auto=format&q=80" alt="Explorer X1" />
+          <span class="rental-badge">Mountain Bike</span>
+          <button class="heart-btn" onclick="toggleHeart(this)">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#141414" stroke-width="1.5">
+              <path d="M7.5 12.5S2 9 2 5a3.5 3.5 0 017-1 3.5 3.5 0 017 1c0 4-5.5 7.5-5.5 7.5z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="rental-body">
+          <div class="rental-name">Explorer X1</div>
+          <div class="rental-meta">
+            <div class="stars">
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+            </div>
+            <span class="rating-val">4.9</span>
+            <span class="rating-count">(87)</span>
+          </div>
+          <div class="rental-loc">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#7A7670" stroke-width="1.5">
+              <path d="M5.5 1C4.12 1 3 2.12 3 3.5c0 2.08 2.5 4.75 2.5 4.75S8 5.58 8 3.5C8 2.12 6.88 1 5.5 1z"/>
+              <circle cx="5.5" cy="3.5" r="1"/>
+            </svg>
+            <span>Dhaka</span>
+          </div>
+          <div class="rental-foot">
+            <div class="rental-price"><strong>$18</strong><span> / day</span></div>
+            <a href="#" class="btn-view">View Details</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="rental-card">
+        <div class="rental-img-wrap">
+          <img src="https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=600&h=500&fit=crop&auto=format&q=80" alt="Urban Cruiser" />
+          <span class="rental-badge">City Bike</span>
+          <button class="heart-btn" onclick="toggleHeart(this)">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#141414" stroke-width="1.5">
+              <path d="M7.5 12.5S2 9 2 5a3.5 3.5 0 017-1 3.5 3.5 0 017 1c0 4-5.5 7.5-5.5 7.5z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="rental-body">
+          <div class="rental-name">Urban Cruiser</div>
+          <div class="rental-meta">
+            <div class="stars">
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+            </div>
+            <span class="rating-val">4.8</span>
+            <span class="rating-count">(64)</span>
+          </div>
+          <div class="rental-loc">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#7A7670" stroke-width="1.5">
+              <path d="M5.5 1C4.12 1 3 2.12 3 3.5c0 2.08 2.5 4.75 2.5 4.75S8 5.58 8 3.5C8 2.12 6.88 1 5.5 1z"/>
+              <circle cx="5.5" cy="3.5" r="1"/>
+            </svg>
+            <span>Dhaka</span>
+          </div>
+          <div class="rental-foot">
+            <div class="rental-price"><strong>$14</strong><span> / day</span></div>
+            <a href="#" class="btn-view">View Details</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="rental-card">
+        <div class="rental-img-wrap">
+          <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=500&fit=crop&auto=format&q=80" alt="Trail Master" />
+          <span class="rental-badge">Adventure Bike</span>
+          <button class="heart-btn" onclick="toggleHeart(this)">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#141414" stroke-width="1.5">
+              <path d="M7.5 12.5S2 9 2 5a3.5 3.5 0 017-1 3.5 3.5 0 017 1c0 4-5.5 7.5-5.5 7.5z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="rental-body">
+          <div class="rental-name">Trail Master</div>
+          <div class="rental-meta">
+            <div class="stars">
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+            </div>
+            <span class="rating-val">5.0</span>
+            <span class="rating-count">(112)</span>
+          </div>
+          <div class="rental-loc">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#7A7670" stroke-width="1.5">
+              <path d="M5.5 1C4.12 1 3 2.12 3 3.5c0 2.08 2.5 4.75 2.5 4.75S8 5.58 8 3.5C8 2.12 6.88 1 5.5 1z"/>
+              <circle cx="5.5" cy="3.5" r="1"/>
+            </svg>
+            <span>Chittagong</span>
+          </div>
+          <div class="rental-foot">
+            <div class="rental-price"><strong>$22</strong><span> / day</span></div>
+            <a href="#" class="btn-view">View Details</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="rental-card">
+        <div class="rental-img-wrap">
+          <img src="https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=600&h=500&fit=crop&auto=format&q=80" alt="Weekend Pro" />
+          <span class="rental-badge">Hybrid Bike</span>
+          <button class="heart-btn" onclick="toggleHeart(this)">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#141414" stroke-width="1.5">
+              <path d="M7.5 12.5S2 9 2 5a3.5 3.5 0 017-1 3.5 3.5 0 017 1c0 4-5.5 7.5-5.5 7.5z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="rental-body">
+          <div class="rental-name">Weekend Pro</div>
+          <div class="rental-meta">
+            <div class="stars">
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+              <svg width="11" height="11" viewBox="0 0 11 11" class="star-filled"><path d="M5.5 1l1.27 2.58 2.84.41-2.06 2 .49 2.84L5.5 7.4 2.96 8.83l.49-2.84L1.39 3.99l2.84-.41L5.5 1z"/></svg>
+            </div>
+            <span class="rating-val">4.9</span>
+            <span class="rating-count">(53)</span>
+          </div>
+          <div class="rental-loc">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#7A7670" stroke-width="1.5">
+              <path d="M5.5 1C4.12 1 3 2.12 3 3.5c0 2.08 2.5 4.75 2.5 4.75S8 5.58 8 3.5C8 2.12 6.88 1 5.5 1z"/>
+              <circle cx="5.5" cy="3.5" r="1"/>
+            </svg>
+            <span>Sylhet</span>
+          </div>
+          <div class="rental-foot">
+            <div class="rental-price"><strong>$16</strong><span> / day</span></div>
+            <a href="#" class="btn-view">View Details</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     PROMO BANNER
+════════════════════════════════════════════ -->
+<section class="promo">
+  <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1920&h=900&fit=crop&auto=format&q=85" alt="Mountain adventure landscape" />
+  <div class="promo-overlay"></div>
+  <div class="promo-content">
+    <div class="container">
+      <div class="promo-inner">
+        <div class="promo-badge">WEEKEND SPECIAL · UP TO 20% OFF</div>
+        <h2 class="promo-h2">Your next adventure<br>starts here.</h2>
+        <p class="promo-sub">Discover premium equipment from trusted local owners.</p>
+        <a href="#" class="btn-white">
+          Explore Rentals
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2.5 7h9M8 3.5l3.5 3.5-3.5 3.5"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     HOW IT WORKS
+════════════════════════════════════════════ -->
+<section class="section-lg">
+  <div class="container">
+    <div class="section-header" style="text-align:center;max-width:36rem;margin:0 auto 4rem">
+      <h2 class="section-heading">Rent in 3 Simple Steps</h2>
+    </div>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="how-num-box"><span class="how-num">01</span></div>
+        <div class="how-title">Find</div>
+        <div class="how-desc">Discover the perfect equipment near you.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num-box"><span class="how-num">02</span></div>
+        <div class="how-title">Book</div>
+        <div class="how-desc">Choose your dates and reserve in seconds.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num-box"><span class="how-num">03</span></div>
+        <div class="how-title">Enjoy</div>
+        <div class="how-desc">Pick it up and start your adventure.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     WHY RENTIVA
+════════════════════════════════════════════ -->
+<section class="section-lg" style="padding-top:0">
+  <div class="container">
+    <div class="why-grid">
+      <div class="why-img">
+        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=960&fit=crop&auto=format&q=85" alt="Adventure cyclist on mountain" />
+      </div>
+      <div>
+        <div class="why-eyebrow">WHY RENTIVA</div>
+        <h2 class="why-h2">Everything you need<br>for a better rental.</h2>
+        <div class="why-features">
+          <div class="why-feature">
+            <div class="why-check">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#1B5E3B" stroke-width="2.2">
+                <path d="M2 6l2.5 2.5 5.5-5"/>
+              </svg>
+            </div>
+            <div>
+              <div class="why-feature-title">Verified Equipment</div>
+              <div class="why-feature-desc">Every item is reviewed and quality checked.</div>
+            </div>
+          </div>
+          <div class="why-feature">
+            <div class="why-check">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#1B5E3B" stroke-width="2.2">
+                <path d="M2 6l2.5 2.5 5.5-5"/>
+              </svg>
+            </div>
+            <div>
+              <div class="why-feature-title">Flexible Booking</div>
+              <div class="why-feature-desc">Choose the dates and rental period that work for you.</div>
+            </div>
+          </div>
+          <div class="why-feature">
+            <div class="why-check">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#1B5E3B" stroke-width="2.2">
+                <path d="M2 6l2.5 2.5 5.5-5"/>
+              </svg>
+            </div>
+            <div>
+              <div class="why-feature-title">Transparent Pricing</div>
+              <div class="why-feature-desc">No confusing fees or hidden surprises.</div>
+            </div>
+          </div>
+          <div class="why-feature">
+            <div class="why-check">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#1B5E3B" stroke-width="2.2">
+                <path d="M2 6l2.5 2.5 5.5-5"/>
+              </svg>
+            </div>
+            <div>
+              <div class="why-feature-title">Secure Payments</div>
+              <div class="why-feature-desc">Simple and secure checkout every time.</div>
+            </div>
+          </div>
+        </div>
+        <a href="#" class="link-green">
+          Learn More
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2.5 7h9M8 3.5l3.5 3.5-3.5 3.5"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     TESTIMONIAL
+════════════════════════════════════════════ -->
+<section class="testimonial">
+  <div class="testimonial-inner">
+    <div class="stars-row">
+      <svg width="18" height="18" viewBox="0 0 18 18" class="star-filled"><path d="M9 1.5l2.1 4.25 4.69.68-3.39 3.31.8 4.67L9 12.22l-4.2 2.19.8-4.67L2.21 6.43l4.69-.68L9 1.5z"/></svg>
+      <svg width="18" height="18" viewBox="0 0 18 18" class="star-filled"><path d="M9 1.5l2.1 4.25 4.69.68-3.39 3.31.8 4.67L9 12.22l-4.2 2.19.8-4.67L2.21 6.43l4.69-.68L9 1.5z"/></svg>
+      <svg width="18" height="18" viewBox="0 0 18 18" class="star-filled"><path d="M9 1.5l2.1 4.25 4.69.68-3.39 3.31.8 4.67L9 12.22l-4.2 2.19.8-4.67L2.21 6.43l4.69-.68L9 1.5z"/></svg>
+      <svg width="18" height="18" viewBox="0 0 18 18" class="star-filled"><path d="M9 1.5l2.1 4.25 4.69.68-3.39 3.31.8 4.67L9 12.22l-4.2 2.19.8-4.67L2.21 6.43l4.69-.68L9 1.5z"/></svg>
+      <svg width="18" height="18" viewBox="0 0 18 18" class="star-filled"><path d="M9 1.5l2.1 4.25 4.69.68-3.39 3.31.8 4.67L9 12.22l-4.2 2.19.8-4.67L2.21 6.43l4.69-.68L9 1.5z"/></svg>
+    </div>
+    <blockquote>
+      "The easiest rental experience I've ever had. The bike was perfect and the entire process took less than two minutes."
+    </blockquote>
+    <div class="testimonial-author">
+      <div class="testimonial-avatar">
+        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&auto=format" alt="Daniel Morgan" />
+      </div>
+      <div>
+        <div class="author-name">Daniel Morgan</div>
+        <div class="author-role">Weekend Traveler</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     FINAL CTA
+════════════════════════════════════════════ -->
+<section class="final-cta">
+  <div class="cta-glow"></div>
+  <div class="final-cta-inner">
+    <h2 class="cta-h2">Ready to explore?</h2>
+    <p class="cta-sub">Find your perfect rental and start your next adventure.</p>
+    <div class="cta-btns">
+      <a href="#" class="btn-primary">Explore Rentals</a>
+      <a href="#" class="btn-dark">List Your Item</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <!-- Brand -->
+      <div>
+        <div class="footer-logo">
+          <div class="logo-mark">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M3 9C3 9 6 5 9 5C12 5 15 9 15 9C15 9 12 13 9 13C6 13 3 9 3 9Z" fill="white" fill-opacity="0.9"/>
+              <circle cx="9" cy="9" r="2.5" fill="white"/>
+            </svg>
+          </div>
+          <span style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.25rem;color:#fff;letter-spacing:-0.02em">Rentiva</span>
+        </div>
+        <p class="footer-tagline">Rent smarter. Explore further.<br>Premium gear from trusted local owners.</p>
+        <div class="social-row">
+          <a href="#" class="social-btn" aria-label="Twitter">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+              <path d="M13 2.5a5.4 5.4 0 01-1.55.42A2.7 2.7 0 0012.65 1a5.43 5.43 0 01-1.72.66A2.7 2.7 0 007 4.18a7.68 7.68 0 01-5.57-2.82 2.7 2.7 0 00.84 3.6A2.7 2.7 0 011 4.62v.03a2.7 2.7 0 002.17 2.65 2.72 2.72 0 01-1.22.05 2.7 2.7 0 002.52 1.87A5.43 5.43 0 011 10.28a7.67 7.67 0 004.15 1.22c4.98 0 7.7-4.12 7.7-7.7l-.01-.35A5.49 5.49 0 0013 2.5z"/>
+            </svg>
+          </a>
+          <a href="#" class="social-btn" aria-label="Instagram">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+              <path d="M7 1.26c1.87 0 2.09.01 2.83.04.68.03 1.05.14 1.3.24.33.13.56.28.8.52.24.24.4.47.52.8.1.25.21.62.24 1.3.03.74.04.96.04 2.84s-.01 2.1-.04 2.83c-.03.68-.14 1.05-.24 1.3-.13.33-.28.56-.52.8a2.14 2.14 0 01-.8.52c-.25.1-.62.21-1.3.24-.74.03-.96.04-2.83.04s-2.1-.01-2.83-.04c-.68-.03-1.05-.14-1.3-.24a2.14 2.14 0 01-.8-.52 2.14 2.14 0 01-.52-.8c-.1-.25-.21-.62-.24-1.3C1.27 9.1 1.26 8.87 1.26 7s.01-2.1.04-2.83c.03-.68.14-1.05.24-1.3.13-.33.28-.56.52-.8.24-.24.47-.4.8-.52.25-.1.62-.21 1.3-.24C4.9 1.27 5.13 1.26 7 1.26zm0-1.26C5.1 0 4.86.01 4.12.04 3.38.07 2.87.19 2.42.36a3.4 3.4 0 00-1.23.8A3.4 3.4 0 00.36 2.4C.19 2.87.07 3.38.04 4.12.01 4.86 0 5.1 0 7s.01 2.14.04 2.88c.03.74.15 1.25.32 1.7a3.4 3.4 0 00.8 1.23 3.4 3.4 0 001.26.8c.45.17.96.29 1.7.32C4.86 13.99 5.1 14 7 14s2.14-.01 2.88-.04c.74-.03 1.25-.15 1.7-.32a3.4 3.4 0 001.23-.8 3.4 3.4 0 00.8-1.23c.17-.45.29-.96.32-1.7.03-.74.04-.98.04-2.88s-.01-2.14-.04-2.88c-.03-.74-.15-1.25-.32-1.7a3.4 3.4 0 00-.8-1.23A3.4 3.4 0 0011.58.36C11.13.19 10.62.07 9.88.04 9.14.01 8.9 0 7 0zM7 3.4a3.6 3.6 0 100 7.2A3.6 3.6 0 007 3.4zm0 5.94a2.34 2.34 0 110-4.68 2.34 2.34 0 010 4.68zm3.74-6.84a.84.84 0 100 1.68.84.84 0 000-1.68z"/>
+            </svg>
+          </a>
+          <a href="#" class="social-btn" aria-label="Facebook">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+              <path d="M13 7a6 6 0 10-6.94 5.93v-4.2H4.52V7h1.54V5.68c0-1.52.9-2.36 2.29-2.36.46 0 .94.04 1.4.12v1.5h-.79c-.77 0-1.01.48-1.01.97V7h1.72l-.28 1.73H7.95v4.2A6 6 0 0013 7z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+      <!-- Explore -->
+      <div>
+        <div class="footer-col-head">EXPLORE</div>
+        <ul class="footer-links">
+          <li><a href="#">Bikes</a></li>
+          <li><a href="#">Scooters</a></li>
+          <li><a href="#">Camping</a></li>
+          <li><a href="#">Sports Equipment</a></li>
+        </ul>
+      </div>
+      <!-- Company -->
+      <div>
+        <div class="footer-col-head">COMPANY</div>
+        <ul class="footer-links">
+          <li><a href="#">About</a></li>
+          <li><a href="#">How It Works</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <!-- Support -->
+      <div>
+        <div class="footer-col-head">SUPPORT</div>
+        <ul class="footer-links">
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">Terms</a></li>
+          <li><a href="#">Privacy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 Rentiva. All rights reserved.</span>
+      <span class="footer-copy">Designed with care for adventurers everywhere.</span>
+    </div>
+  </div>
+</footer>
+
+
+<script>
+  /* ── Sticky header ── */
+  const hdr = document.getElementById('site-header');
+  window.addEventListener('scroll', () => {
+    hdr.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+
+  /* ── Mobile menu ── */
+  function toggleMenu() {
+    document.getElementById('mobile-menu').classList.toggle('open');
+  }
+
+  /* ── Heart toggle ── */
+  function toggleHeart(btn) {
+    btn.classList.toggle('liked');
+    const svg = btn.querySelector('svg');
+    if (btn.classList.contains('liked')) {
+      svg.setAttribute('fill', '#EF4444');
+      svg.setAttribute('stroke', '#EF4444');
+    } else {
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', '#141414');
+    }
+  }
+</script>
+</body>
+</html>

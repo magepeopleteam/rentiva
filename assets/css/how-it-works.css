@@ -1,0 +1,76 @@
+/**
+ * "Rent in 3 Simple Steps" — numbered steps with a connecting line between
+ * columns on desktop, matching mockup/rentiva.html's .how-grid exactly.
+ */
+
+.rentiva-how-it-works__head {
+	text-align: center;
+	max-width: 36rem;
+	margin: 0 auto 4rem;
+}
+
+.rentiva-how-it-works__steps {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 2rem;
+	position: relative;
+}
+
+@media (min-width: 768px) {
+	.rentiva-how-it-works__steps {
+		grid-template-columns: repeat(3, 1fr);
+		gap: 3rem;
+	}
+
+	.rentiva-how-it-works__steps::before,
+	.rentiva-how-it-works__steps::after {
+		content: '';
+		position: absolute;
+		top: 2rem;
+		height: 1px;
+		background-color: var(--rentiva-border);
+	}
+
+	.rentiva-how-it-works__steps::before {
+		left: calc(33.33% + 2rem);
+		width: calc(33.33% - 4rem);
+	}
+
+	.rentiva-how-it-works__steps::after {
+		left: calc(66.66% + 2rem);
+		width: calc(33.33% - 4rem);
+	}
+}
+
+.rentiva-how-it-works__step {
+	position: relative;
+}
+
+.rentiva-how-it-works__number {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 4rem;
+	height: 4rem;
+	border-radius: var(--rentiva-radius);
+	background-color: var(--rentiva-primary);
+	margin-bottom: 1.5rem;
+	position: relative;
+	z-index: 1;
+}
+
+.rentiva-how-it-works__number span {
+	font-family: var(--rentiva-font-display);
+	font-size: var(--rentiva-text-xl);
+	font-weight: 700;
+	color: #FFFFFF;
+}
+
+.rentiva-how-it-works__step h3 {
+	margin-bottom: 0.75rem;
+}
+
+.rentiva-how-it-works__step p {
+	color: var(--rentiva-muted-foreground);
+	line-height: 1.6;
+}

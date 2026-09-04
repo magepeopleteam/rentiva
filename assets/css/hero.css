@@ -1,0 +1,433 @@
+/**
+ * Homepage hero — full-bleed photo, floating trust badges, accented
+ * headline, scroll indicator, and the overlapping search panel. Matches
+ * mockup/rentiva.html's hero section 1:1.
+ */
+
+.rentiva-hero {
+	position: relative;
+	width: 100%;
+	min-height: 100svh;
+	display: flex;
+	flex-direction: column;
+	/* No overflow:hidden here — the search panel (.rentiva-hero__search-wrap)
+	 * deliberately overlaps past this section's bottom edge (see its
+	 * negative margin below) and must not be clipped by it. The
+	 * background-image layer below is contained on its own instead. */
+}
+
+.rentiva-hero__media {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+	background-color: #0d1a14;
+}
+
+.rentiva-hero__image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+	opacity: 0.72;
+}
+
+.rentiva-hero__image--placeholder {
+	opacity: 1;
+	background: radial-gradient(circle at 30% 30%, #2a6b47 0%, #123b26 65%, #0d1a14 100%);
+}
+
+.rentiva-hero__gradient {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(180deg, rgba(8, 20, 14, 0.62) 0%, rgba(8, 20, 14, 0.05) 32%, rgba(8, 20, 14, 0.38) 60%, rgba(8, 20, 14, 0.88) 100%);
+}
+
+.rentiva-hero__tint {
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(ellipse 60% 50% at 10% 90%, rgba(27, 94, 59, 0.35) 0%, transparent 70%);
+}
+
+/* Floating trust badges (desktop only) ----------------------------------- */
+
+.rentiva-hero__badges {
+	position: absolute;
+	right: 4rem;
+	top: 7.5rem;
+	z-index: 3;
+	display: none;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+@media (min-width: 900px) {
+	.rentiva-hero__badges {
+		display: flex;
+	}
+}
+
+.rentiva-hero__badge-glass {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.75rem 1rem;
+	border-radius: var(--rentiva-radius-lg);
+	background: rgba(255, 255, 255, 0.11);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.rentiva-hero__badge-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.25rem;
+	height: 2.25rem;
+	border-radius: 0.625rem;
+	background: var(--rentiva-primary);
+	flex-shrink: 0;
+}
+
+.rentiva-hero__badge-icon--dark {
+	background: rgba(27, 94, 59, 0.8);
+}
+
+.rentiva-hero__badge-val {
+	display: block;
+	font-family: var(--rentiva-font-display);
+	font-weight: 700;
+	font-size: var(--rentiva-text-sm);
+	color: #FFFFFF;
+	line-height: 1;
+}
+
+.rentiva-hero__badge-lbl {
+	display: block;
+	font-size: 0.7rem;
+	color: rgba(255, 255, 255, 0.6);
+	margin-top: 0.2rem;
+}
+
+.rentiva-hero__badge-live {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.625rem 1rem;
+	border-radius: var(--rentiva-radius-lg);
+	background: rgba(27, 94, 59, 0.75);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+	border: 1px solid rgba(27, 94, 59, 0.5);
+}
+
+.rentiva-hero__badge-live span:last-child {
+	font-size: var(--rentiva-text-xs);
+	font-weight: 600;
+	color: #FFFFFF;
+}
+
+.rentiva-hero__pulse-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--rentiva-primary-light);
+	animation: rentiva-pulse 2s ease-in-out infinite;
+	flex-shrink: 0;
+}
+
+@keyframes rentiva-pulse {
+	0%, 100% { opacity: 1; transform: scale(1); }
+	50% { opacity: 0.6; transform: scale(0.85); }
+}
+
+/* Content ------------------------------------------------------------- */
+
+.rentiva-hero__content {
+	position: relative;
+	z-index: 1;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: 7rem 1.5rem 5rem;
+}
+
+.rentiva-hero__eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem 1.25rem;
+	border-radius: var(--rentiva-radius-pill);
+	background: rgba(27, 94, 59, 0.55);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border: 1px solid rgba(27, 94, 59, 0.7);
+	margin-bottom: 2rem;
+}
+
+.rentiva-hero__eyebrow-dot {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--rentiva-primary-light);
+}
+
+.rentiva-hero__eyebrow span:last-child {
+	font-family: var(--rentiva-font-sans);
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 0.2em;
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.rentiva-hero-title {
+	font-family: var(--rentiva-font-display);
+	font-weight: 800;
+	font-size: clamp(3.2rem, 9.5vw, 8rem);
+	letter-spacing: -0.035em;
+	line-height: 0.9;
+	color: #FFFFFF;
+	text-shadow: 0 2px 40px rgba(0, 0, 0, 0.4);
+	max-width: 1000px;
+	margin-bottom: 1.5rem;
+}
+
+.rentiva-hero-title__accent {
+	color: var(--rentiva-primary-light);
+}
+
+.rentiva-hero__subtitle {
+	font-family: var(--rentiva-font-sans);
+	font-size: clamp(1rem, 2vw, 1.2rem);
+	color: rgba(255, 255, 255, 0.75);
+	line-height: 1.65;
+	max-width: 28rem;
+	text-shadow: 0 1px 12px rgba(0, 0, 0, 0.3);
+	margin-bottom: 2.5rem;
+}
+
+/* Mobile-first: stack the two CTAs by default (guaranteed to fit any
+ * width), and only switch to a single wrapped row once there's reliably
+ * enough space for both buttons side by side. */
+/* Mobile-first: stack the two CTAs by default (guaranteed to fit any
+ * width), and only switch to a single row once there's reliably enough
+ * space for both buttons side by side. */
+.rentiva-hero__actions {
+	max-width: 22rem;
+	margin-inline: auto;
+}
+
+.rentiva-hero__actions .btn {
+	display: block;
+	width: 100%;
+	max-width: 100%;
+	margin-bottom: 1rem;
+	justify-content: center;
+}
+
+.rentiva-hero__actions .btn:last-child {
+	margin-bottom: 0;
+}
+
+@media (min-width: 480px) {
+	.rentiva-hero__actions {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+		max-width: none;
+		margin-inline: 0;
+	}
+
+	.rentiva-hero__actions .btn {
+		display: inline-flex;
+		width: auto;
+		margin-bottom: 0;
+	}
+}
+
+/* Scroll indicator ---------------------------------------------------- */
+
+.rentiva-hero__scroll {
+	position: absolute;
+	bottom: 9rem;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.rentiva-hero__scroll-pill {
+	width: 1.25rem;
+	height: 2rem;
+	border-radius: var(--rentiva-radius-pill);
+	border: 1.5px solid rgba(255, 255, 255, 0.35);
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	padding-top: 5px;
+}
+
+.rentiva-hero__scroll-pip {
+	width: 4px;
+	height: 8px;
+	border-radius: var(--rentiva-radius-pill);
+	background: #FFFFFF;
+	animation: rentiva-scroll-bounce 1.8s ease-in-out infinite;
+}
+
+@keyframes rentiva-scroll-bounce {
+	0%, 100% { transform: translateY(0); opacity: 1; }
+	50% { transform: translateY(5px); opacity: 0.4; }
+}
+
+/* Search panel ------------------------------------------------------- */
+
+.rentiva-hero__search-wrap {
+	position: relative;
+	z-index: 2;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	padding-inline: 1.25rem;
+	margin-bottom: 0;
+}
+
+/* The floating "overlap the hero" effect only holds up where the search
+ * grid is a single row (see .rentiva-search-panel__grid's own 901px
+ * breakpoint) — below that the grid wraps to 3–5 rows and a fixed overlap
+ * would push the panel down into the trust strip. Keep it flush at those
+ * widths instead of tuning fragile magic numbers per breakpoint. */
+@media (min-width: 901px) {
+	.rentiva-hero__search-wrap {
+		margin-bottom: -5rem;
+	}
+}
+
+.rentiva-search-panel {
+	width: 100%;
+	max-width: 1100px;
+	background-color: #FFFFFF;
+	border: 1px solid var(--rentiva-border);
+	border-radius: var(--rentiva-radius-xl);
+	box-shadow: 0 32px 100px rgba(0, 0, 0, 0.28), 0 4px 20px rgba(0, 0, 0, 0.1);
+	padding: 1.75rem 2rem;
+}
+
+.rentiva-search-panel__label-row {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 1rem;
+}
+
+.rentiva-search-panel__label-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--rentiva-primary);
+}
+
+.rentiva-search-panel__label-text {
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 0.18em;
+	color: var(--rentiva-muted-foreground);
+}
+
+.rentiva-search-panel__grid {
+	display: grid;
+	grid-template-columns: 1.2fr 1fr 1fr 1fr auto;
+	gap: 0.75rem;
+	align-items: end;
+}
+
+.rentiva-search-panel__grid > * {
+	min-width: 0;
+}
+
+@media (max-width: 900px) {
+	.rentiva-search-panel__grid {
+		grid-template-columns: 1fr 1fr;
+	}
+	.rentiva-search-panel__submit {
+		width: 100%;
+	}
+}
+
+@media (max-width: 540px) {
+	.rentiva-search-panel__grid {
+		grid-template-columns: 1fr;
+	}
+	.rentiva-search-panel {
+		padding: 1.25rem;
+	}
+}
+
+.rentiva-search-panel__field .rentiva-field__label {
+	font-size: 0.68rem;
+	letter-spacing: 0.16em;
+	color: var(--rentiva-field-muted);
+	margin-bottom: 0.5rem;
+	display: block;
+}
+
+.rentiva-field__input-wrap {
+	position: relative;
+}
+
+.rentiva-field__icon {
+	position: absolute;
+	left: 0.875rem;
+	top: 50%;
+	transform: translateY(-50%);
+	pointer-events: none;
+	color: var(--rentiva-muted-foreground);
+	display: inline-flex;
+}
+
+.rentiva-search-panel__field .rentiva-input,
+.rentiva-search-panel__field .rentiva-select {
+	border: 1.5px solid var(--rentiva-border);
+	background-color: var(--rentiva-background);
+	border-radius: var(--rentiva-radius-sm);
+	padding: 0.875rem 1rem 0.875rem 2.5rem;
+	appearance: none;
+	transition: border-color var(--rentiva-transition);
+}
+
+.rentiva-search-panel__field .rentiva-input::placeholder {
+	color: var(--rentiva-field-muted);
+}
+
+.rentiva-search-panel__field .rentiva-input:focus,
+.rentiva-search-panel__field .rentiva-select:focus {
+	border-color: var(--rentiva-primary);
+}
+
+.rentiva-search-panel__submit {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	height: 100%;
+	background: var(--rentiva-primary);
+	color: #FFFFFF;
+	font-family: var(--rentiva-font-sans);
+	font-weight: 700;
+	font-size: var(--rentiva-text-base);
+	padding: 0.875rem 1.5rem;
+	border-radius: var(--rentiva-radius-sm);
+	white-space: nowrap;
+	box-shadow: 0 4px 20px rgba(27, 94, 59, 0.4);
+	transition: background-color var(--rentiva-transition), transform var(--rentiva-transition);
+}
+
+.rentiva-search-panel__submit:hover {
+	background: var(--rentiva-primary-dark);
+	transform: translateY(-1px);
+}

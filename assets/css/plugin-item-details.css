@@ -1,0 +1,19 @@
+/**
+ * "Plugin" single-item layout mode (Rentiva → Theme Settings → Single item
+ * layout). The plugin's own bundled design renders untouched here — this
+ * file only aligns its outer container width/spacing with the rest of the
+ * theme, it never restyles the plugin's internal markup.
+ */
+
+.rbfw-single-container {
+	max-width: var(--rentiva-container);
+	margin-inline: auto;
+	padding-inline: var(--rentiva-gutter);
+	font-family: var(--rentiva-font-sans);
+}
+
+@media (min-width: 1024px) {
+	.rbfw-single-container {
+		padding-inline: var(--rentiva-gutter-lg);
+	}
+}

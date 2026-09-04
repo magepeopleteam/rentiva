@@ -1,0 +1,101 @@
+/**
+ * Type scale. Headings use Plus Jakarta Sans (display), body copy uses Inter —
+ * matches the mockup's font-display/font-sans split exactly.
+ */
+
+h1, h2, h3, h4, h5, h6,
+.rentiva-heading {
+	font-family: var(--rentiva-font-display);
+	font-weight: 800;
+	letter-spacing: -0.03em;
+	line-height: var(--rentiva-leading-tight);
+	margin: 0;
+	color: var(--rentiva-foreground);
+}
+
+p {
+	margin: 0;
+}
+
+.rentiva-eyebrow {
+	display: inline-block;
+	font-family: var(--rentiva-font-sans);
+	font-size: var(--rentiva-text-xs);
+	font-weight: 600;
+	letter-spacing: 0.25em;
+	text-transform: uppercase;
+	color: var(--rentiva-primary);
+}
+
+.rentiva-eyebrow--on-media {
+	color: rgba(255, 255, 255, 0.85);
+}
+
+.rentiva-hero-title {
+	font-size: var(--rentiva-text-hero);
+	font-weight: 800;
+	letter-spacing: -0.03em;
+	line-height: 0.98;
+}
+
+.rentiva-h1 {
+	font-size: var(--rentiva-text-5xl);
+}
+
+.rentiva-h2 {
+	font-size: var(--rentiva-text-4xl);
+}
+
+.rentiva-h3 {
+	font-size: var(--rentiva-text-3xl);
+}
+
+.rentiva-h4 {
+	font-size: var(--rentiva-text-2xl);
+	letter-spacing: -0.02em;
+}
+
+.rentiva-lead {
+	font-family: var(--rentiva-font-sans);
+	font-size: var(--rentiva-text-lg);
+	font-weight: 400;
+	line-height: var(--rentiva-leading-snug);
+	color: var(--rentiva-muted-foreground);
+}
+
+.rentiva-body {
+	font-family: var(--rentiva-font-sans);
+	font-size: var(--rentiva-text-base);
+	line-height: var(--rentiva-leading-normal);
+	color: var(--rentiva-foreground);
+}
+
+.rentiva-small {
+	font-size: var(--rentiva-text-sm);
+	color: var(--rentiva-muted-foreground);
+}
+
+.rentiva-caption {
+	font-size: var(--rentiva-text-xs);
+	color: var(--rentiva-muted-foreground);
+}
+
+.rentiva-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	font-family: var(--rentiva-font-sans);
+	font-size: var(--rentiva-text-sm);
+	font-weight: 600;
+	color: var(--rentiva-primary);
+	transition: gap var(--rentiva-transition), color var(--rentiva-transition);
+}
+
+.rentiva-link:hover {
+	gap: 0.55rem;
+	color: var(--rentiva-primary-dark);
+}
+
+.rentiva-link svg {
+	flex-shrink: 0;
+}
