@@ -110,6 +110,26 @@ Promo Banner, Why Rentiva, and Testimonial all follow this for their
 photo/avatar field, each falling back to its Theme Settings image (or no
 image at all) exactly like every other field on that widget.
 
+**Every field on every widget pre-fills with what's actually live — not
+just the 3 repeaters.** Every plain `TEXT`/`TEXTAREA`/`URL` control sets a
+real `'default'` (not merely a `'placeholder'`, which is just grey hint
+text an empty field shows — it never gets used as the actual value). Each
+default is computed the exact same way that field's `template-parts/home/*.php`
+fallback already resolves it: `rentiva_get_setting( 'hero_eyebrow', 'RENT •
+RIDE • EXPLORE' )` for a field with a Theme Settings key behind it, or the
+literal hardcoded string for one that never had a Theme Settings field at
+all (e.g. Categories' heading, every Hero badge/button, all 4 search field
+labels). `URL` controls default to `['url' => rentiva_get_rentals_page_url()]`
+(or `rentiva_get_list_item_url()`); `MEDIA` controls use the base class's
+`media_default( $attachment_id )` helper, which returns `['id' =>
+…, 'url' => …]` for a real attachment or `[]` (no default) when there's
+nothing configured yet — there's no sensible placeholder photo to fabricate.
+This is why a fresh theme install, or one that's just run Rentiva → Setup's
+demo import, shows every field on every one of the 9 widgets already
+filled in the moment you open it in Elementor: nothing to hunt for, nothing
+that looks broken or "not editable" — an admin can change exactly what they
+want and leave the rest untouched.
+
 **Every widget DOES have Style-tab controls** — a Text Color + Typography
 (font family/size/weight/line-height/letter-spacing) pair per meaningful
 text element in that section (e.g. Hero gets Eyebrow/Headline/Headline

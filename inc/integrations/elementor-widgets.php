@@ -130,6 +130,29 @@ abstract class Rentiva_Elementor_Section_Widget extends \Elementor\Widget_Base {
 	}
 
 	/**
+	 * A `Controls_Manager::MEDIA` control's `default`, so opening a widget
+	 * that already has a real Theme Settings image pre-fills the picker
+	 * with it — same reasoning as rentiva_get_default_trust_stats() (see
+	 * docs/elementor.md): an unset `default` leaves the field looking
+	 * "empty" even though the section has a live photo, which reads as
+	 * "not editable". Returns [] (no default) when there's no image to
+	 * show, since there's no sensible placeholder image asset to offer.
+	 *
+	 * @param int $attachment_id
+	 * @return array{id?:int,url?:string}
+	 */
+	protected function media_default( $attachment_id ) {
+		$attachment_id = (int) $attachment_id;
+		if ( ! $attachment_id ) {
+			return array();
+		}
+		return array(
+			'id'  => $attachment_id,
+			'url' => wp_get_attachment_url( $attachment_id ),
+		);
+	}
+
+	/**
 	 * @return void
 	 */
 	protected function render() {
@@ -164,9 +187,9 @@ class Rentiva_Elementor_Widget_Hero extends Rentiva_Elementor_Section_Widget {
 		$this->add_control(
 			'eyebrow',
 			array(
-				'label'       => __( 'Eyebrow', 'rentiva' ),
-				'type'        => \Elementor\Controls_Manager::TEXT,
-				'placeholder' => __( 'RENT • RIDE • EXPLORE', 'rentiva' ),
+				'label'   => __( 'Eyebrow', 'rentiva' ),
+				'type'    => \Elementor\Controls_Manager::TEXT,
+				'default' => rentiva_get_setting( 'hero_eyebrow', __( 'RENT • RIDE • EXPLORE', 'rentiva' ) ),
 			)
 		);
 		$this->add_control(
@@ -174,7 +197,7 @@ class Rentiva_Elementor_Widget_Hero extends Rentiva_Elementor_Section_Widget {
 			array(
 				'label'       => __( 'Headline', 'rentiva' ),
 				'type'        => \Elementor\Controls_Manager::TEXT,
-				'placeholder' => __( 'Rent. Ride. Explore.', 'rentiva' ),
+				'default'     => rentiva_get_setting( 'hero_title', __( 'Rent. Ride. Explore.', 'rentiva' ) ),
 				'description' => __( 'The last word is automatically shown in the accent color.', 'rentiva' ),
 			)
 		);
@@ -183,7 +206,7 @@ class Rentiva_Elementor_Widget_Hero extends Rentiva_Elementor_Section_Widget {
 			array(
 				'label'       => __( 'Subheading', 'rentiva' ),
 				'type'        => \Elementor\Controls_Manager::TEXTAREA,
-				'placeholder' => __( 'Premium bikes, gear and equipment — ready whenever you are.', 'rentiva' ),
+				'default'     => rentiva_get_setting( 'hero_subtitle', __( 'Premium bikes, gear and equipment — ready whenever you are.', 'rentiva' ) ),
 				'description' => __( 'Breaks onto a second line at an em dash (—), if present.', 'rentiva' ),
 			)
 		);
@@ -193,6 +216,7 @@ class Rentiva_Elementor_Widget_Hero extends Rentiva_Elementor_Section_Widget {
 			array(
 				'label'     => __( 'Background Photo', 'rentiva' ),
 				'type'      => \Elementor\Controls_Manager::MEDIA,
+				'default'   => $this->media_default( rentiva_get_setting( 'hero_image_id', 0 ) ),
 				'separator' => 'before',
 			)
 		);
@@ -205,11 +229,11 @@ class Rentiva_Elementor_Widget_Hero extends Rentiva_Elementor_Section_Widget {
 				'separator' => 'before',
 			)
 		);
-		$this->add_control( 'badge1_value', array( 'label' => __( 'Badge 1 Value', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => '4.9 / 5' ) );
-		$this->add_control( 'badge1_label', array( 'label' => __( 'Badge 1 Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Top Rated', 'rentiva' ) ) );
-		$this->add_control( 'badge2_value', array( 'label' => __( 'Badge 2 Value', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => '10,000+' ) );
-		$this->add_control( 'badge2_label', array( 'label' => __( 'Badge 2 Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Rentals Done', 'rentiva' ) ) );
-		$this->add_control( 'live_text', array( 'label' => __( 'Live Availability Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Available Now', 'rentiva' ) ) );
+		$this->add_control( 'badge1_value', array( 'label' => __( 'Badge 1 Value', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '4.9 / 5' ) );
+		$this->add_control( 'badge1_label', array( 'label' => __( 'Badge 1 Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Top Rated', 'rentiva' ) ) );
+		$this->add_control( 'badge2_value', array( 'label' => __( 'Badge 2 Value', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '10,000+' ) );
+		$this->add_control( 'badge2_label', array( 'label' => __( 'Badge 2 Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Rentals Done', 'rentiva' ) ) );
+		$this->add_control( 'live_text', array( 'label' => __( 'Live Availability Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Available Now', 'rentiva' ) ) );
 
 		$this->add_control(
 			'heading_buttons',
@@ -219,10 +243,10 @@ class Rentiva_Elementor_Widget_Hero extends Rentiva_Elementor_Section_Widget {
 				'separator' => 'before',
 			)
 		);
-		$this->add_control( 'cta_primary_text', array( 'label' => __( 'Primary Button Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Explore Rentals', 'rentiva' ) ) );
-		$this->add_control( 'cta_primary_url', array( 'label' => __( 'Primary Button Link', 'rentiva' ), 'type' => \Elementor\Controls_Manager::URL, 'placeholder' => __( 'Leave empty for the rentals archive', 'rentiva' ), 'show_external' => false ) );
-		$this->add_control( 'cta_secondary_text', array( 'label' => __( 'Secondary Button Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'List Your Equipment', 'rentiva' ) ) );
-		$this->add_control( 'cta_secondary_url', array( 'label' => __( 'Secondary Button Link', 'rentiva' ), 'type' => \Elementor\Controls_Manager::URL, 'placeholder' => __( 'Leave empty for the configured "List Your Item" link', 'rentiva' ), 'show_external' => false ) );
+		$this->add_control( 'cta_primary_text', array( 'label' => __( 'Primary Button Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Explore Rentals', 'rentiva' ) ) );
+		$this->add_control( 'cta_primary_url', array( 'label' => __( 'Primary Button Link', 'rentiva' ), 'type' => \Elementor\Controls_Manager::URL, 'default' => array( 'url' => rentiva_get_rentals_page_url() ), 'show_external' => false ) );
+		$this->add_control( 'cta_secondary_text', array( 'label' => __( 'Secondary Button Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'List Your Equipment', 'rentiva' ) ) );
+		$this->add_control( 'cta_secondary_url', array( 'label' => __( 'Secondary Button Link', 'rentiva' ), 'type' => \Elementor\Controls_Manager::URL, 'default' => array( 'url' => rentiva_get_list_item_url() ), 'show_external' => false ) );
 
 		$this->add_control(
 			'heading_search',
@@ -232,13 +256,13 @@ class Rentiva_Elementor_Widget_Hero extends Rentiva_Elementor_Section_Widget {
 				'separator' => 'before',
 			)
 		);
-		$this->add_control( 'search_label', array( 'label' => __( 'Panel Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'FIND YOUR RENTAL', 'rentiva' ) ) );
-		$this->add_control( 'field_where_label', array( 'label' => __( '"Where" Field Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Where', 'rentiva' ) ) );
-		$this->add_control( 'field_where_placeholder', array( 'label' => __( '"Where" Field Placeholder', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Choose location', 'rentiva' ) ) );
-		$this->add_control( 'field_pickup_label', array( 'label' => __( '"Pickup" Field Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Pickup', 'rentiva' ) ) );
-		$this->add_control( 'field_return_label', array( 'label' => __( '"Return" Field Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Return', 'rentiva' ) ) );
-		$this->add_control( 'field_category_label', array( 'label' => __( '"Category" Field Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Category', 'rentiva' ) ) );
-		$this->add_control( 'submit_text', array( 'label' => __( 'Submit Button Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Find Rentals', 'rentiva' ) ) );
+		$this->add_control( 'search_label', array( 'label' => __( 'Panel Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'FIND YOUR RENTAL', 'rentiva' ) ) );
+		$this->add_control( 'field_where_label', array( 'label' => __( '"Where" Field Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Where', 'rentiva' ) ) );
+		$this->add_control( 'field_where_placeholder', array( 'label' => __( '"Where" Field Placeholder', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Choose location', 'rentiva' ) ) );
+		$this->add_control( 'field_pickup_label', array( 'label' => __( '"Pickup" Field Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Pickup', 'rentiva' ) ) );
+		$this->add_control( 'field_return_label', array( 'label' => __( '"Return" Field Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Return', 'rentiva' ) ) );
+		$this->add_control( 'field_category_label', array( 'label' => __( '"Category" Field Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Category', 'rentiva' ) ) );
+		$this->add_control( 'submit_text', array( 'label' => __( 'Submit Button Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Find Rentals', 'rentiva' ) ) );
 
 		$this->end_controls_section();
 
@@ -350,10 +374,10 @@ class Rentiva_Elementor_Widget_Categories extends Rentiva_Elementor_Section_Widg
 				'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
 			)
 		);
-		$this->add_control( 'heading', array( 'label' => __( 'Headline', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Explore What You Need', 'rentiva' ) ) );
-		$this->add_control( 'lead', array( 'label' => __( 'Subheading', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXTAREA, 'placeholder' => __( 'Find the right equipment for your next adventure.', 'rentiva' ) ) );
-		$this->add_control( 'link_text', array( 'label' => __( 'Link Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'View all categories', 'rentiva' ) ) );
-		$this->add_control( 'link_url', array( 'label' => __( 'Link URL', 'rentiva' ), 'type' => \Elementor\Controls_Manager::URL, 'placeholder' => __( 'Leave empty for the rentals archive', 'rentiva' ), 'show_external' => false ) );
+		$this->add_control( 'heading', array( 'label' => __( 'Headline', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Explore What You Need', 'rentiva' ) ) );
+		$this->add_control( 'lead', array( 'label' => __( 'Subheading', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXTAREA, 'default' => __( 'Find the right equipment for your next adventure.', 'rentiva' ) ) );
+		$this->add_control( 'link_text', array( 'label' => __( 'Link Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'View all categories', 'rentiva' ) ) );
+		$this->add_control( 'link_url', array( 'label' => __( 'Link URL', 'rentiva' ), 'type' => \Elementor\Controls_Manager::URL, 'default' => array( 'url' => rentiva_get_rentals_page_url() ), 'show_external' => false ) );
 
 		$category_repeater = new \Elementor\Repeater();
 		$category_repeater->add_control(
@@ -429,10 +453,10 @@ class Rentiva_Elementor_Widget_Popular_Rentals extends Rentiva_Elementor_Section
 				'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
 			)
 		);
-		$this->add_control( 'heading', array( 'label' => __( 'Headline', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Popular Rentals', 'rentiva' ) ) );
-		$this->add_control( 'lead', array( 'label' => __( 'Subheading', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXTAREA, 'placeholder' => __( 'Highly rated equipment ready for your next adventure.', 'rentiva' ) ) );
-		$this->add_control( 'link_text', array( 'label' => __( 'Link Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'View all rentals', 'rentiva' ) ) );
-		$this->add_control( 'link_url', array( 'label' => __( 'Link URL', 'rentiva' ), 'type' => \Elementor\Controls_Manager::URL, 'placeholder' => __( 'Leave empty for the rentals archive', 'rentiva' ), 'show_external' => false ) );
+		$this->add_control( 'heading', array( 'label' => __( 'Headline', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Popular Rentals', 'rentiva' ) ) );
+		$this->add_control( 'lead', array( 'label' => __( 'Subheading', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXTAREA, 'default' => __( 'Highly rated equipment ready for your next adventure.', 'rentiva' ) ) );
+		$this->add_control( 'link_text', array( 'label' => __( 'Link Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'View all rentals', 'rentiva' ) ) );
+		$this->add_control( 'link_url', array( 'label' => __( 'Link URL', 'rentiva' ), 'type' => \Elementor\Controls_Manager::URL, 'default' => array( 'url' => rentiva_get_rentals_page_url() ), 'show_external' => false ) );
 
 		$item_repeater = new \Elementor\Repeater();
 		$item_repeater->add_control(
@@ -512,12 +536,12 @@ class Rentiva_Elementor_Widget_Promo_Banner extends Rentiva_Elementor_Section_Wi
 				'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
 			)
 		);
-		$this->add_control( 'image', array( 'label' => __( 'Background Photo', 'rentiva' ), 'type' => \Elementor\Controls_Manager::MEDIA ) );
-		$this->add_control( 'badge', array( 'label' => __( 'Badge', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'WEEKEND SPECIAL · UP TO 20% OFF', 'rentiva' ) ) );
-		$this->add_control( 'title', array( 'label' => __( 'Headline', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Your next adventure starts here.', 'rentiva' ) ) );
-		$this->add_control( 'text', array( 'label' => __( 'Body Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXTAREA, 'placeholder' => __( 'Discover premium equipment from trusted local owners.', 'rentiva' ) ) );
-		$this->add_control( 'cta_text', array( 'label' => __( 'Button Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Explore Rentals', 'rentiva' ) ) );
-		$this->add_control( 'cta_url', array( 'label' => __( 'Button Link', 'rentiva' ), 'type' => \Elementor\Controls_Manager::URL, 'placeholder' => __( 'Leave empty for the rentals archive', 'rentiva' ), 'show_external' => false ) );
+		$this->add_control( 'image', array( 'label' => __( 'Background Photo', 'rentiva' ), 'type' => \Elementor\Controls_Manager::MEDIA, 'default' => $this->media_default( rentiva_get_setting( 'promo_image_id', 0 ) ) ) );
+		$this->add_control( 'badge', array( 'label' => __( 'Badge', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => rentiva_get_setting( 'promo_badge', __( 'WEEKEND SPECIAL · UP TO 20% OFF', 'rentiva' ) ) ) );
+		$this->add_control( 'title', array( 'label' => __( 'Headline', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => rentiva_get_setting( 'promo_title', __( 'Your next adventure starts here.', 'rentiva' ) ) ) );
+		$this->add_control( 'text', array( 'label' => __( 'Body Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXTAREA, 'default' => rentiva_get_setting( 'promo_text', __( 'Discover premium equipment from trusted local owners.', 'rentiva' ) ) ) );
+		$this->add_control( 'cta_text', array( 'label' => __( 'Button Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Explore Rentals', 'rentiva' ) ) );
+		$this->add_control( 'cta_url', array( 'label' => __( 'Button Link', 'rentiva' ), 'type' => \Elementor\Controls_Manager::URL, 'default' => array( 'url' => rentiva_get_rentals_page_url() ), 'show_external' => false ) );
 		$this->end_controls_section();
 
 		$this->start_controls_section(
@@ -593,7 +617,7 @@ class Rentiva_Elementor_Widget_How_It_Works extends Rentiva_Elementor_Section_Wi
 				'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
 			)
 		);
-		$this->add_control( 'heading', array( 'label' => __( 'Headline', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Rent in 3 Simple Steps', 'rentiva' ) ) );
+		$this->add_control( 'heading', array( 'label' => __( 'Headline', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Rent in 3 Simple Steps', 'rentiva' ) ) );
 
 		$repeater = new \Elementor\Repeater();
 		$repeater->add_control( 'title', array( 'label' => __( 'Step Title', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Find', 'rentiva' ) ) );
@@ -648,9 +672,9 @@ class Rentiva_Elementor_Widget_Why_Rentiva extends Rentiva_Elementor_Section_Wid
 				'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
 			)
 		);
-		$this->add_control( 'image', array( 'label' => __( 'Photo', 'rentiva' ), 'type' => \Elementor\Controls_Manager::MEDIA ) );
-		$this->add_control( 'eyebrow', array( 'label' => __( 'Eyebrow', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'WHY RENTIVA', 'rentiva' ) ) );
-		$this->add_control( 'heading', array( 'label' => __( 'Headline', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Everything you need for a better rental.', 'rentiva' ) ) );
+		$this->add_control( 'image', array( 'label' => __( 'Photo', 'rentiva' ), 'type' => \Elementor\Controls_Manager::MEDIA, 'default' => $this->media_default( rentiva_get_setting( 'why_image_id', 0 ) ) ) );
+		$this->add_control( 'eyebrow', array( 'label' => __( 'Eyebrow', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'WHY RENTIVA', 'rentiva' ) ) );
+		$this->add_control( 'heading', array( 'label' => __( 'Headline', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Everything you need for a better rental.', 'rentiva' ) ) );
 
 		$repeater = new \Elementor\Repeater();
 		$repeater->add_control( 'title', array( 'label' => __( 'Feature Title', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Verified Equipment', 'rentiva' ) ) );
@@ -668,8 +692,8 @@ class Rentiva_Elementor_Widget_Why_Rentiva extends Rentiva_Elementor_Section_Wid
 			)
 		);
 
-		$this->add_control( 'link_text', array( 'label' => __( 'Link Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Learn More', 'rentiva' ) ) );
-		$this->add_control( 'link_url', array( 'label' => __( 'Link URL', 'rentiva' ), 'type' => \Elementor\Controls_Manager::URL, 'placeholder' => __( 'Leave empty for the rentals archive', 'rentiva' ), 'show_external' => false ) );
+		$this->add_control( 'link_text', array( 'label' => __( 'Link Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Learn More', 'rentiva' ) ) );
+		$this->add_control( 'link_url', array( 'label' => __( 'Link URL', 'rentiva' ), 'type' => \Elementor\Controls_Manager::URL, 'default' => array( 'url' => rentiva_get_rentals_page_url() ), 'show_external' => false ) );
 		$this->end_controls_section();
 
 		$this->add_text_style_section( 'eyebrow', __( 'Eyebrow', 'rentiva' ), '.rentiva-eyebrow' );
@@ -714,10 +738,10 @@ class Rentiva_Elementor_Widget_Testimonial extends Rentiva_Elementor_Section_Wid
 				'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
 			)
 		);
-		$this->add_control( 'quote', array( 'label' => __( 'Quote', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXTAREA, 'placeholder' => __( 'The easiest rental experience I\'ve ever had.', 'rentiva' ) ) );
-		$this->add_control( 'avatar', array( 'label' => __( 'Avatar Photo', 'rentiva' ), 'type' => \Elementor\Controls_Manager::MEDIA ) );
-		$this->add_control( 'name', array( 'label' => __( 'Author Name', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Daniel Morgan', 'rentiva' ) ) );
-		$this->add_control( 'role', array( 'label' => __( 'Author Role', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Weekend Traveler', 'rentiva' ) ) );
+		$this->add_control( 'quote', array( 'label' => __( 'Quote', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXTAREA, 'default' => rentiva_get_setting( 'testimonial_quote', __( 'The easiest rental experience I\'ve ever had. The bike was perfect and the entire process took less than two minutes.', 'rentiva' ) ) ) );
+		$this->add_control( 'avatar', array( 'label' => __( 'Avatar Photo', 'rentiva' ), 'type' => \Elementor\Controls_Manager::MEDIA, 'default' => $this->media_default( rentiva_get_setting( 'testimonial_avatar_id', 0 ) ) ) );
+		$this->add_control( 'name', array( 'label' => __( 'Author Name', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => rentiva_get_setting( 'testimonial_name', __( 'Daniel Morgan', 'rentiva' ) ) ) );
+		$this->add_control( 'role', array( 'label' => __( 'Author Role', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => rentiva_get_setting( 'testimonial_role', __( 'Weekend Traveler', 'rentiva' ) ) ) );
 		$this->end_controls_section();
 
 		$this->add_text_style_section( 'quote', __( 'Quote', 'rentiva' ), '.rentiva-testimonial__quote' );
@@ -760,8 +784,8 @@ class Rentiva_Elementor_Widget_Final_Cta extends Rentiva_Elementor_Section_Widge
 				'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
 			)
 		);
-		$this->add_control( 'heading', array( 'label' => __( 'Headline', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Ready to explore?', 'rentiva' ) ) );
-		$this->add_control( 'lead', array( 'label' => __( 'Subheading', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXTAREA, 'placeholder' => __( 'Find your perfect rental and start your next adventure.', 'rentiva' ) ) );
+		$this->add_control( 'heading', array( 'label' => __( 'Headline', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Ready to explore?', 'rentiva' ) ) );
+		$this->add_control( 'lead', array( 'label' => __( 'Subheading', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXTAREA, 'default' => __( 'Find your perfect rental and start your next adventure.', 'rentiva' ) ) );
 		$this->add_control(
 			'heading_buttons',
 			array(
@@ -770,10 +794,10 @@ class Rentiva_Elementor_Widget_Final_Cta extends Rentiva_Elementor_Section_Widge
 				'separator' => 'before',
 			)
 		);
-		$this->add_control( 'cta_primary_text', array( 'label' => __( 'Primary Button Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'Explore Rentals', 'rentiva' ) ) );
-		$this->add_control( 'cta_primary_url', array( 'label' => __( 'Primary Button Link', 'rentiva' ), 'type' => \Elementor\Controls_Manager::URL, 'placeholder' => __( 'Leave empty for the rentals archive', 'rentiva' ), 'show_external' => false ) );
-		$this->add_control( 'cta_secondary_text', array( 'label' => __( 'Secondary Button Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'placeholder' => __( 'List Your Item', 'rentiva' ) ) );
-		$this->add_control( 'cta_secondary_url', array( 'label' => __( 'Secondary Button Link', 'rentiva' ), 'type' => \Elementor\Controls_Manager::URL, 'placeholder' => __( 'Leave empty for the configured "List Your Item" link', 'rentiva' ), 'show_external' => false ) );
+		$this->add_control( 'cta_primary_text', array( 'label' => __( 'Primary Button Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Explore Rentals', 'rentiva' ) ) );
+		$this->add_control( 'cta_primary_url', array( 'label' => __( 'Primary Button Link', 'rentiva' ), 'type' => \Elementor\Controls_Manager::URL, 'default' => array( 'url' => rentiva_get_rentals_page_url() ), 'show_external' => false ) );
+		$this->add_control( 'cta_secondary_text', array( 'label' => __( 'Secondary Button Text', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'List Your Item', 'rentiva' ) ) );
+		$this->add_control( 'cta_secondary_url', array( 'label' => __( 'Secondary Button Link', 'rentiva' ), 'type' => \Elementor\Controls_Manager::URL, 'default' => array( 'url' => rentiva_get_list_item_url() ), 'show_external' => false ) );
 		$this->end_controls_section();
 
 		$this->add_text_style_section( 'heading', __( 'Headline', 'rentiva' ), '.rentiva-h1' );
