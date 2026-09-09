@@ -59,19 +59,28 @@ interactivity (flatpickr date pickers, off-day blocking, AJAX price
 recalculation, stock checks, nonces, cart submission) is the plugin's
 original, unmodified code.
 
-`assets/css/booking.css` re-skins that real markup to match the design —
-targeting real, confirmed class names (`.rbfw-drp-wrapper`, `.rbfw-select`,
-`.rbfw_bikecarmd_price_result`, `.rbfw-book-now-btn`, etc.) — and hides a
-couple of elements that would otherwise duplicate what the theme's own
-card/sidebar chrome already shows (`.pricing-content-container`,
-`.rbfw-sd-rate-box`). Nothing is ever removed from the DOM, only
-`display:none`, so no plugin JS listener is ever broken.
+The include is wrapped in `<div class="mp_right_section"><div
+class="rbfw-booking-form" id="rbfw_default_booking_form">…</div></div>`
+(plus the plugin's own `rbfw_multi_items_right` / `single-day-booking`
+extra classes for those two item types) — the exact ancestor markup every
+plugin single-item template (`templates/single/{default,muffin}/*.php`)
+puts around this same include. A large share of the plugin's own CSS
+(`rbfw_style.css`) — the Book Now button's width/padding/border-radius,
+the multi-items grid, etc. — is keyed off those specific ancestor classes,
+so omitting them left the form functionally correct but visually broken
+even with zero theme CSS applied to it. Do not remove this wrapper.
 
-`assets/js/quantity-stepper.js` progressively enhances the plugin's real
-`<select name="rbfw_item_quantity">` with a −/+ stepper UI: it changes the
-select's value and dispatches a native `change` event, so the plugin's own
-price-recalculation script still receives the event exactly as if the
-visitor had used the native dropdown.
+`assets/css/booking.css` deliberately applies **zero** styling to anything
+inside `.rentiva-booking-card__form` — date pickers, duration, price
+breakdown, quantity select, submit button, all of it renders with the
+plugin's own unmodified CSS/JS. Only the chrome *around* that wrapper
+(the card border/shadow, the "Rent this item" eyebrow + starting price +
+availability badge, the trust bullets) is theme-owned, built from
+`Rentiva_Rental_Adapter::get_display_price()` /
+`get_availability_status()` — not from the plugin's markup. This is
+intentional: the booking form itself must always look and behave exactly
+as the plugin ships it, so plugin updates never need reconciling against
+a theme skin.
 
 ## Theme-owned data (genuine gaps, not duplicated plugin fields)
 

@@ -684,8 +684,30 @@ class Rentiva_Rental_Adapter {
 		$post_id = $item_id;
 		setup_postdata( $post );
 
+		// Reproduce the exact `.mp_right_section` > `.rbfw-booking-form`
+		// wrapper every plugin single-item template
+		// (templates/single/{default,muffin}/*.php) puts around this same
+		// form include. A large share of the plugin's own CSS (rbfw_style.css)
+		// — book-now button width/padding/radius, the multi-items grid, etc. —
+		// is keyed off these specific ancestor classes, so omitting them left
+		// the form working but visually broken even with zero theme CSS
+		// involved. `rbfw_multi_items_right` / `single-day-booking` are the
+		// same extra per-type classes those templates add.
+		$section_class = 'mp_right_section';
+		if ( 'multi-items' === $file_name ) {
+			$section_class .= ' rbfw_multi_items_right';
+		}
+
+		$form_class = 'rbfw-booking-form';
+		if ( 'single-day' === $file_name ) {
+			$form_class .= ' single-day-booking';
+		}
+
+		printf( '<div class="%s">', esc_attr( $section_class ) );
 		do_action( 'booking_form_header', $post_id );
+		printf( '<div class="%s" id="rbfw_default_booking_form">', esc_attr( $form_class ) );
 		include $path; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable -- resolved exclusively via RBFW_Function::get_template_path(), not user input.
+		echo '</div></div>';
 
 		wp_reset_postdata();
 	}

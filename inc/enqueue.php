@@ -151,7 +151,6 @@ function rentiva_register_assets() {
 	wp_register_script( 'rentiva-favorites', $js_dir . 'favorites.js', array(), $ver, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	wp_register_script( 'rentiva-search-suggest', $js_dir . 'search-suggest.js', array(), $ver, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	wp_register_script( 'rentiva-gallery-thumbnails', $js_dir . 'gallery-thumbnails.js', array(), $ver, array( 'in_footer' => true, 'strategy' => 'defer' ) );
-	wp_register_script( 'rentiva-quantity-stepper', $js_dir . 'quantity-stepper.js', array(), $ver, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	wp_register_script( 'rentiva-sticky-card', $js_dir . 'sticky-card.js', array(), $ver, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	wp_register_script( 'rentiva-admin-setup', $js_dir . 'admin-setup.js', array( 'jquery' ), $ver, array( 'in_footer' => true ) );
 }
@@ -203,7 +202,6 @@ function rentiva_enqueue_assets() {
 		wp_enqueue_style( 'rentiva-booking' );
 		wp_enqueue_script( 'rentiva-favorites' );
 		wp_enqueue_script( 'rentiva-gallery-thumbnails' );
-		wp_enqueue_script( 'rentiva-quantity-stepper' );
 		wp_enqueue_script( 'rentiva-sticky-card' );
 	}
 
