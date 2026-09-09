@@ -38,12 +38,77 @@ that's a separate file):
 - Rentiva: Testimonial
 - Rentiva: Final CTA
 
-Each widget has **no Content-tab controls** by design: it renders the exact
-same `template-parts/home/{slug}.php` file the real homepage uses (via
-`Rentiva_Elementor_Section_Widget::render()`), so a page built with these
-widgets is pixel-identical to the built-in homepage. Copy/images are edited
-the same way the homepage's is — through Rentiva → Theme Settings
-(docs/theme-settings.md), not per-widget fields.
+Every widget also has real Content-tab fields for every piece of text/value
+in that section (Hero: eyebrow, headline, subheading, background photo,
+both trust badges, live-availability text, both button texts/links, search
+panel label, all 4 search field labels/placeholder, submit button text;
+Trust Strip/How It Works/Why Rentiva: a `Controls_Manager::REPEATER` for
+their stats/steps/features, so rows can be added, removed, and reordered;
+Categories/Popular Rentals: heading, subheading, link text/URL, **plus** a
+picker repeater (`categories` / `items`) that controls exactly *which* real
+categories/rental items appear and in what order; Promo Banner: background
+photo, badge, headline, body text, button text/link, plus Style-tab
+background/overlay color; Final CTA: heading, body text, button texts/
+links; Testimonial: quote, avatar photo, name, role; Why Rentiva: photo,
+eyebrow, headline, features). Each field is **optional** — left blank, it falls back
+to that section's Rentiva → Theme Settings value (or, for content with no
+Theme Settings field at all, like Categories' heading or How It Works'
+steps, a hardcoded default) via a `$rentiva_arg()`-style closure or
+`! empty( $args['key'] )` check at the top of that `template-parts/home/*.php`
+file. This means a page built entirely with default (blank) widget settings
+still renders pixel-identical to the built-in homepage, while an admin who
+wants a different headline on THIS page only can type it directly into the
+widget instead of touching the site-wide Theme Settings value.
+
+**Repeater fields replace wholesale, they don't merge by index.** When a
+repeater control (`stats`, `steps`, `features`) is non-empty, the
+template-part uses it as the *complete* list — `$rentiva_stats = $args['stats'];`,
+not a per-row merge with the built-in defaults. Only an entirely empty
+repeater falls back to the defaults. This matches what admins expect from a
+repeater (add/remove/reorder IS the list) and avoids a real bug that
+existed briefly during development: merging by array index left stale
+default rows (e.g. a leftover "100% verified equipment" stat) rendering
+alongside 1-2 intentionally-added custom rows. How It Works' step number
+("01", "02", ...) is always auto-generated from the row's position when a
+custom `steps` list is used, since the repeater only collects title/desc.
+
+**The three repeaters' `default` is pre-filled with what's actually live**,
+via `rentiva_get_default_trust_stats()` / `rentiva_get_default_how_it_works_steps()`
+/ `rentiva_get_default_why_rentiva_features()` (`inc/helpers.php` — Trust
+Strip's checks Rentiva → Theme Settings first, the other two have no Theme
+Settings field so they're always the hardcoded default). These same
+functions are also each template-part's own fallback, so there's one source
+of truth. This exists specifically so opening a fresh Trust Strip/How It
+Works/Why Rentiva widget shows the 4 (or 3) rows *actually on the page*,
+ready to click and edit — an empty `default => []` left the repeater with
+nothing to click, which looked like "the content isn't editable" even
+though the Content-tab field was right there. Once such a widget is saved
+(even untouched), Elementor bakes the then-current resolved rows into
+`_elementor_data`, making them that page's own independent copy from then
+on — reflected live from Theme Settings only until the first save.
+
+**Categories and Popular Rentals use a *picker* repeater, not a content
+repeater.** Their rows hold a single `Controls_Manager::SELECT2` field
+(`term_id` / `item_id`) whose options are every real `rbfw_item_caregory`
+term / published `rbfw_item` post (`rentiva_get_category_picker_options()`
+/ `rentiva_get_rental_item_picker_options()`, `inc/helpers.php`) — an admin
+picks *which* real categories/items appear and in what order, not their
+name/photo/price (those stay owned by the category/item itself, edited on
+its own admin screen). Same wholesale-replace and live-pre-filled-default
+rules apply (`rentiva_get_default_category_repeater_rows()` /
+`rentiva_get_default_rental_item_repeater_rows()`). `render()` resolves
+each picked id to a full card via `rentiva_get_category_card( $term_id )`
+or `Rentiva_Rental_Adapter::get_item_card_data( $item_id )`, skipping any
+id that no longer resolves (deleted category/unpublished item) rather than
+rendering a broken card.
+
+**Image fields use `Controls_Manager::MEDIA`**, whose resolved value is
+`['id' => int, 'url' => string, ...]` — always read `$settings['field']['id']`,
+never `['url']`, since every template still renders via `wp_get_attachment_image()`
+(so the theme's registered crop sizes apply) not a raw `<img src>`. Hero,
+Promo Banner, Why Rentiva, and Testimonial all follow this for their
+photo/avatar field, each falling back to its Theme Settings image (or no
+image at all) exactly like every other field on that widget.
 
 **Every widget DOES have Style-tab controls** — a Text Color + Typography
 (font family/size/weight/line-height/letter-spacing) pair per meaningful

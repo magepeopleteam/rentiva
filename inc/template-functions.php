@@ -267,6 +267,7 @@ function rentiva_get_homepage_categories() {
 			$term = get_term_by( 'name', $name, 'rbfw_item_caregory' );
 			if ( $term ) {
 				$cards[] = array(
+					'term_id'  => $term->term_id,
 					'name'     => $term->name,
 					'slug'     => $term->slug,
 					'url'      => get_term_link( $term ),
@@ -294,6 +295,7 @@ function rentiva_get_homepage_categories() {
 						continue;
 					}
 					$cards[] = array(
+						'term_id'  => $term->term_id,
 						'name'     => $term->name,
 						'slug'     => $term->slug,
 						'url'      => get_term_link( $term ),
@@ -307,6 +309,7 @@ function rentiva_get_homepage_categories() {
 	if ( empty( $cards ) ) {
 		foreach ( $featured_names as $name ) {
 			$cards[] = array(
+				'term_id'  => 0,
 				'name'     => $name,
 				'slug'     => sanitize_title( $name ),
 				'url'      => rentiva_get_rentals_page_url(),
@@ -316,6 +319,30 @@ function rentiva_get_homepage_categories() {
 	}
 
 	return $cards;
+}
+
+/**
+ * A category card array for one specific real `rbfw_item_caregory` term id
+ * — same shape rentiva_get_homepage_categories() produces, used when an
+ * admin picks specific categories via the Rentiva: Categories Elementor
+ * widget's repeater (see Rentiva_Elementor_Widget_Categories::render()).
+ *
+ * @param int $term_id
+ * @return array{term_id:int,name:string,slug:string,url:string,image_id:int}|null Null if the term doesn't exist.
+ */
+function rentiva_get_category_card( $term_id ) {
+	$term = get_term( (int) $term_id, 'rbfw_item_caregory' );
+	if ( ! $term || is_wp_error( $term ) ) {
+		return null;
+	}
+
+	return array(
+		'term_id'  => $term->term_id,
+		'name'     => $term->name,
+		'slug'     => $term->slug,
+		'url'      => get_term_link( $term ),
+		'image_id' => (int) get_term_meta( $term->term_id, 'rentiva_category_image_id', true ),
+	);
 }
 
 /* -------------------------------------------------------------------------

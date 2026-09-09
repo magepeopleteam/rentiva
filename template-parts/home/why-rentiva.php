@@ -9,26 +9,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$rentiva_image_id = (int) rentiva_get_setting( 'why_image_id', 0 );
+$rentiva_image_id = ! empty( $args['image_id'] ) ? (int) $args['image_id'] : (int) rentiva_get_setting( 'why_image_id', 0 );
 
-$rentiva_features = array(
-	array(
-		'title' => __( 'Verified Equipment', 'rentiva' ),
-		'desc'  => __( 'Every item is reviewed and quality checked.', 'rentiva' ),
-	),
-	array(
-		'title' => __( 'Flexible Booking', 'rentiva' ),
-		'desc'  => __( 'Choose the dates and rental period that work for you.', 'rentiva' ),
-	),
-	array(
-		'title' => __( 'Transparent Pricing', 'rentiva' ),
-		'desc'  => __( 'No confusing fees or hidden surprises.', 'rentiva' ),
-	),
-	array(
-		'title' => __( 'Secure Payments', 'rentiva' ),
-		'desc'  => __( 'Simple and secure checkout every time.', 'rentiva' ),
-	),
-);
+// $args['features'] — a full replacement list when rendering as the
+// Rentiva: Why Rentiva Elementor widget's repeater (its own add/remove/
+// reorder rows wholly define the set; only an entirely empty repeater
+// falls back to the built-in 4 features) — see
+// Rentiva_Elementor_Widget_Why_Rentiva::render().
+$rentiva_features = ( ! empty( $args['features'] ) && is_array( $args['features'] ) )
+	? $args['features']
+	: rentiva_get_default_why_rentiva_features();
+
+$rentiva_eyebrow   = ! empty( $args['eyebrow'] ) ? $args['eyebrow'] : __( 'WHY RENTIVA', 'rentiva' );
+$rentiva_heading   = ! empty( $args['heading'] ) ? $args['heading'] : __( 'Everything you need for a better rental.', 'rentiva' );
+$rentiva_link_text = ! empty( $args['link_text'] ) ? $args['link_text'] : __( 'Learn More', 'rentiva' );
+$rentiva_link_url  = ! empty( $args['link_url'] ) ? $args['link_url'] : rentiva_get_rentals_page_url();
 ?>
 <section class="rentiva-section--lg rentiva-section--flush-top rentiva-why-rentiva">
 	<div class="rentiva-container rentiva-why-rentiva__grid">
@@ -41,9 +36,9 @@ $rentiva_features = array(
 		</div>
 
 		<div>
-			<p class="rentiva-eyebrow"><?php esc_html_e( 'WHY RENTIVA', 'rentiva' ); ?></p>
+			<p class="rentiva-eyebrow"><?php echo esc_html( $rentiva_eyebrow ); ?></p>
 			<h2 class="rentiva-h3 rentiva-why-rentiva__title">
-				<?php esc_html_e( 'Everything you need for a better rental.', 'rentiva' ); ?>
+				<?php echo esc_html( $rentiva_heading ); ?>
 			</h2>
 
 			<ul class="rentiva-checklist">
@@ -60,8 +55,8 @@ $rentiva_features = array(
 				<?php endforeach; ?>
 			</ul>
 
-			<a href="<?php echo esc_url( rentiva_get_rentals_page_url() ); ?>" class="rentiva-link" style="margin-top:2.5rem;">
-				<?php esc_html_e( 'Learn More', 'rentiva' ); ?>
+			<a href="<?php echo esc_url( $rentiva_link_url ); ?>" class="rentiva-link" style="margin-top:2.5rem;">
+				<?php echo esc_html( $rentiva_link_text ); ?>
 				<?php echo rentiva_get_icon( 'chevron-right' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			</a>
 		</div>

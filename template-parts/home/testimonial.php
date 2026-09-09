@@ -9,10 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$rentiva_quote  = rentiva_get_setting( 'testimonial_quote', __( 'The easiest rental experience I\'ve ever had. The bike was perfect and the entire process took less than two minutes.', 'rentiva' ) );
-$rentiva_name   = rentiva_get_setting( 'testimonial_name', __( 'Daniel Morgan', 'rentiva' ) );
-$rentiva_role   = rentiva_get_setting( 'testimonial_role', __( 'Weekend Traveler', 'rentiva' ) );
-$rentiva_avatar = (int) rentiva_get_setting( 'testimonial_avatar_id', 0 );
+// $args overrides when rendering as the Rentiva: Testimonial Elementor widget.
+$rentiva_quote  = ! empty( $args['quote'] ) ? $args['quote'] : rentiva_get_setting( 'testimonial_quote', __( 'The easiest rental experience I\'ve ever had. The bike was perfect and the entire process took less than two minutes.', 'rentiva' ) );
+$rentiva_name   = ! empty( $args['name'] ) ? $args['name'] : rentiva_get_setting( 'testimonial_name', __( 'Daniel Morgan', 'rentiva' ) );
+$rentiva_role   = ! empty( $args['role'] ) ? $args['role'] : rentiva_get_setting( 'testimonial_role', __( 'Weekend Traveler', 'rentiva' ) );
+$rentiva_avatar = ! empty( $args['avatar_id'] ) ? (int) $args['avatar_id'] : (int) rentiva_get_setting( 'testimonial_avatar_id', 0 );
 ?>
 <section class="rentiva-section rentiva-section--dark rentiva-testimonial">
 	<div class="rentiva-container rentiva-container--narrow rentiva-testimonial__inner">

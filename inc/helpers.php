@@ -123,6 +123,185 @@ function rentiva_get_setting( $key, $default = '' ) {
 }
 
 /**
+ * The Trust Strip's 4 stats — whatever is currently live (the Rentiva →
+ * Theme Settings value if set, else the built-in default). Single source
+ * of truth for template-parts/home/trust-strip.php AND
+ * Rentiva_Elementor_Widget_Trust_Strip's Stats repeater default, so opening
+ * that widget in Elementor shows the 4 rows actually on the page — ready to
+ * tweak — instead of an empty repeater with nothing to click.
+ *
+ * @return array<int,array{value:string,label:string}>
+ */
+function rentiva_get_default_trust_stats() {
+	$stats = rentiva_get_setting( 'trust_stats', array() );
+	if ( ! empty( $stats ) && is_array( $stats ) ) {
+		return $stats;
+	}
+
+	return array(
+		array( 'value' => __( '10,000+', 'rentiva' ), 'label' => __( 'rentals completed', 'rentiva' ) ),
+		array( 'value' => __( '4.9 / 5', 'rentiva' ), 'label' => __( 'average rating', 'rentiva' ) ),
+		array( 'value' => __( '100%', 'rentiva' ), 'label' => __( 'verified equipment', 'rentiva' ) ),
+		array( 'value' => __( 'Secure', 'rentiva' ), 'label' => __( 'booking guaranteed', 'rentiva' ) ),
+	);
+}
+
+/**
+ * The "How It Works" section's 3 built-in steps. Single source of truth for
+ * template-parts/home/how-it-works.php AND
+ * Rentiva_Elementor_Widget_How_It_Works's Steps repeater default (see
+ * rentiva_get_default_trust_stats() for why). No Theme Settings field
+ * exists for these, so this is always the hardcoded default.
+ *
+ * @return array<int,array{title:string,desc:string}>
+ */
+function rentiva_get_default_how_it_works_steps() {
+	return array(
+		array(
+			'title' => __( 'Find', 'rentiva' ),
+			'desc'  => __( 'Discover the perfect equipment near you.', 'rentiva' ),
+		),
+		array(
+			'title' => __( 'Book', 'rentiva' ),
+			'desc'  => __( 'Choose your dates and reserve in seconds.', 'rentiva' ),
+		),
+		array(
+			'title' => __( 'Enjoy', 'rentiva' ),
+			'desc'  => __( 'Pick it up and start your adventure.', 'rentiva' ),
+		),
+	);
+}
+
+/**
+ * The "Why Rentiva" section's 4 built-in features. Single source of truth
+ * for template-parts/home/why-rentiva.php AND
+ * Rentiva_Elementor_Widget_Why_Rentiva's Features repeater default (see
+ * rentiva_get_default_trust_stats() for why). No Theme Settings field
+ * exists for these, so this is always the hardcoded default.
+ *
+ * @return array<int,array{title:string,desc:string}>
+ */
+function rentiva_get_default_why_rentiva_features() {
+	return array(
+		array(
+			'title' => __( 'Verified Equipment', 'rentiva' ),
+			'desc'  => __( 'Every item is reviewed and quality checked.', 'rentiva' ),
+		),
+		array(
+			'title' => __( 'Flexible Booking', 'rentiva' ),
+			'desc'  => __( 'Choose the dates and rental period that work for you.', 'rentiva' ),
+		),
+		array(
+			'title' => __( 'Transparent Pricing', 'rentiva' ),
+			'desc'  => __( 'No confusing fees or hidden surprises.', 'rentiva' ),
+		),
+		array(
+			'title' => __( 'Secure Payments', 'rentiva' ),
+			'desc'  => __( 'Simple and secure checkout every time.', 'rentiva' ),
+		),
+	);
+}
+
+/**
+ * `term_id => term_name` options for the Rentiva: Categories Elementor
+ * widget's category-picker repeater (Controls_Manager::SELECT2).
+ *
+ * @return array<int,string>
+ */
+function rentiva_get_category_picker_options() {
+	if ( ! rentiva_has_booking_plugin() ) {
+		return array();
+	}
+
+	$terms = get_terms(
+		array(
+			'taxonomy'   => 'rbfw_item_caregory',
+			'hide_empty' => false,
+			'orderby'    => 'name',
+		)
+	);
+
+	if ( is_wp_error( $terms ) ) {
+		return array();
+	}
+
+	$options = array();
+	foreach ( $terms as $term ) {
+		$options[ $term->term_id ] = $term->name;
+	}
+
+	return $options;
+}
+
+/**
+ * Default rows for that same repeater — the 6 categories currently shown
+ * (rentiva_get_homepage_categories()), as {term_id} rows, so opening the
+ * widget shows the current picks pre-filled and ready to edit/reorder
+ * instead of an empty repeater with nothing to click.
+ *
+ * @return array<int,array{term_id:int}>
+ */
+function rentiva_get_default_category_repeater_rows() {
+	$rows = array();
+	foreach ( rentiva_get_homepage_categories() as $card ) {
+		if ( ! empty( $card['term_id'] ) ) {
+			$rows[] = array( 'term_id' => $card['term_id'] );
+		}
+	}
+	return $rows;
+}
+
+/**
+ * `post_id => post_title` options for the Rentiva: Popular Rentals
+ * Elementor widget's item-picker repeater (Controls_Manager::SELECT2).
+ * Every published `rbfw_item`, not just the "popular" subset, so an admin
+ * can feature any real item here regardless of comment/booking count.
+ *
+ * @return array<int,string>
+ */
+function rentiva_get_rental_item_picker_options() {
+	if ( ! rentiva_has_booking_plugin() ) {
+		return array();
+	}
+
+	$posts = get_posts(
+		array(
+			'post_type'      => 'rbfw_item',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'fields'         => 'ids',
+		)
+	);
+
+	$options = array();
+	foreach ( $posts as $post_id ) {
+		$options[ $post_id ] = get_the_title( $post_id );
+	}
+
+	return $options;
+}
+
+/**
+ * Default rows for that same repeater — the items currently shown
+ * (rentiva_get_rental_cards( 4, 'popular' )), as {item_id} rows, so opening
+ * the widget shows the current picks pre-filled and ready to edit/reorder
+ * instead of an empty repeater with nothing to click.
+ *
+ * @return array<int,array{item_id:int}>
+ */
+function rentiva_get_default_rental_item_repeater_rows() {
+	$rows = array();
+	foreach ( rentiva_get_rental_cards( 4, 'popular' ) as $card ) {
+		if ( ! empty( $card['id'] ) ) {
+			$rows[] = array( 'item_id' => $card['id'] );
+		}
+	}
+	return $rows;
+}
+
+/**
  * Whether single `rbfw_item` pages should render Rentiva's own themed page
  * (default) or defer entirely to the plugin's bundled design.
  *
