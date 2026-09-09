@@ -20,19 +20,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+if ( ! rentiva_use_theme_single_item_layout() && class_exists( 'RBFW_Function' ) ) {
+	// Default: defer entirely to the plugin's own bundled page so each
+	// item's selected template (Default/Muffin) renders as chosen, instead
+	// of this theme's layout below. Opt into the theme layout via
+	// Rentiva → Theme Settings → Single item layout.
+	//
+	// The plugin's single-rbfw.php is a self-contained `single_template`
+	// entry point — it calls get_header()/the_post()/get_footer() itself —
+	// so it must be included here directly, before this file's own
+	// get_header() and while(have_posts()):the_post() below ever run.
+	// Running both meant get_header() printed twice (duplicated header
+	// markup) and the_post() was called twice against a single-post query,
+	// which pushed WP_Query::next_post() past the only available post
+	// (an "Undefined array key 1" notice) and left the global $post null
+	// for the rest of the request — emptying titles/content site-wide.
+	include RBFW_TEMPLATE_PATH . 'single/single-rbfw.php';
+	return;
+}
+
 get_header();
 
 while ( have_posts() ) :
 	the_post();
 	$rentiva_item_id = get_the_ID();
-
-	if ( ! rentiva_use_theme_single_item_layout() && class_exists( 'RBFW_Function' ) ) {
-		// Escape hatch (Rentiva → Theme Settings → Single item layout): defer
-		// entirely to the plugin's own bundled page instead of the theme's
-		// layout below.
-		include RBFW_TEMPLATE_PATH . 'single/single-rbfw.php';
-		continue;
-	}
 	?>
 
 	<?php rentiva_template_part( 'template-parts/item/breadcrumb', '', array( 'item_id' => $rentiva_item_id ) ); ?>

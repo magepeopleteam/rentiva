@@ -303,7 +303,8 @@ function rentiva_get_default_rental_item_repeater_rows() {
 
 /**
  * Whether single `rbfw_item` pages should render Rentiva's own themed page
- * (default) or defer entirely to the plugin's bundled design.
+ * or defer to the plugin's bundled design (default), which honors whichever
+ * template (Default/Muffin) is selected per item.
  *
  * Unlike a `single_template` filter fight, RBFW resolves its own templates
  * through `RBFW_Function::get_template_path()`, which already checks
@@ -312,10 +313,14 @@ function rentiva_get_default_rental_item_repeater_rows() {
  * This setting only controls what THAT theme file does: render Rentiva's
  * own layout, or `include` the plugin's bundled template directly.
  *
- * @return bool True to use Rentiva's themed layout (default), false to defer to the plugin.
+ * Defaults to the plugin's design so the theme never silently overrides a
+ * rental item's selected template; site owners can opt into Rentiva's own
+ * layout from Theme Settings.
+ *
+ * @return bool True to use Rentiva's themed layout, false (default) to defer to the plugin.
  */
 function rentiva_use_theme_single_item_layout() {
-	return 'plugin' !== rentiva_get_setting( 'single_item_layout', 'theme' );
+	return 'theme' === rentiva_get_setting( 'single_item_layout', 'plugin' );
 }
 
 /**

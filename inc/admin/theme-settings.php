@@ -149,7 +149,7 @@ function rentiva_sanitize_settings( $input ) {
 	}
 
 	if ( isset( $input['single_item_layout'] ) ) {
-		$output['single_item_layout'] = in_array( $input['single_item_layout'], array( 'theme', 'plugin' ), true ) ? $input['single_item_layout'] : 'theme';
+		$output['single_item_layout'] = in_array( $input['single_item_layout'], array( 'theme', 'plugin' ), true ) ? $input['single_item_layout'] : 'plugin';
 	}
 
 	if ( isset( $input['trust_stats'] ) && is_array( $input['trust_stats'] ) ) {
@@ -282,9 +282,9 @@ function rentiva_render_settings_page() {
 						<tr>
 							<th scope="row"><?php esc_html_e( 'Single item layout', 'rentiva' ); ?></th>
 							<td>
-								<?php $layout = $settings['single_item_layout'] ?? 'theme'; ?>
-								<label><input type="radio" name="rentiva_settings[single_item_layout]" value="theme" <?php checked( $layout, 'theme' ); ?>> <?php esc_html_e( 'Rentiva design (recommended)', 'rentiva' ); ?></label><br>
-								<label><input type="radio" name="rentiva_settings[single_item_layout]" value="plugin" <?php checked( $layout, 'plugin' ); ?>> <?php esc_html_e( "Plugin's own bundled design", 'rentiva' ); ?></label>
+								<?php $layout = $settings['single_item_layout'] ?? 'plugin'; ?>
+								<label><input type="radio" name="rentiva_settings[single_item_layout]" value="theme" <?php checked( $layout, 'theme' ); ?>> <?php esc_html_e( 'Rentiva design', 'rentiva' ); ?></label><br>
+								<label><input type="radio" name="rentiva_settings[single_item_layout]" value="plugin" <?php checked( $layout, 'plugin' ); ?>> <?php esc_html_e( "Plugin's own bundled design (recommended)", 'rentiva' ); ?></label>
 							</td>
 						</tr>
 						<tr>

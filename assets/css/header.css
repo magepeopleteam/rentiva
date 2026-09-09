@@ -82,6 +82,17 @@ body:not(.rentiva-header-on-media) .site-header__logo-text {
 	color: var(--rentiva-foreground);
 }
 
+/* Nav menu items --------------------------------------------------------
+ * wp_nav_menu() here is rendered with container:false and items_wrap:'%3$s',
+ * so the <li> items sit directly in .site-header__nav / .site-header__mobile-menu
+ * with no wrapping <ul> to catch base.css's `ul, ol { list-style: none }`
+ * reset — left alone they show the browser's default bullet.
+ */
+
+.site-header li {
+	list-style: none;
+}
+
 /* Desktop nav --------------------------------------------------------- */
 
 .site-header__nav {
