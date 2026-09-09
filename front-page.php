@@ -2,10 +2,12 @@
 /**
  * The homepage template — always wins for "/" (see docs/architecture.md).
  *
- * Renders an admin-built Elementor page's own content when one has been set
- * as the static front page (rentiva_homepage_uses_custom_builder());
- * otherwise renders the theme's built-in, filterable section layout that
- * matches mockup/src/pages/HomePage.tsx exactly.
+ * Renders the Elementor-built "Homepage" page's own content when one is set
+ * as the static front page (rentiva_homepage_uses_custom_builder()) — which
+ * Rentiva Setup creates automatically on theme activation, since Elementor
+ * is a hard theme dependency; otherwise falls back to the theme's built-in,
+ * filterable section layout that matches mockup/src/pages/HomePage.tsx
+ * exactly.
  *
  * @package Rentiva
  */

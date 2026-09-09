@@ -272,12 +272,15 @@ function rentiva_trim_words( $text, $words = 20 ) {
 }
 
 /**
- * Whether the homepage should be handed over to an admin-built page (Elementor)
- * instead of the theme's built-in front-page.php section layout.
+ * Whether the homepage should be handed over to the static front page's own
+ * content (the Elementor-built "Homepage" page Rentiva Setup creates on
+ * activation — see rentiva_setup_homepage_page()) instead of the theme's
+ * built-in front-page.php section layout.
  *
- * Deliberately conservative: a fresh/default install always falls through to
- * the built-in homepage — nothing changes until an admin explicitly builds a
- * static front page with real content via Rentiva Setup / Elementor.
+ * The built-in layout only remains as a fallback for sites where that page
+ * doesn't exist or has no content yet (e.g. Elementor wasn't active at
+ * activation time, or an admin reset Settings → Reading back to "Your
+ * latest posts").
  *
  * @return bool
  */
@@ -296,8 +299,16 @@ function rentiva_homepage_uses_custom_builder() {
 		return false;
 	}
 
-	$has_content   = '' !== trim( (string) $front_page->post_content );
-	$has_elementor = 'builder' === get_post_meta( $front_id, '_elementor_edit_mode', true );
+	$has_content = '' !== trim( (string) $front_page->post_content );
+
+	// Require actual saved elements, not just the `builder` edit-mode flag:
+	// Elementor sets that flag the moment its editor is opened for a page,
+	// even before anything is saved (and rentiva_setup_homepage_page() only
+	// seeds a page while `_elementor_data` is still empty) — without this
+	// check, a page that's in builder mode but genuinely has no elements
+	// yet would render as a blank homepage instead of falling back safely.
+	$has_elementor = 'builder' === get_post_meta( $front_id, '_elementor_edit_mode', true )
+		&& '' !== (string) get_post_meta( $front_id, '_elementor_data', true );
 
 	return $has_content || $has_elementor;
 }
@@ -313,4 +324,171 @@ function rentiva_homepage_uses_custom_builder() {
  */
 function rentiva_template_part( $slug, $name = '', $args = array() ) {
 	get_template_part( $slug, $name, $args );
+}
+
+/**
+ * Find the "Homepage" page Rentiva Setup creates, if one already exists.
+ *
+ * Matched by title rather than a stored option, so the check stays correct
+ * even if an admin recreated the page by hand.
+ *
+ * @return int Page ID, or 0 if no such page exists yet.
+ */
+function rentiva_get_homepage_page_id() {
+	$existing = new WP_Query(
+		array(
+			'post_type'              => 'page',
+			'post_status'            => 'any',
+			'title'                  => 'Homepage',
+			'posts_per_page'         => 1,
+			'fields'                 => 'ids',
+			'no_found_rows'          => true,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+		)
+	);
+
+	return $existing->have_posts() ? (int) $existing->posts[0] : 0;
+}
+
+/**
+ * Create (if missing) a "Homepage" page — pre-built with Elementor, one
+ * section per built-in homepage widget (see inc/integrations/elementor.php)
+ * so it looks identical to the built-in layout but is fully editable in
+ * Elementor from the start — and set it as the static front page. Safe to
+ * call more than once: seeding only ever fills in `_elementor_data` while
+ * it's still empty (e.g. the page was created before Elementor was fully
+ * active, so seeding was skipped, or the editor was opened but never
+ * saved) — once an admin has actually saved real content, this never
+ * touches the page again.
+ *
+ * @return int The homepage page ID, or 0 on failure.
+ */
+function rentiva_setup_homepage_page() {
+	$page_id = rentiva_get_homepage_page_id();
+
+	if ( ! $page_id ) {
+		$page_id = wp_insert_post(
+			array(
+				'post_type'    => 'page',
+				'post_title'   => 'Homepage',
+				'post_status'  => 'publish',
+				'post_content' => '',
+			)
+		);
+
+		if ( is_wp_error( $page_id ) || ! $page_id ) {
+			return 0;
+		}
+	}
+
+	if ( rentiva_has_elementor() && '' === (string) get_post_meta( $page_id, '_elementor_data', true ) ) {
+		rentiva_seed_homepage_elementor_data( $page_id );
+	}
+
+	update_option( 'show_on_front', 'page' );
+	update_option( 'page_on_front', $page_id );
+
+	return (int) $page_id;
+}
+
+/**
+ * Pre-build a page's `_elementor_data` with one section per built-in
+ * homepage widget, in the same order as the fallback layout's
+ * `rentiva_home_sections` filter — every `rentiva-{slug}` widget type here
+ * matches a class registered in inc/integrations/elementor.php exactly.
+ *
+ * @param int $page_id
+ * @return void
+ */
+function rentiva_seed_homepage_elementor_data( $page_id ) {
+	$section_slugs = apply_filters(
+		'rentiva_home_sections',
+		array(
+			'hero',
+			'trust-strip',
+			'categories',
+			'popular-rentals',
+			'promo-banner',
+			'how-it-works',
+			'why-rentiva',
+			'testimonial',
+			'final-cta',
+		)
+	);
+
+	// Every section is seeded Full Width with no column gap: each widget
+	// renders its own full-bleed <section> (its own max-width/padding is
+	// already baked into template-parts/home/*.php's CSS, matching the
+	// approved mockup/rentiva.html design exactly), so Elementor's own
+	// defaults — a 1140px "Boxed" content width and a 10px column-gap
+	// padding around every widget — must be turned off here. Otherwise
+	// every section would render visibly narrower/inset the moment an
+	// admin opens this page, and they'd have to know to fix each
+	// section's Content Width/Gap themselves to match the design.
+	$section_settings = array(
+		'layout' => 'full_width',
+		'gap'    => 'no',
+		'margin' => array(
+			'unit'     => 'px',
+			'top'      => '0',
+			'bottom'   => '0',
+			'isLinked' => false,
+		),
+		'padding' => array(
+			'unit'     => 'px',
+			'top'      => '0',
+			'right'    => '0',
+			'bottom'   => '0',
+			'left'     => '0',
+			'isLinked' => false,
+		),
+	);
+
+	$sections = array();
+	foreach ( $section_slugs as $slug ) {
+		$sections[] = array(
+			'id'       => rentiva_generate_elementor_id(),
+			'elType'   => 'section',
+			'settings' => $section_settings,
+			'elements' => array(
+				array(
+					'id'       => rentiva_generate_elementor_id(),
+					'elType'   => 'column',
+					'settings' => array( '_column_size' => 100 ),
+					'elements' => array(
+						array(
+							'id'         => rentiva_generate_elementor_id(),
+							'elType'     => 'widget',
+							'settings'   => array(),
+							'widgetType' => 'rentiva-' . $slug,
+							'elements'   => array(),
+						),
+					),
+				),
+			),
+		);
+	}
+
+	update_post_meta( $page_id, '_elementor_data', wp_json_encode( $sections ) );
+	update_post_meta( $page_id, '_elementor_edit_mode', 'builder' );
+	update_post_meta( $page_id, '_elementor_page_settings', array() );
+
+	if ( defined( 'ELEMENTOR_VERSION' ) ) {
+		update_post_meta( $page_id, '_elementor_version', ELEMENTOR_VERSION );
+	}
+
+	if ( class_exists( '\Elementor\Plugin' ) ) {
+		\Elementor\Plugin::$instance->files_manager->clear_cache();
+	}
+}
+
+/**
+ * A short unique id in the format Elementor uses for its own section/
+ * column/widget element nodes.
+ *
+ * @return string
+ */
+function rentiva_generate_elementor_id() {
+	return substr( md5( uniqid( (string) wp_rand(), true ) ), 0, 7 );
 }

@@ -1,8 +1,10 @@
 # Theme Settings
 
-**Appearance → Rentiva Settings** (`inc/admin/theme-settings.php`) stores
-every override in a single `rentiva_settings` option (one wp_options row —
-deactivating the theme never leaves orphaned rows behind).
+**Rentiva → Theme Settings** (`inc/admin/theme-settings.php`) stores every
+override in a single `rentiva_settings` option (one wp_options row —
+deactivating the theme never leaves orphaned rows behind). Fields are
+grouped into sidebar tabs on the settings screen; each tab below maps 1:1 to
+a `data-tab="{slug}"` section in `rentiva_render_settings_page()`.
 
 | Section | Fields |
 |---|---|

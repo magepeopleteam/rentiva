@@ -39,13 +39,24 @@ elsewhere; everything calls the same function or `get_template_part()`.
 
 ## Homepage sections
 
-`front-page.php` renders a filterable, ordered list of section slugs
-(`rentiva_home_sections`), each mapping to `template-parts/home/{slug}.php`:
+Elementor is a hard theme dependency (`style.css`'s `Requires Plugins`), and
+the homepage is meant to be a real, fully editable Elementor page: on theme
+activation, `rentiva_flag_activation()` (`inc/admin/setup-wizard.php`) calls
+`rentiva_setup_homepage_page()` (`inc/helpers.php`), which creates a
+"Homepage" page pre-built out of the theme's 9 Elementor section widgets —
 hero → trust-strip → categories → popular-rentals → promo-banner →
-how-it-works → why-rentiva → testimonial → final-cta. The same 9 sections
-are also available as Elementor widgets (docs/elementor.md) for building
-other pages — the real homepage does not use Elementor itself, for
-guaranteed performance and pixel fidelity to the design.
+how-it-works → why-rentiva → testimonial → final-cta (docs/elementor.md) —
+and sets it as the static front page. `front-page.php` then renders that
+page's own content via `the_content()`.
+
+`front-page.php` only falls back to rendering
+`template-parts/home/{slug}.php` directly (the same `rentiva_home_sections`
+filterable list, hardcoded in PHP) when no such page exists yet — e.g.
+Elementor wasn't active at activation time, or an admin reset Settings →
+Reading back to "Your latest posts". `rentiva_homepage_uses_custom_builder()`
+in `inc/helpers.php` is the switch between the two, and **Rentiva → Setup**
+(and its compact Dashboard widget) offers a "Create editable Homepage page"
+button to (re)provision it by hand.
 
 ## Single-item page
 

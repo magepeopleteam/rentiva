@@ -254,7 +254,6 @@
 .rentiva-hero__scroll {
 	position: absolute;
 	bottom: 9rem;
-	left: 50%;
 	transform: translateX(-50%);
 	display: flex;
 	flex-direction: column;

@@ -1,11 +1,369 @@
 /**
- * Rentiva Settings screen (wp-admin) — small layout helpers only; everything
- * else inherits core wp-admin form-table styling.
+ * Rentiva admin screens (Rentiva → Setup, Rentiva → Theme Settings).
+ *
+ * Tokens below are copied from assets/css/variables.css (the same palette,
+ * radius and shadow scale the front end uses) rather than @import-ing that
+ * file directly, so wp-admin never inherits the front end's full reset.
+ * Scoped under .rentiva-admin so nothing here leaks onto other admin screens.
  */
 
-.rentiva-settings .title {
-	margin-top: 2rem;
+.rentiva-admin {
+	--rentiva-primary: #1B5E3B;
+	--rentiva-primary-dark: #154D2E;
+	--rentiva-primary-light: #6EE7A0;
+	--rentiva-background: #F9F8F5;
+	--rentiva-card: #FFFFFF;
+	--rentiva-foreground: #141414;
+	--rentiva-muted: #F3F0EB;
+	--rentiva-muted-foreground: #7A7670;
+	--rentiva-border: #E8E4DC;
+	--rentiva-chip-bg: #E8F5EE;
+	--rentiva-danger-bg: #FDEDEC;
+	--rentiva-danger-foreground: #B3261E;
+	--rentiva-radius: 1rem;
+	--rentiva-radius-lg: 1.25rem;
+	--rentiva-radius-pill: 999px;
+	--rentiva-shadow-card: 0 1px 2px rgba(20, 20, 20, 0.04), 0 8px 24px rgba(20, 20, 20, 0.06);
+	max-width: 1100px;
+	color: var(--rentiva-foreground);
 }
+
+.rentiva-admin h1 {
+	margin-bottom: 0.25rem;
+}
+
+.rentiva-admin-intro {
+	color: var(--rentiva-muted-foreground);
+	max-width: 60ch;
+	margin-top: 0;
+}
+
+/* Top bar: brand + Setup/Theme Settings tabs */
+
+.rentiva-admin-topbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	margin: 1rem 0 1.5rem;
+}
+
+.rentiva-admin-topbar__brand {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	font-size: var(--rentiva-text-sm, 0.875rem);
+	color: var(--rentiva-primary);
+}
+
+.rentiva-admin-topbar__nav {
+	display: flex;
+	gap: 0.25rem;
+	background: var(--rentiva-muted);
+	border-radius: var(--rentiva-radius-pill);
+	padding: 0.25rem;
+}
+
+.rentiva-admin-topbar__nav a {
+	display: inline-block;
+	padding: 0.4rem 1rem;
+	border-radius: var(--rentiva-radius-pill);
+	font-weight: 600;
+	font-size: 0.875rem;
+	text-decoration: none;
+	color: var(--rentiva-foreground);
+}
+
+.rentiva-admin-topbar__nav a.is-active {
+	background: var(--rentiva-primary);
+	color: #fff;
+}
+
+/* Step chips */
+
+.rentiva-steps {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	margin-bottom: 1.5rem;
+}
+
+.rentiva-step-chip {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.75rem 1.25rem;
+	border: 1px solid var(--rentiva-border);
+	border-radius: var(--rentiva-radius-pill);
+	background: var(--rentiva-card);
+	font-weight: 600;
+}
+
+.rentiva-step-chip.is-done {
+	border-color: var(--rentiva-primary);
+	background: var(--rentiva-chip-bg);
+}
+
+.rentiva-step-chip__check {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.5rem;
+	height: 1.5rem;
+	border-radius: 50%;
+	background: var(--rentiva-muted-foreground);
+	color: #fff;
+	font-size: 0.75rem;
+}
+
+.rentiva-step-chip.is-done .rentiva-step-chip__check {
+	background: var(--rentiva-primary);
+}
+
+/* Cards */
+
+.rentiva-card {
+	background: var(--rentiva-card);
+	border: 1px solid var(--rentiva-border);
+	border-radius: var(--rentiva-radius-lg);
+	box-shadow: var(--rentiva-shadow-card);
+	padding: 1.5rem;
+	margin-bottom: 1.5rem;
+}
+
+.rentiva-card__header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-bottom: 1.25rem;
+}
+
+.rentiva-card__header h2 {
+	margin: 0.15rem 0 0.4rem;
+}
+
+.rentiva-card__header p {
+	margin: 0;
+	color: var(--rentiva-muted-foreground);
+	max-width: 60ch;
+}
+
+.rentiva-card__eyebrow {
+	font-size: 0.75rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var(--rentiva-primary);
+}
+
+/* Badges */
+
+.rentiva-badge {
+	display: inline-flex;
+	align-items: center;
+	white-space: nowrap;
+	padding: 0.3rem 0.75rem;
+	border-radius: var(--rentiva-radius-pill);
+	font-size: 0.8125rem;
+	font-weight: 600;
+}
+
+.rentiva-badge--ready {
+	background: var(--rentiva-chip-bg);
+	color: var(--rentiva-primary-dark);
+}
+
+.rentiva-badge--attention {
+	background: var(--rentiva-danger-bg);
+	color: var(--rentiva-danger-foreground);
+}
+
+/* Plugin rows */
+
+.rentiva-plugin-row {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	padding: 0.9rem 1rem;
+	border: 1px solid var(--rentiva-border);
+	border-radius: var(--rentiva-radius);
+	margin-bottom: 0.75rem;
+	flex-wrap: wrap;
+}
+
+.rentiva-plugin-row:last-child {
+	margin-bottom: 0;
+}
+
+.rentiva-plugin-row__icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.25rem;
+	height: 2.25rem;
+	border-radius: var(--rentiva-radius);
+	background: var(--rentiva-chip-bg);
+	color: var(--rentiva-primary-dark);
+	flex: none;
+}
+
+.rentiva-plugin-row__body {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 220px;
+}
+
+.rentiva-plugin-row__body span {
+	color: var(--rentiva-muted-foreground);
+	font-size: 0.875rem;
+}
+
+/* Notices */
+
+.rentiva-notice {
+	border-radius: var(--rentiva-radius);
+	padding: 0.9rem 1.1rem;
+	margin-bottom: 1rem;
+}
+
+.rentiva-notice--success {
+	background: var(--rentiva-chip-bg);
+	color: var(--rentiva-primary-dark);
+}
+
+.rentiva-notice--success p {
+	margin: 0.25rem 0 0;
+}
+
+.button-hero {
+	padding: 0.5rem 1.5rem !important;
+	height: auto !important;
+	font-weight: 600 !important;
+}
+
+/* Next-steps tiles */
+
+.rentiva-next-steps {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 1rem;
+}
+
+.rentiva-next-step-tile {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	padding: 1.1rem;
+	border: 1px solid var(--rentiva-border);
+	border-radius: var(--rentiva-radius);
+	text-decoration: none;
+	color: var(--rentiva-foreground);
+	transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.rentiva-next-step-tile:hover,
+.rentiva-next-step-tile:focus {
+	border-color: var(--rentiva-primary);
+	box-shadow: var(--rentiva-shadow-card);
+	color: var(--rentiva-foreground);
+}
+
+.rentiva-next-step-tile .dashicons {
+	color: var(--rentiva-primary);
+}
+
+.rentiva-next-step-tile span:last-child {
+	color: var(--rentiva-muted-foreground);
+	font-size: 0.875rem;
+}
+
+/* Theme Settings: sidebar tab layout */
+
+.rentiva-settings-layout {
+	display: flex;
+	align-items: flex-start;
+	gap: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+.rentiva-settings-nav {
+	display: flex;
+	flex-direction: column;
+	flex: none;
+	width: 200px;
+	border-right: 1px solid var(--rentiva-border);
+	padding: 0.5rem;
+}
+
+.rentiva-settings-nav__item {
+	background: none;
+	border: none;
+	text-align: left;
+	padding: 0.6rem 0.75rem;
+	border-radius: var(--rentiva-radius);
+	cursor: pointer;
+	font-weight: 500;
+	color: var(--rentiva-foreground);
+}
+
+.rentiva-settings-nav__item:hover {
+	background: var(--rentiva-muted);
+}
+
+.rentiva-settings-nav__item.is-active {
+	background: var(--rentiva-chip-bg);
+	color: var(--rentiva-primary-dark);
+	font-weight: 600;
+}
+
+.rentiva-settings-content {
+	flex: 1 1 auto;
+	min-width: 0;
+	padding: 1.5rem;
+}
+
+.rentiva-settings-tab[hidden] {
+	display: none;
+}
+
+.rentiva-settings-tab h2 {
+	margin-top: 0;
+}
+
+.rentiva-settings-save {
+	display: flex;
+	align-items: center;
+	gap: 0.85rem;
+	padding-top: 1rem;
+	border-top: 1px solid var(--rentiva-border);
+}
+
+.rentiva-settings-save__hint {
+	color: var(--rentiva-muted-foreground);
+	font-size: 0.875rem;
+}
+
+@media (max-width: 782px) {
+	.rentiva-settings-layout {
+		flex-direction: column;
+	}
+
+	.rentiva-settings-nav {
+		flex-direction: row;
+		flex-wrap: wrap;
+		width: auto;
+		border-right: none;
+		border-bottom: 1px solid var(--rentiva-border);
+	}
+}
+
+/* Form fields (image picker, color swatch input) */
 
 .rentiva-image-field {
 	display: flex;
@@ -16,7 +374,7 @@
 .rentiva-image-field__preview img {
 	display: block;
 	border-radius: 4px;
-	border: 1px solid #dcdcde;
+	border: 1px solid var(--rentiva-border);
 }
 
 .rentiva-color-field {

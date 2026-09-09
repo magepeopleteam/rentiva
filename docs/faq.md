@@ -32,5 +32,5 @@ point at your own contact/onboarding process (Rentiva → Theme Settings),
 not a frontend submission form.
 
 **How do I change the accent color?**
-Appearance → Rentiva Settings → Colors — not by editing CSS. See
+Rentiva → Theme Settings → Colors — not by editing CSS. See
 docs/customization.md.

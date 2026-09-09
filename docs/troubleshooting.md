@@ -2,7 +2,7 @@
 
 **The homepage shows placeholder gradients instead of photos.**
 No image has been set for that section yet. Set the Hero/Promo/Why Rentiva
-photos under Appearance → Rentiva Settings, or add a featured image to the
+photos under Rentiva → Theme Settings, or add a featured image to the
 relevant rental items for card photos.
 
 **Rental cards show demo items I didn't create.**
@@ -13,7 +13,7 @@ empty). Publish real rental items and the fallback disappears automatically
 
 **The single-item page looks like the plugin's own default design, not
 Rentiva's.**
-Check Appearance → Rentiva Settings → Integrations → "Single item layout" —
+Check Rentiva → Theme Settings → Integrations → "Single item layout" —
 it may be set to "Plugin's own bundled design".
 
 **A rental item's "Key Specifications" section is empty.**

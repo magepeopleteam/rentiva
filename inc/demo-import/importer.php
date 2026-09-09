@@ -137,6 +137,8 @@ function rentiva_import_demo_content() {
 			update_post_meta( $post_id, 'rbfw_feature_category', $feature_categories );
 		}
 	}
+
+	update_option( 'rentiva_demo_imported_at', current_time( 'mysql' ) );
 }
 
 /**

@@ -12,22 +12,62 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Register the settings page as a top-level admin menu item.
+ * Register the top-level "Rentiva" admin menu with two submenus: Setup
+ * (inc/admin/setup-wizard.php) and Theme Settings (this file). Both share
+ * the parent slug 'rentiva-settings' — the Setup submenu deliberately keeps
+ * that exact slug too, so it lands on the parent menu's own URL instead of
+ * WordPress auto-generating a redundant duplicate first item.
  *
  * @return void
  */
 function rentiva_add_settings_page() {
 	add_menu_page(
-		__( 'Rentiva Settings', 'rentiva' ),
-		__( 'Rentiva Settings', 'rentiva' ),
+		__( 'Rentiva', 'rentiva' ),
+		__( 'Rentiva', 'rentiva' ),
 		'edit_theme_options',
 		'rentiva-settings',
-		'rentiva_render_settings_page',
+		'rentiva_render_setup_page',
 		'dashicons-admin-customizer',
 		61
 	);
+
+	$setup_hook = add_submenu_page(
+		'rentiva-settings',
+		__( 'Rentiva Setup', 'rentiva' ),
+		__( 'Setup', 'rentiva' ),
+		'edit_theme_options',
+		'rentiva-settings',
+		'rentiva_render_setup_page'
+	);
+
+	$settings_hook = add_submenu_page(
+		'rentiva-settings',
+		__( 'Rentiva Theme Settings', 'rentiva' ),
+		__( 'Theme Settings', 'rentiva' ),
+		'edit_theme_options',
+		'rentiva-theme-settings',
+		'rentiva_render_settings_page'
+	);
+
+	rentiva_admin_page_hooks( array_filter( array( $setup_hook, $settings_hook ) ) );
 }
 add_action( 'admin_menu', 'rentiva_add_settings_page' );
+
+/**
+ * Stores (or, called with no argument, retrieves) the hook suffixes of
+ * Rentiva's two admin pages, so rentiva_settings_page_assets() can target
+ * both without guessing WordPress's hook-name generation rules.
+ *
+ * @param string[]|null $hooks Hook suffixes to store, or null to read them back.
+ * @return string[]
+ */
+function rentiva_admin_page_hooks( $hooks = null ) {
+	static $stored = array();
+	if ( null !== $hooks ) {
+		$stored = $hooks;
+	}
+	return $stored;
+}
 
 /**
  * Register the single `rentiva_settings` option + its sanitize callback.
@@ -141,7 +181,7 @@ function rentiva_sanitize_settings( $input ) {
  * @return void
  */
 function rentiva_settings_page_assets( $hook ) {
-	if ( 'toplevel_page_rentiva-settings' !== $hook ) {
+	if ( ! in_array( $hook, rentiva_admin_page_hooks(), true ) ) {
 		return;
 	}
 	wp_enqueue_media();
@@ -201,156 +241,197 @@ function rentiva_render_settings_page() {
 	}
 
 	$social = isset( $settings['social_links'] ) && is_array( $settings['social_links'] ) ? $settings['social_links'] : array();
-	?>
-	<div class="wrap rentiva-settings">
-		<h1><?php esc_html_e( 'Rentiva Settings', 'rentiva' ); ?></h1>
-		<p><?php esc_html_e( 'Override the homepage copy, images, colors and integration behavior. Anything left blank falls back to the built-in design defaults.', 'rentiva' ); ?></p>
 
-		<form method="post" action="options.php">
+	$tabs = array(
+		'hero'         => __( 'Hero', 'rentiva' ),
+		'trust-strip'  => __( 'Trust Strip', 'rentiva' ),
+		'promo-banner' => __( 'Promo Banner', 'rentiva' ),
+		'why-rentiva'  => __( 'Why Rentiva', 'rentiva' ),
+		'testimonial'  => __( 'Testimonial', 'rentiva' ),
+		'footer'       => __( 'Footer & Social', 'rentiva' ),
+		'colors'       => __( 'Colors', 'rentiva' ),
+		'integrations' => __( 'Integrations', 'rentiva' ),
+	);
+	?>
+	<div class="wrap rentiva-admin">
+		<?php rentiva_render_admin_topbar( 'settings' ); ?>
+
+		<h1><?php esc_html_e( 'Theme Settings', 'rentiva' ); ?></h1>
+		<p class="rentiva-admin-intro"><?php esc_html_e( 'Override the homepage copy, images, colors and integration behavior. Anything left blank falls back to the built-in design defaults.', 'rentiva' ); ?></p>
+
+		<form method="post" action="options.php" class="rentiva-card rentiva-settings-layout">
 			<?php settings_fields( 'rentiva_settings_group' ); ?>
 
-			<h2 class="title"><?php esc_html_e( 'Hero', 'rentiva' ); ?></h2>
-			<table class="form-table" role="presentation">
-				<tr>
-					<th scope="row"><label for="rentiva_hero_eyebrow"><?php esc_html_e( 'Eyebrow', 'rentiva' ); ?></label></th>
-					<td><input type="text" id="rentiva_hero_eyebrow" class="regular-text" name="rentiva_settings[hero_eyebrow]" value="<?php echo esc_attr( $settings['hero_eyebrow'] ?? '' ); ?>" placeholder="RENT • RIDE • EXPLORE"></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="rentiva_hero_title"><?php esc_html_e( 'Headline', 'rentiva' ); ?></label></th>
-					<td><input type="text" id="rentiva_hero_title" class="regular-text" name="rentiva_settings[hero_title]" value="<?php echo esc_attr( $settings['hero_title'] ?? '' ); ?>" placeholder="Rent. Ride. Explore."></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="rentiva_hero_subtitle"><?php esc_html_e( 'Subheading', 'rentiva' ); ?></label></th>
-					<td><input type="text" id="rentiva_hero_subtitle" class="large-text" name="rentiva_settings[hero_subtitle]" value="<?php echo esc_attr( $settings['hero_subtitle'] ?? '' ); ?>"></td>
-				</tr>
-				<tr>
-					<th scope="row"><?php esc_html_e( 'Background photo', 'rentiva' ); ?></th>
-					<td><?php rentiva_render_image_field( 'hero_image_id', $settings ); ?></td>
-				</tr>
-			</table>
+			<nav class="rentiva-settings-nav">
+				<?php foreach ( $tabs as $slug => $label ) : ?>
+					<button type="button" class="rentiva-settings-nav__item" data-tab="<?php echo esc_attr( $slug ); ?>"><?php echo esc_html( $label ); ?></button>
+				<?php endforeach; ?>
+			</nav>
 
-			<h2 class="title"><?php esc_html_e( 'Trust Strip', 'rentiva' ); ?></h2>
-			<table class="form-table" role="presentation">
-				<?php foreach ( $stats as $index => $stat ) : ?>
-					<tr>
-						<th scope="row">
-							<?php
-							printf(
-								/* translators: %d: stat position, 1-4 */
-								esc_html__( 'Stat %d', 'rentiva' ),
-								absint( $index + 1 )
-							);
+			<div class="rentiva-settings-content">
+
+				<section class="rentiva-settings-tab" data-tab="hero">
+					<h2><?php esc_html_e( 'Hero', 'rentiva' ); ?></h2>
+					<table class="form-table" role="presentation">
+						<tr>
+							<th scope="row"><label for="rentiva_hero_eyebrow"><?php esc_html_e( 'Eyebrow', 'rentiva' ); ?></label></th>
+							<td><input type="text" id="rentiva_hero_eyebrow" class="regular-text" name="rentiva_settings[hero_eyebrow]" value="<?php echo esc_attr( $settings['hero_eyebrow'] ?? '' ); ?>" placeholder="RENT • RIDE • EXPLORE"></td>
+						</tr>
+						<tr>
+							<th scope="row"><label for="rentiva_hero_title"><?php esc_html_e( 'Headline', 'rentiva' ); ?></label></th>
+							<td><input type="text" id="rentiva_hero_title" class="regular-text" name="rentiva_settings[hero_title]" value="<?php echo esc_attr( $settings['hero_title'] ?? '' ); ?>" placeholder="Rent. Ride. Explore."></td>
+						</tr>
+						<tr>
+							<th scope="row"><label for="rentiva_hero_subtitle"><?php esc_html_e( 'Subheading', 'rentiva' ); ?></label></th>
+							<td><input type="text" id="rentiva_hero_subtitle" class="large-text" name="rentiva_settings[hero_subtitle]" value="<?php echo esc_attr( $settings['hero_subtitle'] ?? '' ); ?>"></td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Background photo', 'rentiva' ); ?></th>
+							<td><?php rentiva_render_image_field( 'hero_image_id', $settings ); ?></td>
+						</tr>
+					</table>
+				</section>
+
+				<section class="rentiva-settings-tab" data-tab="trust-strip">
+					<h2><?php esc_html_e( 'Trust Strip', 'rentiva' ); ?></h2>
+					<table class="form-table" role="presentation">
+						<?php foreach ( $stats as $index => $stat ) : ?>
+							<tr>
+								<th scope="row">
+									<?php
+									printf(
+										/* translators: %d: stat position, 1-4 */
+										esc_html__( 'Stat %d', 'rentiva' ),
+										absint( $index + 1 )
+									);
+									?>
+								</th>
+								<td>
+									<input type="text" class="small-text" name="rentiva_settings[trust_stats][<?php echo esc_attr( $index ); ?>][value]" value="<?php echo esc_attr( $stat['value'] ); ?>" placeholder="10,000+">
+									<input type="text" class="regular-text" name="rentiva_settings[trust_stats][<?php echo esc_attr( $index ); ?>][label]" value="<?php echo esc_attr( $stat['label'] ); ?>" placeholder="rentals completed">
+								</td>
+							</tr>
+						<?php endforeach; ?>
+					</table>
+				</section>
+
+				<section class="rentiva-settings-tab" data-tab="promo-banner">
+					<h2><?php esc_html_e( 'Promo Banner', 'rentiva' ); ?></h2>
+					<table class="form-table" role="presentation">
+						<tr>
+							<th scope="row"><label for="rentiva_promo_badge"><?php esc_html_e( 'Badge text', 'rentiva' ); ?></label></th>
+							<td><input type="text" id="rentiva_promo_badge" class="regular-text" name="rentiva_settings[promo_badge]" value="<?php echo esc_attr( $settings['promo_badge'] ?? '' ); ?>"></td>
+						</tr>
+						<tr>
+							<th scope="row"><label for="rentiva_promo_title"><?php esc_html_e( 'Headline', 'rentiva' ); ?></label></th>
+							<td><input type="text" id="rentiva_promo_title" class="regular-text" name="rentiva_settings[promo_title]" value="<?php echo esc_attr( $settings['promo_title'] ?? '' ); ?>"></td>
+						</tr>
+						<tr>
+							<th scope="row"><label for="rentiva_promo_text"><?php esc_html_e( 'Text', 'rentiva' ); ?></label></th>
+							<td><input type="text" id="rentiva_promo_text" class="large-text" name="rentiva_settings[promo_text]" value="<?php echo esc_attr( $settings['promo_text'] ?? '' ); ?>"></td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Background photo', 'rentiva' ); ?></th>
+							<td><?php rentiva_render_image_field( 'promo_image_id', $settings ); ?></td>
+						</tr>
+					</table>
+				</section>
+
+				<section class="rentiva-settings-tab" data-tab="why-rentiva">
+					<h2><?php esc_html_e( 'Why Rentiva', 'rentiva' ); ?></h2>
+					<table class="form-table" role="presentation">
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Photo', 'rentiva' ); ?></th>
+							<td><?php rentiva_render_image_field( 'why_image_id', $settings ); ?></td>
+						</tr>
+					</table>
+				</section>
+
+				<section class="rentiva-settings-tab" data-tab="testimonial">
+					<h2><?php esc_html_e( 'Testimonial', 'rentiva' ); ?></h2>
+					<table class="form-table" role="presentation">
+						<tr>
+							<th scope="row"><label for="rentiva_testimonial_quote"><?php esc_html_e( 'Quote', 'rentiva' ); ?></label></th>
+							<td><textarea id="rentiva_testimonial_quote" class="large-text" rows="3" name="rentiva_settings[testimonial_quote]"><?php echo esc_textarea( $settings['testimonial_quote'] ?? '' ); ?></textarea></td>
+						</tr>
+						<tr>
+							<th scope="row"><label for="rentiva_testimonial_name"><?php esc_html_e( 'Name', 'rentiva' ); ?></label></th>
+							<td><input type="text" id="rentiva_testimonial_name" class="regular-text" name="rentiva_settings[testimonial_name]" value="<?php echo esc_attr( $settings['testimonial_name'] ?? '' ); ?>"></td>
+						</tr>
+						<tr>
+							<th scope="row"><label for="rentiva_testimonial_role"><?php esc_html_e( 'Role', 'rentiva' ); ?></label></th>
+							<td><input type="text" id="rentiva_testimonial_role" class="regular-text" name="rentiva_settings[testimonial_role]" value="<?php echo esc_attr( $settings['testimonial_role'] ?? '' ); ?>"></td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Avatar', 'rentiva' ); ?></th>
+							<td><?php rentiva_render_image_field( 'testimonial_avatar_id', $settings ); ?></td>
+						</tr>
+					</table>
+				</section>
+
+				<section class="rentiva-settings-tab" data-tab="footer">
+					<h2><?php esc_html_e( 'Footer & Social', 'rentiva' ); ?></h2>
+					<table class="form-table" role="presentation">
+						<tr>
+							<th scope="row"><label for="rentiva_footer_tagline"><?php esc_html_e( 'Tagline', 'rentiva' ); ?></label></th>
+							<td><input type="text" id="rentiva_footer_tagline" class="regular-text" name="rentiva_settings[footer_tagline]" value="<?php echo esc_attr( $settings['footer_tagline'] ?? '' ); ?>"></td>
+						</tr>
+						<?php foreach ( array( 'twitter' => 'Twitter / X', 'instagram' => 'Instagram', 'facebook' => 'Facebook' ) as $platform => $label ) : ?>
+							<tr>
+								<th scope="row"><label for="rentiva_social_<?php echo esc_attr( $platform ); ?>"><?php echo esc_html( $label ); ?></label></th>
+								<td><input type="url" id="rentiva_social_<?php echo esc_attr( $platform ); ?>" class="regular-text" name="rentiva_settings[social_links][<?php echo esc_attr( $platform ); ?>]" value="<?php echo esc_attr( $social[ $platform ] ?? '' ); ?>" placeholder="https://"></td>
+							</tr>
+						<?php endforeach; ?>
+					</table>
+				</section>
+
+				<section class="rentiva-settings-tab" data-tab="colors">
+					<h2><?php esc_html_e( 'Colors', 'rentiva' ); ?></h2>
+					<table class="form-table" role="presentation">
+						<?php
+						$colors = array(
+							'color_primary'      => array( __( 'Primary', 'rentiva' ), '#1B5E3B' ),
+							'color_primary_dark' => array( __( 'Primary (hover)', 'rentiva' ), '#154D2E' ),
+							'color_background'   => array( __( 'Background', 'rentiva' ), '#F9F8F5' ),
+						);
+						foreach ( $colors as $key => $meta ) :
+							list( $label, $default ) = $meta;
 							?>
-						</th>
-						<td>
-							<input type="text" class="small-text" name="rentiva_settings[trust_stats][<?php echo esc_attr( $index ); ?>][value]" value="<?php echo esc_attr( $stat['value'] ); ?>" placeholder="10,000+">
-							<input type="text" class="regular-text" name="rentiva_settings[trust_stats][<?php echo esc_attr( $index ); ?>][label]" value="<?php echo esc_attr( $stat['label'] ); ?>" placeholder="rentals completed">
-						</td>
-					</tr>
-				<?php endforeach; ?>
-			</table>
+							<tr>
+								<th scope="row"><label for="rentiva_<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?></label></th>
+								<td><input type="text" id="rentiva_<?php echo esc_attr( $key ); ?>" class="rentiva-color-field" name="rentiva_settings[<?php echo esc_attr( $key ); ?>]" value="<?php echo esc_attr( $settings[ $key ] ?? $default ); ?>"></td>
+							</tr>
+						<?php endforeach; ?>
+					</table>
+				</section>
 
-			<h2 class="title"><?php esc_html_e( 'Promo Banner', 'rentiva' ); ?></h2>
-			<table class="form-table" role="presentation">
-				<tr>
-					<th scope="row"><label for="rentiva_promo_badge"><?php esc_html_e( 'Badge text', 'rentiva' ); ?></label></th>
-					<td><input type="text" id="rentiva_promo_badge" class="regular-text" name="rentiva_settings[promo_badge]" value="<?php echo esc_attr( $settings['promo_badge'] ?? '' ); ?>"></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="rentiva_promo_title"><?php esc_html_e( 'Headline', 'rentiva' ); ?></label></th>
-					<td><input type="text" id="rentiva_promo_title" class="regular-text" name="rentiva_settings[promo_title]" value="<?php echo esc_attr( $settings['promo_title'] ?? '' ); ?>"></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="rentiva_promo_text"><?php esc_html_e( 'Text', 'rentiva' ); ?></label></th>
-					<td><input type="text" id="rentiva_promo_text" class="large-text" name="rentiva_settings[promo_text]" value="<?php echo esc_attr( $settings['promo_text'] ?? '' ); ?>"></td>
-				</tr>
-				<tr>
-					<th scope="row"><?php esc_html_e( 'Background photo', 'rentiva' ); ?></th>
-					<td><?php rentiva_render_image_field( 'promo_image_id', $settings ); ?></td>
-				</tr>
-			</table>
+				<section class="rentiva-settings-tab" data-tab="integrations">
+					<h2><?php esc_html_e( 'Integrations', 'rentiva' ); ?></h2>
+					<table class="form-table" role="presentation">
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Single item layout', 'rentiva' ); ?></th>
+							<td>
+								<?php $layout = $settings['single_item_layout'] ?? 'theme'; ?>
+								<label><input type="radio" name="rentiva_settings[single_item_layout]" value="theme" <?php checked( $layout, 'theme' ); ?>> <?php esc_html_e( 'Rentiva design (recommended)', 'rentiva' ); ?></label><br>
+								<label><input type="radio" name="rentiva_settings[single_item_layout]" value="plugin" <?php checked( $layout, 'plugin' ); ?>> <?php esc_html_e( "Plugin's own bundled design", 'rentiva' ); ?></label>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><label for="rentiva_list_item_url"><?php esc_html_e( '"List Your Item" link', 'rentiva' ); ?></label></th>
+							<td><input type="url" id="rentiva_list_item_url" class="regular-text" name="rentiva_settings[list_item_url]" value="<?php echo esc_attr( $settings['list_item_url'] ?? '' ); ?>" placeholder="https://"></td>
+						</tr>
+						<tr>
+							<th scope="row"><label for="rentiva_pickup_hours"><?php esc_html_e( 'Default pickup hours', 'rentiva' ); ?></label></th>
+							<td><input type="text" id="rentiva_pickup_hours" class="regular-text" name="rentiva_settings[pickup_hours]" value="<?php echo esc_attr( $settings['pickup_hours'] ?? '' ); ?>" placeholder="Available daily 8:00 AM – 8:00 PM"></td>
+						</tr>
+					</table>
+				</section>
 
-			<h2 class="title"><?php esc_html_e( 'Why Rentiva', 'rentiva' ); ?></h2>
-			<table class="form-table" role="presentation">
-				<tr>
-					<th scope="row"><?php esc_html_e( 'Photo', 'rentiva' ); ?></th>
-					<td><?php rentiva_render_image_field( 'why_image_id', $settings ); ?></td>
-				</tr>
-			</table>
-
-			<h2 class="title"><?php esc_html_e( 'Testimonial', 'rentiva' ); ?></h2>
-			<table class="form-table" role="presentation">
-				<tr>
-					<th scope="row"><label for="rentiva_testimonial_quote"><?php esc_html_e( 'Quote', 'rentiva' ); ?></label></th>
-					<td><textarea id="rentiva_testimonial_quote" class="large-text" rows="3" name="rentiva_settings[testimonial_quote]"><?php echo esc_textarea( $settings['testimonial_quote'] ?? '' ); ?></textarea></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="rentiva_testimonial_name"><?php esc_html_e( 'Name', 'rentiva' ); ?></label></th>
-					<td><input type="text" id="rentiva_testimonial_name" class="regular-text" name="rentiva_settings[testimonial_name]" value="<?php echo esc_attr( $settings['testimonial_name'] ?? '' ); ?>"></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="rentiva_testimonial_role"><?php esc_html_e( 'Role', 'rentiva' ); ?></label></th>
-					<td><input type="text" id="rentiva_testimonial_role" class="regular-text" name="rentiva_settings[testimonial_role]" value="<?php echo esc_attr( $settings['testimonial_role'] ?? '' ); ?>"></td>
-				</tr>
-				<tr>
-					<th scope="row"><?php esc_html_e( 'Avatar', 'rentiva' ); ?></th>
-					<td><?php rentiva_render_image_field( 'testimonial_avatar_id', $settings ); ?></td>
-				</tr>
-			</table>
-
-			<h2 class="title"><?php esc_html_e( 'Footer & Social', 'rentiva' ); ?></h2>
-			<table class="form-table" role="presentation">
-				<tr>
-					<th scope="row"><label for="rentiva_footer_tagline"><?php esc_html_e( 'Tagline', 'rentiva' ); ?></label></th>
-					<td><input type="text" id="rentiva_footer_tagline" class="regular-text" name="rentiva_settings[footer_tagline]" value="<?php echo esc_attr( $settings['footer_tagline'] ?? '' ); ?>"></td>
-				</tr>
-				<?php foreach ( array( 'twitter' => 'Twitter / X', 'instagram' => 'Instagram', 'facebook' => 'Facebook' ) as $platform => $label ) : ?>
-					<tr>
-						<th scope="row"><label for="rentiva_social_<?php echo esc_attr( $platform ); ?>"><?php echo esc_html( $label ); ?></label></th>
-						<td><input type="url" id="rentiva_social_<?php echo esc_attr( $platform ); ?>" class="regular-text" name="rentiva_settings[social_links][<?php echo esc_attr( $platform ); ?>]" value="<?php echo esc_attr( $social[ $platform ] ?? '' ); ?>" placeholder="https://"></td>
-					</tr>
-				<?php endforeach; ?>
-			</table>
-
-			<h2 class="title"><?php esc_html_e( 'Colors', 'rentiva' ); ?></h2>
-			<table class="form-table" role="presentation">
-				<?php
-				$colors = array(
-					'color_primary'      => array( __( 'Primary', 'rentiva' ), '#1B5E3B' ),
-					'color_primary_dark' => array( __( 'Primary (hover)', 'rentiva' ), '#154D2E' ),
-					'color_background'   => array( __( 'Background', 'rentiva' ), '#F9F8F5' ),
-				);
-				foreach ( $colors as $key => $meta ) :
-					list( $label, $default ) = $meta;
-					?>
-					<tr>
-						<th scope="row"><label for="rentiva_<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?></label></th>
-						<td><input type="text" id="rentiva_<?php echo esc_attr( $key ); ?>" class="rentiva-color-field" name="rentiva_settings[<?php echo esc_attr( $key ); ?>]" value="<?php echo esc_attr( $settings[ $key ] ?? $default ); ?>"></td>
-					</tr>
-				<?php endforeach; ?>
-			</table>
-
-			<h2 class="title"><?php esc_html_e( 'Integrations', 'rentiva' ); ?></h2>
-			<table class="form-table" role="presentation">
-				<tr>
-					<th scope="row"><?php esc_html_e( 'Single item layout', 'rentiva' ); ?></th>
-					<td>
-						<?php $layout = $settings['single_item_layout'] ?? 'theme'; ?>
-						<label><input type="radio" name="rentiva_settings[single_item_layout]" value="theme" <?php checked( $layout, 'theme' ); ?>> <?php esc_html_e( 'Rentiva design (recommended)', 'rentiva' ); ?></label><br>
-						<label><input type="radio" name="rentiva_settings[single_item_layout]" value="plugin" <?php checked( $layout, 'plugin' ); ?>> <?php esc_html_e( "Plugin's own bundled design", 'rentiva' ); ?></label>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="rentiva_list_item_url"><?php esc_html_e( '"List Your Item" link', 'rentiva' ); ?></label></th>
-					<td><input type="url" id="rentiva_list_item_url" class="regular-text" name="rentiva_settings[list_item_url]" value="<?php echo esc_attr( $settings['list_item_url'] ?? '' ); ?>" placeholder="https://"></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="rentiva_pickup_hours"><?php esc_html_e( 'Default pickup hours', 'rentiva' ); ?></label></th>
-					<td><input type="text" id="rentiva_pickup_hours" class="regular-text" name="rentiva_settings[pickup_hours]" value="<?php echo esc_attr( $settings['pickup_hours'] ?? '' ); ?>" placeholder="Available daily 8:00 AM – 8:00 PM"></td>
-				</tr>
-			</table>
-
-			<?php submit_button(); ?>
+				<div class="rentiva-settings-save">
+					<?php submit_button( __( 'Save Settings', 'rentiva' ), 'primary', 'submit', false ); ?>
+					<span class="rentiva-settings-save__hint"><?php esc_html_e( 'Changes apply sitewide after save.', 'rentiva' ); ?></span>
+				</div>
+			</div>
 		</form>
 	</div>
 	<?php

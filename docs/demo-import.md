@@ -1,8 +1,11 @@
 # Demo importer
 
-**Where:** the welcome notice shown right after activating Rentiva, or by
-resubmitting the same form manually (Appearance → Rentiva Settings shows a
-success/error notice after running).
+**Where:** the welcome notice shown right after activating Rentiva, or
+**Rentiva → Setup**'s "Import Demo Content" button (also on its Dashboard
+widget) — either shows a success/error notice after running, and the Setup
+page additionally shows a persistent "Demo already imported on {date}"
+banner once `rentiva_demo_imported_at` (set at the end of
+`rentiva_import_demo_content()`) is populated.
 
 **What it does** (`inc/demo-import/importer.php`):
 
