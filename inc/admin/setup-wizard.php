@@ -59,7 +59,7 @@ function rentiva_welcome_notice() {
 			</p>
 		<?php endif; ?>
 		<p>
-			<a href="<?php echo esc_url( admin_url( 'themes.php?page=rentiva-settings' ) ); ?>" class="button button-primary">
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=rentiva-settings' ) ); ?>" class="button button-primary">
 				<?php esc_html_e( 'Open Rentiva Settings', 'rentiva' ); ?>
 			</a>
 			<?php if ( rentiva_has_booking_plugin() ) : ?>
