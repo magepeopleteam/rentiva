@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /** Theme version — bump on every release; also used as a cache-busting asset suffix. */
-define( 'RENTIVA_VERSION', '1.0.0' );
+define( 'RENTIVA_VERSION', '1.0.1' );
 
 /** Absolute filesystem path to the theme, no trailing slash. */
 define( 'RENTIVA_DIR', trailingslashit( get_template_directory() ) );

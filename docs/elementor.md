@@ -1,5 +1,26 @@
 # Elementor widgets
 
+**Elementor's own `frontend.css` ships `.elementor img { height: auto }`.**
+That's a compound selector (specificity 0,1,1), which beats any of this
+theme's single-class "fill the container" image rules like
+`.rentiva-category-card__image { height: 100% }` (specificity 0,1,0) —
+confirmed via Chrome DevTools' `CSS.getMatchedStylesForNode`. Wherever a
+cover-fit image sits inside `.elementor …` markup (i.e. every homepage
+section, since they're all Elementor widgets now), the image's rendered
+height silently falls back to its intrinsic aspect ratio instead of
+filling its box. Whether this is visible depends on the specific photo:
+if the resulting auto-height happens to exceed the container, an
+`overflow: hidden` ancestor clips the excess and it looks fine by pure
+coincidence (this is what made Popular Rentals look correct while
+Categories, with wider/shorter photos, visibly left a gap at the bottom).
+Every affected rule — `.rentiva-hero__image`, `.rentiva-category-card__image`,
+`.rentiva-promo-banner__image`, `.rentiva-why-rentiva__image`,
+`.rentiva-rental-card__image` (`components.css`), and
+`.rentiva-testimonial__avatar img` — now sets `height: 100% !important` for
+exactly this reason. Any new cover-fit image style added to a homepage
+section widget must do the same, or it will intermittently break depending
+on the aspect ratio of whatever photo happens to be uploaded.
+
 Elementor is a required plugin (see `style.css`'s `Requires Plugins`
 header). Rentiva registers a **"Rentiva"** widget category
 (`inc/integrations/elementor.php`) with 9 widgets — one per homepage

@@ -327,7 +327,10 @@
 
 .rentiva-rental-card__image {
 	width: 100%;
-	height: 100%;
+	/* !important: overrides Elementor's own `.elementor img { height: auto }` reset
+	   (specificity 0,1,1 beats this single class) whenever this card renders inside
+	   an Elementor widget (Popular Rentals on the homepage) — see docs/elementor.md. */
+	height: 100% !important;
 	object-fit: cover;
 	transition: transform 500ms ease;
 }

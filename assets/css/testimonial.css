@@ -45,7 +45,10 @@
 
 .rentiva-testimonial__avatar img {
 	width: 100%;
-	height: 100%;
+	/* !important: same specificity (0,1,1) as Elementor's own `.elementor img {
+	   height: auto }` reset, which loads after this file and would otherwise win
+	   the tie on source order — see docs/elementor.md. */
+	height: 100% !important;
 	object-fit: cover;
 }
 
