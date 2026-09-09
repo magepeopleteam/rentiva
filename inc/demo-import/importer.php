@@ -25,13 +25,13 @@ function rentiva_handle_import_demo() {
 	check_admin_referer( 'rentiva_import_demo' );
 
 	if ( ! rentiva_has_booking_plugin() ) {
-		wp_safe_redirect( add_query_arg( 'rentiva_demo_imported', 'missing-plugin', admin_url( 'themes.php?page=rentiva-settings' ) ) );
+		wp_safe_redirect( add_query_arg( 'rentiva_demo_imported', 'missing-plugin', admin_url( 'admin.php?page=rentiva-settings' ) ) );
 		exit;
 	}
 
 	rentiva_import_demo_content();
 
-	wp_safe_redirect( add_query_arg( 'rentiva_demo_imported', '1', admin_url( 'themes.php?page=rentiva-settings' ) ) );
+	wp_safe_redirect( add_query_arg( 'rentiva_demo_imported', '1', admin_url( 'admin.php?page=rentiva-settings' ) ) );
 	exit;
 }
 add_action( 'admin_post_rentiva_import_demo', 'rentiva_handle_import_demo' );

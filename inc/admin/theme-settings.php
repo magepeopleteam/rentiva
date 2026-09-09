@@ -12,17 +12,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Register the settings page under Appearance.
+ * Register the settings page as a top-level admin menu item.
  *
  * @return void
  */
 function rentiva_add_settings_page() {
-	add_theme_page(
+	add_menu_page(
 		__( 'Rentiva Settings', 'rentiva' ),
 		__( 'Rentiva Settings', 'rentiva' ),
 		'edit_theme_options',
 		'rentiva-settings',
-		'rentiva_render_settings_page'
+		'rentiva_render_settings_page',
+		'dashicons-admin-customizer',
+		61
 	);
 }
 add_action( 'admin_menu', 'rentiva_add_settings_page' );
@@ -139,7 +141,7 @@ function rentiva_sanitize_settings( $input ) {
  * @return void
  */
 function rentiva_settings_page_assets( $hook ) {
-	if ( 'appearance_page_rentiva-settings' !== $hook ) {
+	if ( 'toplevel_page_rentiva-settings' !== $hook ) {
 		return;
 	}
 	wp_enqueue_media();
