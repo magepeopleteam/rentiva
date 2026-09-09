@@ -73,10 +73,17 @@ function rentiva_setup() {
 	);
 
 	// Image sizes used by the rental-card/gallery system and editorial content.
+	// Aspect ratios are locked to mockup/rentiva.html's own image crops (or, where
+	// a section has no direct mockup equivalent, to the exact box ratio its CSS
+	// already declares) — object-fit: cover crops to whatever box ratio the CSS
+	// enforces regardless of the source crop, so a mismatched source orientation
+	// (e.g. a landscape crop forced into a portrait card) shows up as the image
+	// looking oddly zoomed/cut, not just "the wrong size".
 	add_image_size( 'rentiva-card', 600, 450, true );          // Popular Rentals / Similar Rentals card image.
-	add_image_size( 'rentiva-category', 600, 400, true );      // Explore Categories tile.
+	add_image_size( 'rentiva-category', 600, 700, true );      // Explore Categories tile (matches mockup's 6:7 crop).
 	add_image_size( 'rentiva-hero', 1920, 1080, true );        // Homepage hero full-bleed photo.
 	add_image_size( 'rentiva-promo', 1920, 900, true );        // Promo banner full-bleed photo.
+	add_image_size( 'rentiva-why', 800, 1000, true );          // Why Rentiva media (matches its CSS's own 4:5 aspect-ratio).
 	add_image_size( 'rentiva-gallery-main', 1200, 750, true ); // Single-item main gallery image (16:10).
 	add_image_size( 'rentiva-gallery-thumb', 300, 225, true ); // Single-item gallery thumbnail strip.
 	add_image_size( 'rentiva-square', 400, 400, true );        // Reviewer/testimonial avatars.

@@ -415,7 +415,6 @@
 	align-items: center;
 	justify-content: center;
 	gap: 0.5rem;
-	height: 100%;
 	background: var(--rentiva-primary);
 	color: #FFFFFF;
 	font-family: var(--rentiva-font-sans);

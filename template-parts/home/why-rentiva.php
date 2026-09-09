@@ -34,7 +34,7 @@ $rentiva_features = array(
 	<div class="rentiva-container rentiva-why-rentiva__grid">
 		<div class="rentiva-why-rentiva__media">
 			<?php if ( $rentiva_image_id ) : ?>
-				<?php echo wp_get_attachment_image( $rentiva_image_id, 'rentiva-gallery-main', false, array( 'class' => 'rentiva-why-rentiva__image', 'alt' => '' ) ); ?>
+				<?php echo wp_get_attachment_image( $rentiva_image_id, 'rentiva-why', false, array( 'class' => 'rentiva-why-rentiva__image', 'alt' => '' ) ); ?>
 			<?php else : ?>
 				<div class="rentiva-why-rentiva__image rentiva-why-rentiva__image--placeholder" aria-hidden="true"></div>
 			<?php endif; ?>

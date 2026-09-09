@@ -21,10 +21,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Base class for every Rentiva homepage-section widget: no attributes, no
- * settings controls — the widget's only job is to render the same
- * template-part every classic PHP template uses, so there is exactly one
- * source of truth for each section's markup.
+ * Base class for every Rentiva homepage-section widget: content (copy,
+ * images) is fixed to match the mockup and is edited via Rentiva → Theme
+ * Settings, not per-widget — but each section's text elements DO get a
+ * Style-tab "Text Color" + "Typography" control per element, wired through
+ * Elementor's own `selectors` engine (see add_text_style_section() below),
+ * so an admin can restyle a section's look directly in the Elementor panel
+ * without editing CSS.
  */
 abstract class Rentiva_Elementor_Section_Widget extends \Elementor\Widget_Base {
 
@@ -78,12 +81,53 @@ abstract class Rentiva_Elementor_Section_Widget extends \Elementor\Widget_Base {
 	}
 
 	/**
-	 * No controls — content is fixed to match the mockup design exactly;
-	 * copy is editable via Rentiva → Theme Settings, not per-widget.
+	 * Add one Style-tab section with a Text Color control and a Typography
+	 * group control (font family/size/weight/line-height/letter-spacing),
+	 * both scoped to $selector via Elementor's `selectors` mechanism —
+	 * Elementor generates the resulting CSS itself, scoped to this exact
+	 * widget instance via `{{WRAPPER}}`, and writes it into the page's own
+	 * generated stylesheet. Nothing in render() or the template-parts needs
+	 * to change for these controls to take effect, and since `{{WRAPPER}}`
+	 * always resolves to this specific widget's own unique element class,
+	 * this is safe to use even for selectors built on classes shared across
+	 * multiple sections (`.rentiva-h2`, `.rentiva-lead`, etc.) — the override
+	 * never leaks into other widgets or the built-in PHP fallback layout.
 	 *
+	 * @param string $key      Unique control-id prefix (e.g. 'heading').
+	 * @param string $label    Style section label shown in the Elementor panel.
+	 * @param string $selector CSS selector, relative to the widget root, to style.
 	 * @return void
 	 */
-	protected function register_controls() {}
+	protected function add_text_style_section( $key, $label, $selector ) {
+		$this->start_controls_section(
+			'style_section_' . $key,
+			array(
+				'label' => $label,
+				'tab'   => \Elementor\Controls_Manager::TAB_STYLE,
+			)
+		);
+
+		$this->add_control(
+			$key . '_color',
+			array(
+				'label'     => __( 'Text Color', 'rentiva' ),
+				'type'      => \Elementor\Controls_Manager::COLOR,
+				'selectors' => array(
+					'{{WRAPPER}} ' . $selector => 'color: {{VALUE}};',
+				),
+			)
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			array(
+				'name'     => $key . '_typography',
+				'selector' => '{{WRAPPER}} ' . $selector,
+			)
+		);
+
+		$this->end_controls_section();
+	}
 
 	/**
 	 * @return void
@@ -98,6 +142,13 @@ class Rentiva_Elementor_Widget_Hero extends Rentiva_Elementor_Section_Widget {
 	public function get_title() { return __( 'Rentiva: Hero', 'rentiva' ); }
 	public function get_icon() { return 'eicon-slider-full-screen'; }
 	protected function get_section_slug() { return 'hero'; }
+
+	protected function register_controls() {
+		$this->add_text_style_section( 'eyebrow', __( 'Eyebrow', 'rentiva' ), '.rentiva-hero__eyebrow' );
+		$this->add_text_style_section( 'heading', __( 'Headline', 'rentiva' ), '.rentiva-hero-title' );
+		$this->add_text_style_section( 'accent', __( 'Headline Accent Word', 'rentiva' ), '.rentiva-hero-title__accent' );
+		$this->add_text_style_section( 'subheading', __( 'Subheading', 'rentiva' ), '.rentiva-hero__subtitle' );
+	}
 }
 
 class Rentiva_Elementor_Widget_Trust_Strip extends Rentiva_Elementor_Section_Widget {
@@ -107,6 +158,11 @@ class Rentiva_Elementor_Widget_Trust_Strip extends Rentiva_Elementor_Section_Wid
 	protected function get_section_slug() { return 'trust-strip'; }
 	// No dedicated trust-strip.css — its styles live bundled in home.css.
 	protected function get_style_handle() { return 'rentiva-home'; }
+
+	protected function register_controls() {
+		$this->add_text_style_section( 'value', __( 'Stat Value', 'rentiva' ), '.rentiva-trust-strip__value' );
+		$this->add_text_style_section( 'label', __( 'Stat Label', 'rentiva' ), '.rentiva-trust-strip__label' );
+	}
 }
 
 class Rentiva_Elementor_Widget_Categories extends Rentiva_Elementor_Section_Widget {
@@ -114,6 +170,11 @@ class Rentiva_Elementor_Widget_Categories extends Rentiva_Elementor_Section_Widg
 	public function get_title() { return __( 'Rentiva: Categories', 'rentiva' ); }
 	public function get_icon() { return 'eicon-gallery-grid'; }
 	protected function get_section_slug() { return 'categories'; }
+
+	protected function register_controls() {
+		$this->add_text_style_section( 'heading', __( 'Headline', 'rentiva' ), '.rentiva-h2' );
+		$this->add_text_style_section( 'lead', __( 'Subheading', 'rentiva' ), '.rentiva-lead' );
+	}
 }
 
 class Rentiva_Elementor_Widget_Popular_Rentals extends Rentiva_Elementor_Section_Widget {
@@ -121,6 +182,11 @@ class Rentiva_Elementor_Widget_Popular_Rentals extends Rentiva_Elementor_Section
 	public function get_title() { return __( 'Rentiva: Popular Rentals', 'rentiva' ); }
 	public function get_icon() { return 'eicon-product-related'; }
 	protected function get_section_slug() { return 'popular-rentals'; }
+
+	protected function register_controls() {
+		$this->add_text_style_section( 'heading', __( 'Headline', 'rentiva' ), '.rentiva-h2' );
+		$this->add_text_style_section( 'lead', __( 'Subheading', 'rentiva' ), '.rentiva-lead' );
+	}
 }
 
 class Rentiva_Elementor_Widget_Promo_Banner extends Rentiva_Elementor_Section_Widget {
@@ -128,6 +194,12 @@ class Rentiva_Elementor_Widget_Promo_Banner extends Rentiva_Elementor_Section_Wi
 	public function get_title() { return __( 'Rentiva: Promo Banner', 'rentiva' ); }
 	public function get_icon() { return 'eicon-banner'; }
 	protected function get_section_slug() { return 'promo-banner'; }
+
+	protected function register_controls() {
+		$this->add_text_style_section( 'badge', __( 'Badge', 'rentiva' ), '.rentiva-promo-banner__badge' );
+		$this->add_text_style_section( 'heading', __( 'Headline', 'rentiva' ), '.rentiva-promo-banner__title' );
+		$this->add_text_style_section( 'text', __( 'Body Text', 'rentiva' ), '.rentiva-promo-banner__text' );
+	}
 }
 
 class Rentiva_Elementor_Widget_How_It_Works extends Rentiva_Elementor_Section_Widget {
@@ -135,6 +207,13 @@ class Rentiva_Elementor_Widget_How_It_Works extends Rentiva_Elementor_Section_Wi
 	public function get_title() { return __( 'Rentiva: How It Works', 'rentiva' ); }
 	public function get_icon() { return 'eicon-number-field'; }
 	protected function get_section_slug() { return 'how-it-works'; }
+
+	protected function register_controls() {
+		$this->add_text_style_section( 'heading', __( 'Headline', 'rentiva' ), '.rentiva-h2' );
+		$this->add_text_style_section( 'number', __( 'Step Number', 'rentiva' ), '.rentiva-how-it-works__number' );
+		$this->add_text_style_section( 'step_title', __( 'Step Title', 'rentiva' ), '.rentiva-h4' );
+		$this->add_text_style_section( 'step_body', __( 'Step Description', 'rentiva' ), '.rentiva-body' );
+	}
 }
 
 class Rentiva_Elementor_Widget_Why_Rentiva extends Rentiva_Elementor_Section_Widget {
@@ -142,6 +221,13 @@ class Rentiva_Elementor_Widget_Why_Rentiva extends Rentiva_Elementor_Section_Wid
 	public function get_title() { return __( 'Rentiva: Why Rentiva', 'rentiva' ); }
 	public function get_icon() { return 'eicon-check-circle-o'; }
 	protected function get_section_slug() { return 'why-rentiva'; }
+
+	protected function register_controls() {
+		$this->add_text_style_section( 'eyebrow', __( 'Eyebrow', 'rentiva' ), '.rentiva-eyebrow' );
+		$this->add_text_style_section( 'heading', __( 'Headline', 'rentiva' ), '.rentiva-why-rentiva__title' );
+		$this->add_text_style_section( 'feature_title', __( 'Feature Title', 'rentiva' ), '.rentiva-why-rentiva__feature-title' );
+		$this->add_text_style_section( 'feature_desc', __( 'Feature Description', 'rentiva' ), '.rentiva-why-rentiva__feature-desc' );
+	}
 }
 
 class Rentiva_Elementor_Widget_Testimonial extends Rentiva_Elementor_Section_Widget {
@@ -149,6 +235,12 @@ class Rentiva_Elementor_Widget_Testimonial extends Rentiva_Elementor_Section_Wid
 	public function get_title() { return __( 'Rentiva: Testimonial', 'rentiva' ); }
 	public function get_icon() { return 'eicon-testimonial'; }
 	protected function get_section_slug() { return 'testimonial'; }
+
+	protected function register_controls() {
+		$this->add_text_style_section( 'quote', __( 'Quote', 'rentiva' ), '.rentiva-testimonial__quote' );
+		$this->add_text_style_section( 'name', __( 'Author Name', 'rentiva' ), '.rentiva-testimonial__name' );
+		$this->add_text_style_section( 'role', __( 'Author Role', 'rentiva' ), '.rentiva-testimonial__role' );
+	}
 }
 
 class Rentiva_Elementor_Widget_Final_Cta extends Rentiva_Elementor_Section_Widget {
@@ -156,4 +248,9 @@ class Rentiva_Elementor_Widget_Final_Cta extends Rentiva_Elementor_Section_Widge
 	public function get_title() { return __( 'Rentiva: Final CTA', 'rentiva' ); }
 	public function get_icon() { return 'eicon-call-to-action'; }
 	protected function get_section_slug() { return 'final-cta'; }
+
+	protected function register_controls() {
+		$this->add_text_style_section( 'heading', __( 'Headline', 'rentiva' ), '.rentiva-h1' );
+		$this->add_text_style_section( 'lead', __( 'Subheading', 'rentiva' ), '.rentiva-lead' );
+	}
 }

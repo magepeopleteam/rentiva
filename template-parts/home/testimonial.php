@@ -29,8 +29,8 @@ $rentiva_avatar = (int) rentiva_get_setting( 'testimonial_avatar_id', 0 );
 				<?php endif; ?>
 			</span>
 			<span class="rentiva-testimonial__meta">
-				<strong><?php echo esc_html( $rentiva_name ); ?></strong>
-				<span><?php echo esc_html( $rentiva_role ); ?></span>
+				<strong class="rentiva-testimonial__name"><?php echo esc_html( $rentiva_name ); ?></strong>
+				<span class="rentiva-testimonial__role"><?php echo esc_html( $rentiva_role ); ?></span>
 			</span>
 		</div>
 	</div>

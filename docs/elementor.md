@@ -38,12 +38,43 @@ that's a separate file):
 - Rentiva: Testimonial
 - Rentiva: Final CTA
 
-Each widget has **no settings controls** by design: it renders the exact
+Each widget has **no Content-tab controls** by design: it renders the exact
 same `template-parts/home/{slug}.php` file the real homepage uses (via
 `Rentiva_Elementor_Section_Widget::render()`), so a page built with these
-widgets is pixel-identical to the built-in homepage. Content is edited the
-same way the homepage's is — through Rentiva → Theme Settings
+widgets is pixel-identical to the built-in homepage. Copy/images are edited
+the same way the homepage's is — through Rentiva → Theme Settings
 (docs/theme-settings.md), not per-widget fields.
+
+**Every widget DOES have Style-tab controls** — a Text Color + Typography
+(font family/size/weight/line-height/letter-spacing) pair per meaningful
+text element in that section (e.g. Hero gets Eyebrow/Headline/Headline
+Accent Word/Subheading; Trust Strip gets Stat Value/Stat Label). These are
+registered via `Rentiva_Elementor_Section_Widget::add_text_style_section()`
+(`inc/integrations/elementor-widgets.php`), which wires a `Controls_Manager::COLOR`
+control and a `Group_Control_Typography` group to a CSS selector through
+Elementor's own `selectors` mechanism (`'{{WRAPPER}} .some-class' => 'color:
+{{VALUE}};'`) — Elementor generates and scopes the resulting CSS itself
+(via `{{WRAPPER}}`, unique per widget instance), so nothing in `render()` or
+the template-parts needs to change, and it's safe even for selectors built
+on classes shared across multiple sections (`.rentiva-h2`, `.rentiva-lead`,
+etc.) since the override never leaks outside that one widget instance. To
+add style controls for a 10th widget (or a new element on an existing one),
+call `add_text_style_section( $key, $label, $selector )` from that widget's
+`register_controls()` with the element's real CSS class from its
+template-part — `$key` becomes the control-id prefix (`{$key}_color`,
+`{$key}_typography_typography`, etc.), so keep it unique within that widget.
+
+**These controls only appear inside wp-admin.** Elementor 4.x's
+`\Elementor\Core\Frontend\Performance::should_optimize_controls()` segregates
+"style" controls (anything with `selectors`, e.g. Color/Typography) into a
+separate internal bucket whenever `is_admin()` is false — `get_controls()`
+then simply won't return them. This is intentional front-end-performance
+behavior, not a bug: the real Elementor editor always runs inside
+`wp-admin`, so it always sees the full set. Don't be alarmed if a CLI/WP-CLI
+script that boots WordPress outside `wp-admin` (e.g. via `wp-load.php`
+directly) shows these controls missing from `get_controls()` — verify by
+forcing admin context instead (`define( 'WP_ADMIN', true )` before loading
+WordPress), not by trusting a bare front-end-context script.
 
 **Every widget declares its own CSS via `get_style_depends()`.**
 `inc/enqueue.php` only auto-loads every section's CSS together (as
