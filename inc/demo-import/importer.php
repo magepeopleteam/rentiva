@@ -63,8 +63,16 @@ add_action( 'admin_notices', 'rentiva_demo_import_notice' );
  */
 function rentiva_import_demo_content() {
 	$category_ids = array();
-	foreach ( rentiva_demo_categories() as $category_name ) {
-		$category_ids[ $category_name ] = rentiva_get_or_create_term( $category_name, 'rbfw_item_caregory' );
+	foreach ( rentiva_demo_categories() as $category_name => $category_photo ) {
+		$term_id = rentiva_get_or_create_term( $category_name, 'rbfw_item_caregory' );
+		$category_ids[ $category_name ] = $term_id;
+
+		if ( $term_id && ! get_term_meta( $term_id, 'rentiva_category_image_id', true ) ) {
+			$image_id = rentiva_sideload_demo_photo( $category_photo, 600, 700, $category_name . ' category' );
+			if ( $image_id ) {
+				update_term_meta( $term_id, 'rentiva_category_image_id', $image_id );
+			}
+		}
 	}
 
 	$location_ids = array();
@@ -85,60 +93,260 @@ function rentiva_import_demo_content() {
 				'update_post_term_cache' => false,
 			)
 		);
-		if ( $existing->have_posts() ) {
-			continue;
-		}
 
-		$post_id = wp_insert_post(
-			array(
-				'post_type'    => 'rbfw_item',
-				'post_title'   => $item['title'],
-				'post_excerpt' => $item['excerpt'],
-				'post_content' => $item['content'],
-				'post_status'  => 'publish',
-			)
-		);
+		$is_new  = ! $existing->have_posts();
+		$post_id = $is_new ? 0 : (int) $existing->posts[0];
 
-		if ( is_wp_error( $post_id ) || ! $post_id ) {
-			continue;
-		}
-
-		if ( ! empty( $category_ids[ $item['category'] ] ) ) {
-			wp_set_object_terms( $post_id, (int) $category_ids[ $item['category'] ], 'rbfw_item_caregory' );
-		}
-		if ( ! empty( $location_ids[ $item['location'] ] ) ) {
-			wp_set_object_terms( $post_id, (int) $location_ids[ $item['location'] ], 'rbfw_item_location' );
-		}
-
-		update_post_meta( $post_id, 'rbfw_item_type', 'bike_car_md' );
-		update_post_meta( $post_id, 'rbfw_enable_daily_rate', 'yes' );
-		update_post_meta( $post_id, 'rbfw_daily_rate', (float) $item['daily_rate'] );
-		update_post_meta( $post_id, 'rbfw_enable_hourly_rate', 'no' );
-
-		if ( ! empty( $item['weekly_rate'] ) ) {
-			update_post_meta( $post_id, 'rbfw_enable_weekly_rate', 'yes' );
-			update_post_meta( $post_id, 'rbfw_weekly_rate', (float) $item['weekly_rate'] );
-		}
-
-		$feature_categories = array();
-		if ( ! empty( $item['specs'] ) ) {
-			$feature_categories[] = array(
-				'cat_title'    => __( 'Specifications', 'rentiva' ),
-				'cat_features' => rentiva_demo_features_from_titles( $item['specs'] ),
+		if ( $is_new ) {
+			$post_id = wp_insert_post(
+				array(
+					'post_type'    => 'rbfw_item',
+					'post_title'   => $item['title'],
+					'post_excerpt' => $item['excerpt'],
+					'post_content' => $item['content'],
+					'post_status'  => 'publish',
+				)
 			);
+
+			if ( is_wp_error( $post_id ) || ! $post_id ) {
+				continue;
+			}
+
+			if ( ! empty( $category_ids[ $item['category'] ] ) ) {
+				wp_set_object_terms( $post_id, (int) $category_ids[ $item['category'] ], 'rbfw_item_caregory' );
+			}
+			if ( ! empty( $location_ids[ $item['location'] ] ) ) {
+				wp_set_object_terms( $post_id, (int) $location_ids[ $item['location'] ], 'rbfw_item_location' );
+			}
+
+			update_post_meta( $post_id, 'rbfw_item_type', 'bike_car_md' );
+			update_post_meta( $post_id, 'rbfw_enable_daily_rate', 'yes' );
+			update_post_meta( $post_id, 'rbfw_daily_rate', (float) $item['daily_rate'] );
+			update_post_meta( $post_id, 'rbfw_enable_hourly_rate', 'no' );
+
+			if ( ! empty( $item['weekly_rate'] ) ) {
+				update_post_meta( $post_id, 'rbfw_enable_weekly_rate', 'yes' );
+				update_post_meta( $post_id, 'rbfw_weekly_rate', (float) $item['weekly_rate'] );
+			}
+
+			$feature_categories = array();
+			if ( ! empty( $item['specs'] ) ) {
+				$feature_categories[] = array(
+					'cat_title'    => __( 'Specifications', 'rentiva' ),
+					'cat_features' => rentiva_demo_features_from_titles( $item['specs'] ),
+				);
+			}
+			if ( ! empty( $item['included'] ) ) {
+				$feature_categories[] = array(
+					'cat_title'    => __( "What's Included", 'rentiva' ),
+					'cat_features' => rentiva_demo_features_from_titles( $item['included'] ),
+				);
+			}
+			if ( ! empty( $feature_categories ) ) {
+				update_post_meta( $post_id, 'rbfw_feature_category', $feature_categories );
+			}
 		}
-		if ( ! empty( $item['included'] ) ) {
-			$feature_categories[] = array(
-				'cat_title'    => __( "What's Included", 'rentiva' ),
-				'cat_features' => rentiva_demo_features_from_titles( $item['included'] ),
-			);
+
+		// Backfilled for both a brand-new item and one that already existed
+		// (e.g. created by an earlier version of this importer) — without
+		// this, the plugin's own stock logic treats a never-set quantity as
+		// zero, so the item shows "out of stock" regardless of when it was
+		// created. '10' matches the plugin's own bundled demo importer
+		// (inc/rbfw_import_demo.php) exactly.
+		if ( '' === get_post_meta( $post_id, 'rbfw_item_stock_quantity', true ) ) {
+			update_post_meta( $post_id, 'rbfw_item_stock_quantity', '10' );
 		}
-		if ( ! empty( $feature_categories ) ) {
-			update_post_meta( $post_id, 'rbfw_feature_category', $feature_categories );
+
+		if ( ! empty( $item['photo'] ) && ! get_post_thumbnail_id( $post_id ) ) {
+			$image_id = rentiva_sideload_demo_photo( $item['photo'], 600, 450, $item['title'] );
+			if ( $image_id ) {
+				set_post_thumbnail( $post_id, $image_id );
+			}
 		}
 	}
 
+	rentiva_import_demo_menus();
+	rentiva_import_demo_homepage_images();
+
 	update_option( 'rentiva_demo_imported_at', current_time( 'mysql' ) );
+}
+
+/**
+ * Sideload the Hero/Promo Banner/Why Rentiva/Testimonial photos
+ * (rentiva_demo_homepage_images(), sample-data.php) into their matching
+ * `rentiva_settings` key — but only a key that's still genuinely unset, so
+ * a site that's already picked its own image (via Theme Settings before,
+ * or directly in the Elementor widget now) is never overwritten. Each
+ * fetched at that field's own registered crop size (inc/setup.php) so it
+ * needs no further cropping.
+ *
+ * @return void
+ */
+function rentiva_import_demo_homepage_images() {
+	$sizes = array(
+		'hero_image_id'         => array( 1920, 1080 ),
+		'promo_image_id'        => array( 1920, 900 ),
+		'why_image_id'          => array( 800, 1000 ),
+		'testimonial_avatar_id' => array( 400, 400 ),
+	);
+
+	$settings = get_option( 'rentiva_settings', array() );
+	if ( ! is_array( $settings ) ) {
+		$settings = array();
+	}
+
+	$changed = false;
+	foreach ( rentiva_demo_homepage_images() as $key => $photo_id ) {
+		if ( ! empty( $settings[ $key ] ) ) {
+			continue;
+		}
+
+		list( $width, $height ) = $sizes[ $key ];
+		$image_id = rentiva_sideload_demo_photo( $photo_id, $width, $height, $key );
+		if ( $image_id ) {
+			$settings[ $key ] = $image_id;
+			$changed = true;
+		}
+	}
+
+	if ( $changed ) {
+		update_option( 'rentiva_settings', $settings );
+	}
+}
+
+/**
+ * Sideload one Unsplash demo photo into the media library. Network calls
+ * can legitimately fail (no outbound internet, Unsplash unreachable, a
+ * photo id no longer resolving) — every caller treats a `0` return as
+ * "skip this image, keep going", never as a reason to abort the rest of
+ * the import.
+ *
+ * Uses download_url() + media_handle_sideload() rather than
+ * media_sideload_image(): Unsplash's image URLs carry no file extension
+ * (it's an image ID plus query-string crop params), and
+ * media_sideload_image() derives its filename — and therefore its
+ * filetype check — straight from the URL, so it rejects the URL outright
+ * with "Invalid image URL" before ever downloading it. Fetching the file
+ * first and handing sideload an explicit `.jpg` filename (matching
+ * `fm=jpg`, which forces Unsplash to actually serve JPEG) sidesteps that.
+ *
+ * @param string $photo_id Unsplash photo id, e.g. 'photo-xxxxxxxx'.
+ * @param int    $width
+ * @param int    $height
+ * @param string $description Used only to build a descriptive attachment title.
+ * @return int Attachment id, or 0 on failure.
+ */
+function rentiva_sideload_demo_photo( $photo_id, $width, $height, $description = '' ) {
+	if ( ! function_exists( 'media_handle_sideload' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/media.php';
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		require_once ABSPATH . 'wp-admin/includes/image.php';
+	}
+
+	$url = sprintf(
+		'https://images.unsplash.com/%s?w=%d&h=%d&fit=crop&auto=format&fm=jpg&q=80',
+		rawurlencode( $photo_id ),
+		(int) $width,
+		(int) $height
+	);
+
+	$tmp_file = download_url( $url );
+	if ( is_wp_error( $tmp_file ) ) {
+		return 0;
+	}
+
+	$file_array = array(
+		'name'     => sanitize_file_name( $photo_id ) . '.jpg',
+		'tmp_name' => $tmp_file,
+	);
+
+	$attachment_id = media_handle_sideload( $file_array, 0, $description );
+
+	if ( is_wp_error( $attachment_id ) ) {
+		if ( file_exists( $tmp_file ) ) {
+			wp_delete_file( $tmp_file );
+		}
+		return 0;
+	}
+
+	return (int) $attachment_id;
+}
+
+/**
+ * Create the 4 real, editable nav menus (Primary Navigation, Footer —
+ * Explore/Company/Support) from the theme's own default nav items
+ * (rentiva_default_primary_nav_items() / rentiva_default_footer_nav_items()
+ * in inc/template-functions.php — the exact same items the header/footer
+ * already show when no menu is assigned), and assign each to its theme
+ * location. Without this, Appearance → Menus shows nothing at all even
+ * though the site looks fully populated — there's nothing there to click
+ * and see how to change, since that content was only ever PHP fallback
+ * markup, never real menu items. Called after categories/items above so
+ * "Footer — Explore" picks up the real imported categories.
+ *
+ * Safe to run more than once: an existing menu with the same name is
+ * reused (never duplicated), items already present (matched by title)
+ * are skipped, and a location that already has ANY menu assigned — even
+ * one the admin picked themselves — is left alone rather than reassigned.
+ *
+ * @return void
+ */
+function rentiva_import_demo_menus() {
+	$menus = array(
+		'primary'        => array(
+			'name'  => __( 'Primary Navigation', 'rentiva' ),
+			'items' => rentiva_default_primary_nav_items(),
+		),
+		'footer-explore' => array(
+			'name'  => __( 'Footer — Explore', 'rentiva' ),
+			'items' => rentiva_default_footer_nav_items( 'footer-explore' ),
+		),
+		'footer-company' => array(
+			'name'  => __( 'Footer — Company', 'rentiva' ),
+			'items' => rentiva_default_footer_nav_items( 'footer-company' ),
+		),
+		'footer-support' => array(
+			'name'  => __( 'Footer — Support', 'rentiva' ),
+			'items' => rentiva_default_footer_nav_items( 'footer-support' ),
+		),
+	);
+
+	$locations = get_nav_menu_locations();
+
+	foreach ( $menus as $location => $menu_data ) {
+		$menu    = wp_get_nav_menu_object( $menu_data['name'] );
+		$menu_id = $menu ? $menu->term_id : wp_create_nav_menu( $menu_data['name'] );
+
+		if ( is_wp_error( $menu_id ) || ! $menu_id ) {
+			continue;
+		}
+
+		$existing_items  = wp_get_nav_menu_items( $menu_id );
+		$existing_titles = $existing_items ? wp_list_pluck( $existing_items, 'title' ) : array();
+
+		$position = 1;
+		foreach ( $menu_data['items'] as $item ) {
+			if ( ! in_array( $item['label'], $existing_titles, true ) ) {
+				wp_update_nav_menu_item(
+					$menu_id,
+					0,
+					array(
+						'menu-item-title'    => $item['label'],
+						'menu-item-url'      => $item['url'],
+						'menu-item-status'   => 'publish',
+						'menu-item-position' => $position,
+					)
+				);
+			}
+			++$position;
+		}
+
+		if ( empty( $locations[ $location ] ) ) {
+			$locations[ $location ] = $menu_id;
+		}
+	}
+
+	set_theme_mod( 'nav_menu_locations', $locations );
 }
 
 /**

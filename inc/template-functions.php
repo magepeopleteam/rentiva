@@ -475,31 +475,22 @@ add_action( 'comment_post', 'rentiva_save_comment_rating' );
 function rentiva_default_footer_nav_items( $location ) {
 	switch ( $location ) {
 		case 'footer-explore':
-			$categories = rentiva_has_booking_plugin() ? get_terms(
-				array(
-					'taxonomy'   => 'rbfw_item_caregory',
-					'number'     => 4,
-					'hide_empty' => false,
-				)
-			) : array();
-
-			if ( ! is_wp_error( $categories ) && ! empty( $categories ) ) {
-				return array_map(
-					static function ( $term ) {
-						return array(
-							'label' => $term->name,
-							'url'   => get_term_link( $term ),
-						);
-					},
-					$categories
-				);
-			}
-
-			return array(
-				array( 'label' => __( 'Bikes', 'rentiva' ), 'url' => rentiva_get_rentals_page_url() ),
-				array( 'label' => __( 'Scooters', 'rentiva' ), 'url' => rentiva_get_rentals_page_url() ),
-				array( 'label' => __( 'Camping', 'rentiva' ), 'url' => rentiva_get_rentals_page_url() ),
-				array( 'label' => __( 'Sports Equipment', 'rentiva' ), 'url' => rentiva_get_rentals_page_url() ),
+			// Same featured categories the homepage's "Explore What You
+			// Need" section shows (rentiva_get_homepage_categories(),
+			// which always returns at least its 6 hardcoded featured
+			// names/URLs even with no booking plugin or terms at all) —
+			// not an arbitrary get_terms() call, which has no defined
+			// order and can just as easily surface old/unrelated
+			// categories a site happens to have instead of the theme's
+			// intended featured set. Only the first 4 fit a footer column.
+			return array_map(
+				static function ( $card ) {
+					return array(
+						'label' => $card['name'],
+						'url'   => $card['url'],
+					);
+				},
+				array_slice( rentiva_get_homepage_categories(), 0, 4 )
 			);
 
 		case 'footer-company':

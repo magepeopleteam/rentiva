@@ -68,11 +68,11 @@ add_action( 'admin_notices', 'rentiva_welcome_notice' );
 
 /**
  * Hide Booking and Rental Manager for WooCommerce's own
- * `RBFW_Admin_Payment_Notice` "no payment gateway enabled" warning on the
- * Rentiva → Setup screen only — Setup's own "Required plugins" card already
- * covers that plugin's status, so its competing notice on the very same
- * screen is just noise. Every other admin screen (including Rentiva →
- * Theme Settings) still shows it, since it's a real, actionable warning
+ * `RBFW_Admin_Payment_Notice` "no payment gateway enabled" warning on
+ * Rentiva's own two admin screens (Setup and Theme Settings) — Setup's own
+ * "Required plugins" card already covers that plugin's status, so its
+ * competing notice on either of Rentiva's own screens is just noise. Every
+ * other admin screen still shows it, since it's a real, actionable warning
  * everywhere else. Removed via `current_screen` (which fires well before
  * `admin_notices`) rather than editing the plugin, so a plugin update never
  * clobbers this.
@@ -80,8 +80,9 @@ add_action( 'admin_notices', 'rentiva_welcome_notice' );
  * @return void
  */
 function rentiva_hide_rbfw_payment_notice_on_setup_page() {
+	$rentiva_pages = array( 'rentiva-settings', 'rentiva-theme-settings' );
 	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only screen check, no state change.
-	if ( ! isset( $_GET['page'] ) || 'rentiva-settings' !== $_GET['page'] || ! class_exists( 'RBFW_Admin_Payment_Notice' ) ) {
+	if ( ! isset( $_GET['page'] ) || ! in_array( $_GET['page'], $rentiva_pages, true ) || ! class_exists( 'RBFW_Admin_Payment_Notice' ) ) {
 		return;
 	}
 

@@ -1,12 +1,10 @@
 /**
- * Sticky booking card chrome + a CSS-only skin over the plugin's REAL
- * booking form markup (Booking and Rental Manager for WooCommerce).
- *
- * This file only ever restyles the plugin's existing classes — it never
- * duplicates functionality. Verified selectors below come straight from
- * templates/forms/multi-day-registration.php and its sibling single-day /
- * resort / multiple-items partials (same shared class names throughout).
- * See docs/booking-integration.md.
+ * Sticky booking card chrome only. The plugin's real booking form markup
+ * (Booking and Rental Manager for WooCommerce) — date pickers, duration,
+ * price breakdown, submit button, everything inside
+ * `.rentiva-booking-card__form` — is intentionally left with zero theme
+ * CSS so it always renders exactly as the plugin ships it. See
+ * docs/booking-integration.md.
  */
 
 /* Card chrome ------------------------------------------------------------- */
@@ -23,33 +21,124 @@
 }
 
 .rentiva-booking-card__inner {
-	padding: 1.5rem;
+	padding: 1.75rem;
 	border: 1px solid var(--rentiva-border);
-	box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
+	border-radius: var(--rentiva-radius-lg);
+	box-shadow: var(--rentiva-shadow-card);
+	background-color: var(--rentiva-card);
 }
 
-.rentiva-booking-card__title {
-	margin-bottom: 1.25rem;
+/* Head: eyebrow + starting price on the left, live availability badge on
+ * the right — replaces the plugin's own hidden rate/teaser boxes (still
+ * suppressed below) with one clean, theme-styled summary line. */
+.rentiva-booking-card__head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-bottom: 1.25rem;
+	margin-bottom: 1.5rem;
+	border-bottom: 1px solid var(--rentiva-border);
+}
+
+.rentiva-booking-card__eyebrow {
+	display: block;
+	font-size: var(--rentiva-text-xs);
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--rentiva-muted-foreground);
+	margin-bottom: 0.4rem;
+}
+
+.rentiva-booking-card__price {
+	display: flex;
+	align-items: baseline;
+	gap: 0.35rem;
+	margin: 0;
+}
+
+.rentiva-booking-card__price-amount {
+	font-family: var(--rentiva-font-display);
+	font-size: var(--rentiva-text-2xl);
+	font-weight: 700;
+	color: var(--rentiva-foreground);
+	line-height: 1;
+}
+
+.rentiva-booking-card__price-unit {
+	font-size: var(--rentiva-text-sm);
+	color: var(--rentiva-muted-foreground);
+}
+
+.rentiva-booking-card__badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	flex-shrink: 0;
+	padding: 0.4rem 0.85rem;
+	border-radius: var(--rentiva-radius-pill);
+	font-size: var(--rentiva-text-xs);
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.rentiva-booking-card__badge-dot {
+	width: 0.4rem;
+	height: 0.4rem;
+	border-radius: 50%;
+	background-color: currentColor;
+}
+
+.rentiva-booking-card__badge--in-stock {
+	background-color: #DCFCE7;
+	color: #15803D;
+}
+
+.rentiva-booking-card__badge--low-stock {
+	background-color: #FEF3C7;
+	color: #B45309;
+}
+
+.rentiva-booking-card__badge--sold-out {
+	background-color: #FEE2E2;
+	color: #B91C1C;
 }
 
 .rentiva-booking-card__trust {
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-	margin-top: 1rem;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0.75rem;
+	margin-top: 1.5rem;
 }
 
 .rentiva-booking-card__trust-item {
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
+	padding: 0.65rem 0.75rem;
+	border-radius: var(--rentiva-radius-sm);
+	background-color: var(--rentiva-muted);
 	font-size: var(--rentiva-text-xs);
-	color: var(--rentiva-muted-foreground);
+	font-weight: 600;
+	color: var(--rentiva-foreground);
 }
 
-.rentiva-booking-card__trust-item svg {
-	color: var(--rentiva-primary);
+.rentiva-booking-card__trust-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.5rem;
+	height: 1.5rem;
 	flex-shrink: 0;
+	border-radius: 50%;
+	background-color: var(--rentiva-primary);
+	color: #FFFFFF;
+}
+
+.rentiva-booking-card__trust-icon svg {
+	width: 0.7rem;
+	height: 0.7rem;
 }
 
 /* Plugin form skin --------------------------------------------------------- */
@@ -105,13 +194,42 @@
 
 /* Pickup/return date + time row */
 .rentiva-booking-card__form .rbfw-drp-wrapper {
-	margin-bottom: 1rem;
+	margin-bottom: 1.25rem;
 }
 
 .rentiva-booking-card__form .rbfw-drp-row {
-	display: flex;
-	flex-direction: column;
-	gap: 0.75rem;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0;
+	border: 1.5px solid var(--rentiva-border);
+	border-radius: var(--rentiva-radius-sm);
+	overflow: hidden;
+	background-color: var(--rentiva-card);
+	transition: border-color var(--rentiva-transition), box-shadow var(--rentiva-transition);
+}
+
+.rentiva-booking-card__form .rbfw-drp-row:focus-within {
+	border-color: var(--rentiva-primary);
+	box-shadow: 0 0 0 3px rgba(27, 94, 59, 0.1);
+}
+
+.rentiva-booking-card__form .rbfw-drp-col {
+	padding: 0.65rem 0.85rem;
+}
+
+.rentiva-booking-card__form .rbfw-drp-col + .rbfw-drp-col {
+	border-left: 1px solid var(--rentiva-border);
+}
+
+@media (max-width: 380px) {
+	.rentiva-booking-card__form .rbfw-drp-row {
+		grid-template-columns: 1fr;
+	}
+
+	.rentiva-booking-card__form .rbfw-drp-col + .rbfw-drp-col {
+		border-left: 0;
+		border-top: 1px solid var(--rentiva-border);
+	}
 }
 
 .rentiva-booking-card__form .rbfw-drp-label {
@@ -121,47 +239,81 @@
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
 	color: var(--rentiva-muted-foreground);
-	margin-bottom: 0.4rem;
+	margin-bottom: 0.3rem;
 }
 
 .rentiva-booking-card__form .rbfw-drp-field {
 	position: relative;
 	display: flex;
 	align-items: center;
-	border: 1.5px solid var(--rentiva-border);
-	border-radius: var(--rentiva-radius-sm);
-	background-color: var(--rentiva-card);
-	transition: border-color var(--rentiva-transition);
-}
-
-.rentiva-booking-card__form .rbfw-drp-field:focus-within {
-	border-color: var(--rentiva-primary);
+	border: 0;
+	border-radius: 0;
+	background-color: transparent;
 }
 
 .rentiva-booking-card__form .rbfw-drp-icon {
 	display: inline-flex;
-	padding-left: 0.85rem;
-	color: var(--rentiva-muted-foreground);
+	padding-left: 0;
+	color: var(--rentiva-primary);
 	font-size: var(--rentiva-text-sm);
 }
 
 .rentiva-booking-card__form .rbfw-drp-field input {
 	border: 0;
 	background: transparent;
-	padding: 0.75rem 0.6rem;
+	padding: 0 0 0 0.5rem;
+	font-weight: 600;
 }
 
 .rentiva-booking-card__form .rbfw-drp-chevron {
-	padding-right: 0.85rem;
-	color: var(--rentiva-muted-foreground);
-	font-size: var(--rentiva-text-xs);
+	display: none;
 }
 
+/* Duration summary strip */
 .rentiva-booking-card__form .rbfw-duration {
-	font-size: var(--rentiva-text-sm);
-	color: var(--rentiva-muted-foreground);
 	display: flex;
+	align-items: center;
 	justify-content: space-between;
+	gap: 0.75rem;
+	padding: 0.75rem 1rem;
+	border-radius: var(--rentiva-radius-sm);
+	background-color: var(--rentiva-muted);
+	font-size: var(--rentiva-text-sm);
+	color: var(--rentiva-foreground);
+}
+
+.rentiva-booking-card__form .rbfw-duration .rbfw-single-right-heading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	font-size: var(--rentiva-text-sm);
+	font-weight: 600;
+	letter-spacing: normal;
+	text-transform: none;
+	color: var(--rentiva-foreground);
+	margin-bottom: 0;
+}
+
+.rentiva-booking-card__form .rbfw-duration-left {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	color: var(--rentiva-muted-foreground);
+}
+
+.rentiva-booking-card__form .rbfw-duration-icon {
+	color: var(--rentiva-primary);
+}
+
+.rentiva-booking-card__form .rbfw-duration-label {
+	font-weight: 600;
+	color: var(--rentiva-foreground);
+}
+
+.rentiva-booking-card__form .item-price {
+	font-weight: 700;
+	color: var(--rentiva-foreground);
 }
 
 /* Quantity stepper (decorated by assets/js/quantity-stepper.js — the real
@@ -207,12 +359,14 @@
 	white-space: nowrap;
 }
 
-/* Price breakdown */
+/* Price breakdown — elevated into its own tinted panel so the final total
+ * reads clearly as the card's headline number rather than another list row. */
 .rentiva-booking-card__form .rbfw_bikecarmd_price_result {
-	padding-block: 1rem;
-	margin-block: 1rem;
-	border-top: 1px solid var(--rentiva-border);
-	border-bottom: 1px solid var(--rentiva-border);
+	position: relative;
+	padding: 1rem 1.1rem;
+	margin-block: 1.25rem;
+	border-radius: var(--rentiva-radius-sm);
+	background-color: var(--rentiva-muted);
 }
 
 .rentiva-booking-card__form .rbfw-ul {
@@ -221,7 +375,7 @@
 	padding: 0;
 	display: flex;
 	flex-direction: column;
-	gap: 0.5rem;
+	gap: 0.55rem;
 }
 
 .rentiva-booking-card__form .rbfw-ul li {
@@ -233,10 +387,12 @@
 }
 
 .rentiva-booking-card__form .rbfw-ul li.total {
-	font-size: var(--rentiva-text-base);
+	font-size: var(--rentiva-text-lg);
 	font-weight: 700;
 	color: var(--rentiva-foreground);
-	margin-top: 0.25rem;
+	margin-top: 0.4rem;
+	padding-top: 0.6rem;
+	border-top: 1px dashed var(--rentiva-border);
 }
 
 .rentiva-booking-card__form .rbfw-loader {
@@ -245,29 +401,46 @@
 	color: var(--rentiva-primary);
 }
 
-/* Submit button — single stable class across every item type/template variant */
+/* Submit button — single stable class across every item type/template
+ * variant. WooCommerce's own `.button.alt` rules (also present in this
+ * button's class list) can otherwise win the cascade on width/display/
+ * background depending on stylesheet load order, so those three are
+ * pinned with !important — every other property is decorative and safe
+ * to lose a specificity fight. */
 .rentiva-booking-card__form .rbfw-book-now-btn {
-	display: flex;
+	display: flex !important;
 	align-items: center;
 	justify-content: center;
-	width: 100%;
+	gap: 0.5rem;
+	width: 100% !important;
 	font-family: var(--rentiva-font-display);
 	font-weight: 700;
 	font-size: var(--rentiva-text-base);
 	padding: 1rem 1.5rem;
 	border-radius: var(--rentiva-radius-sm);
 	border: 0;
-	background-color: var(--rentiva-primary);
+	background-color: var(--rentiva-primary) !important;
 	color: #FFFFFF;
-	transition: background-color var(--rentiva-transition);
+	box-shadow: 0 8px 20px rgba(27, 94, 59, 0.25);
+	transition: background-color var(--rentiva-transition), box-shadow var(--rentiva-transition), transform var(--rentiva-transition);
 }
 
 .rentiva-booking-card__form .rbfw-book-now-btn:hover:not(:disabled) {
-	background-color: var(--rentiva-primary-dark);
+	background-color: var(--rentiva-primary-dark) !important;
+	box-shadow: 0 10px 24px rgba(27, 94, 59, 0.32);
+	transform: translateY(-1px);
+}
+
+.rentiva-booking-card__form .rbfw-book-now-btn:active:not(:disabled) {
+	transform: translateY(0);
 }
 
 .rentiva-booking-card__form .rbfw-book-now-btn:disabled {
-	opacity: 0.6;
+	background-color: var(--rentiva-primary) !important;
+	color: #FFFFFF;
+	opacity: 0.55;
+	box-shadow: none;
+	cursor: not-allowed;
 }
 
 .rentiva-booking-card__form .mps_alert_warning {
