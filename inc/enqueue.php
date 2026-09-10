@@ -140,7 +140,12 @@ function rentiva_register_assets() {
 	// enqueued) purely for load order: this must print after them to win
 	// equal-specificity cascades against WC Blocks' own fairly specific
 	// selectors, without needing !important everywhere.
-	wp_register_style( 'rentiva-woocommerce', $css_dir . 'woocommerce.css', array_merge( $core_deps, array( 'wc-blocks-style', 'wc-blocks-style-cart', 'wc-blocks-packages-style' ) ), $ver );
+	//
+	// filemtime(), not $ver — same reasoning as 'rentiva-admin'/'rentiva-admin-setup'
+	// above: this file is actively being iterated on, and the fixed
+	// RENTIVA_VERSION string would leave every edit invisible behind
+	// whatever a browser already cached under that same ?ver=.
+	wp_register_style( 'rentiva-woocommerce', $css_dir . 'woocommerce.css', array_merge( $core_deps, array( 'wc-blocks-style', 'wc-blocks-style-cart', 'wc-blocks-style-checkout', 'wc-blocks-packages-style' ) ), (string) filemtime( RENTIVA_DIR . 'assets/css/woocommerce.css' ) );
 	wp_register_style( 'rentiva-plugin-item-details', $css_dir . 'plugin-item-details.css', $core_deps, $ver );
 	wp_register_style( 'rentiva-content', $css_dir . 'content.css', $core_deps, $ver );
 	// filemtime(), not $ver — see the matching note on 'rentiva-admin-setup'

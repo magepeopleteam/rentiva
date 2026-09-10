@@ -32,6 +32,7 @@ body.rentiva-front-page .site-main {
 @media (min-width: 1025px) {
 	.rentiva-container {
 		padding-inline: var(--rentiva-gutter-lg);
+		max-width: 1200px;
 	}
 }
 

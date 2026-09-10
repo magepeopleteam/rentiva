@@ -33,15 +33,20 @@
 	font-weight: 700;
 }
 
-/* Card panels — order summary sidebar, coupon panel, shipping options. */
+/*
+ * Card panels — order summary sidebar, coupon panel, shipping options.
+ * `!important` on every property here (not just background): this page
+ * already proved WC Blocks' own styles can win equal-specificity fights
+ * depending on load order, and a card whose background silently loses that
+ * fight is invisible against the page's own near-identical off-white — it
+ * doesn't just look slightly off, it looks like there's no card at all.
+ */
 .wc-block-components-totals-wrapper,
 .wc-block-components-panel,
 .wc-block-components-order-summary,
 .wc-block-checkout__payment-method,
 .wc-block-components-shipping-rates-control__package {
-	background: var(--rentiva-card);
-	border: 1px solid var(--rentiva-border);
-	border-radius: var(--rentiva-radius);
+	background: var(--rentiva-card) !important;
 }
 
 /* Buttons — every WC Blocks button (Proceed to Checkout, Place Order,
@@ -110,6 +115,60 @@
 	background-color: var(--rentiva-chip-bg);
 }
 
+/*
+ * Payment methods (radio-control-accordion-option) are a different variant:
+ * a selected option's description expands directly beneath the label as a
+ * separate sibling element, both inside one accordion-option wrapper. The
+ * rule above only borders the label, so once a method is selected its
+ * description text renders below the card, outside the border, looking
+ * detached. Moving the card treatment to the wrapper contains both; the
+ * label's own border/background are then reset so they don't double up.
+ */
+.wc-block-components-radio-control-accordion-option {
+	border: 1px solid var(--rentiva-border) !important;
+	border-radius: var(--rentiva-radius-sm) !important;
+	overflow: hidden;
+	transition: border-color var(--rentiva-transition), background-color var(--rentiva-transition);
+}
+
+/*
+ * WC draws its own 1px divider between options via an absolutely-positioned
+ * `::after` (packages-style.css) rather than a real border — with each
+ * option now getting its own real border/radius above, that leftover
+ * divider line just doubles up visually (adjacent items looked fused into
+ * one flush-edged block instead of two separate rounded cards). Removing
+ * it entirely since our own border replaces what it was doing.
+ */
+.wc-block-components-radio-control-accordion-option:after {
+	content: none !important;
+}
+
+.wc-block-components-radio-control-accordion-option + .wc-block-components-radio-control-accordion-option {
+	margin-top: 0.65rem !important;
+}
+
+.wc-block-components-radio-control-accordion-option:has(.wc-block-components-radio-control__option-checked) {
+	border-color: var(--rentiva-primary) !important;
+	background-color: var(--rentiva-chip-bg);
+}
+
+.wc-block-components-radio-control-accordion-option .wc-block-components-radio-control__option {
+	border: none !important;
+	background: none !important;
+	/* padding-block only — WC's own radio input is `position: absolute;
+	   left: 0` relative to this label, so its default padding-left is what
+	   reserves room for that circle. A plain `padding` shorthand here would
+	   reset padding-left too, shrinking that gap and overlapping the input
+	   with the label text. */
+	padding-block: 0.9rem;
+}
+
+.wc-block-components-radio-control-accordion-content {
+	padding: 0 1rem 1rem;
+	color: var(--rentiva-muted-foreground);
+	font-size: var(--rentiva-text-sm);
+}
+
 .wc-block-components-radio-control__input:checked {
 	background-color: var(--rentiva-primary) !important;
 	border-color: var(--rentiva-primary) !important;
@@ -155,32 +214,78 @@
    Cart page
    ========================================================================== */
 
+/*
+ * .wc-block-cart-items is a real <table> (thead/tbody/tr/td), not a div
+ * grid — confirmed from the live markup, not assumed. That matters a lot:
+ * padding and border on a <tr> (`.wc-block-cart-items__header`,
+ * `.wc-block-cart-items__row`) are simply not rendered by any browser's
+ * table layout — only a table CELL (<td>/<th>) respects them. Every
+ * previous rule here targeting the row itself was a no-op, which is
+ * exactly the "padding issue, header broken" look. Rewritten against the
+ * actual cells, with `border-collapse: separate` on the table so its own
+ * border-radius still clips correctly (radius + `border-collapse: collapse`
+ * don't render together in any browser).
+ */
 .wc-block-cart-items {
-	background: var(--rentiva-card);
-	border: 1px solid var(--rentiva-border);
-	border-radius: var(--rentiva-radius-lg);
+	width: 100%;
+	background: var(--rentiva-card) !important;
+	border: 1px solid var(--rentiva-border) !important;
+	border-radius: var(--rentiva-radius-lg) !important;
+	border-collapse: separate !important;
+	border-spacing: 0;
+	box-shadow: var(--rentiva-shadow-card);
 	overflow: hidden;
 }
 
-.wc-block-cart-items__header {
-	background: var(--rentiva-muted);
+.wc-block-cart-items__header th {
+	background: var(--rentiva-muted) !important;
+	padding: 0.85rem 1.5rem !important;
 	font-size: var(--rentiva-text-xs);
 	text-transform: uppercase;
 	letter-spacing: 0.04em;
 	color: var(--rentiva-muted-foreground);
+	font-weight: 600;
+	text-align: left;
 }
 
-.wc-block-cart-items__row {
-	border-bottom: 1px solid var(--rentiva-border);
-	padding-block: 1.25rem;
+/* Belt-and-suspenders alongside the table's own overflow:hidden clip —
+   guarantees the rounded top corners even if a browser paints a table
+   cell's own background past the table's clip in some edge case. */
+.wc-block-cart-items__header th:first-child {
+	border-top-left-radius: var(--rentiva-radius-lg);
 }
 
-.wc-block-cart-items__row:last-child {
-	border-bottom: none;
+.wc-block-cart-items__header th:last-child {
+	border-top-right-radius: var(--rentiva-radius-lg);
+}
+
+.wc-block-cart-items__row > * {
+	padding: 1.25rem 1.5rem !important;
+	border-bottom: 1px solid var(--rentiva-border) !important;
+	vertical-align: middle;
+}
+
+.wc-block-cart-items__row:last-child > * {
+	border-bottom: none !important;
+}
+
+/* The plugin's shadow products fall back to WooCommerce's own generic
+   placeholder graphic rather than a real photo, so this restyles the
+   actual <img> (a plain 80×80 <img> in a <td>, not a wrapper div) down to
+   a smaller, rounded, neutral-backed thumbnail — which is exactly what an
+   ordinary WooCommerce product's real photo renders into as well, since
+   it's the same markup either way. */
+.wc-block-cart-item__image {
+	width: 72px;
 }
 
 .wc-block-cart-item__image img {
+	display: block;
+	width: 64px;
+	height: 64px;
+	object-fit: cover;
 	border-radius: var(--rentiva-radius-sm);
+	background: var(--rentiva-muted);
 }
 
 .wc-block-components-product-name {
@@ -219,8 +324,11 @@
 }
 
 .wc-block-cart__sidebar .wc-block-components-totals-wrapper {
-	padding: 1.5rem;
-	box-shadow: var(--rentiva-shadow-card);
+	margin: 10px 0px;
+	padding: 1.5rem !important;
+	border: 1px solid var(--rentiva-border) !important;
+	border-radius: var(--rentiva-radius-lg) !important;
+	box-shadow: var(--rentiva-shadow-card) !important;
 }
 
 .wc-block-cart__submit-button.wp-element-button {
@@ -240,14 +348,14 @@
 .wc-block-components-checkout-step__description-payments-aligned,
 .wc-block-checkout__billing-fields,
 .wc-block-checkout__shipping-fields {
-	background: var(--rentiva-card);
-	border: 1px solid var(--rentiva-border);
-	border-radius: var(--rentiva-radius-lg);
-	padding: 1.5rem;
+	background: var(--rentiva-card) !important;
+	border: 1px solid var(--rentiva-border) !important;
+	border-radius: var(--rentiva-radius-lg) !important;
+	padding: 1.5rem !important;
 }
 
 .wc-block-components-checkout-order-summary__content {
-	padding: 1.5rem;
+	padding: 1.5rem !important;
 }
 
 .wc-block-components-order-summary-item__image img {
