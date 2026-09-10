@@ -176,9 +176,13 @@
 	justify-self: start;
 }
 
+/* Hidden per request — the booking form further down the page (and the
+   sticky/mobile booking bar) already cover this same "Book Now" action, so
+   this hero-level shortcut button is removed rather than restyled. Done as
+   a CSS-only display:none (not a plugin template edit) so a plugin update
+   never resurrects it needing to be re-removed by hand. */
 .rbfw_default_hero_book_btn {
-	grid-column: 2;
-	justify-self: end;
+	display: none !important;
 }
 
 .rbfw_default_hero_badge {

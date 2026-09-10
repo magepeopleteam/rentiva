@@ -344,24 +344,6 @@
 	transform: scale(1.06);
 }
 
-.rentiva-rental-card__badge {
-	position: absolute;
-	top: 0.75rem;
-	left: 0.75rem;
-	max-width: calc(100% - 4rem);
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	font-family: var(--rentiva-font-sans);
-	font-size: var(--rentiva-text-xs);
-	font-weight: 600;
-	letter-spacing: 0.04em;
-	padding: 0.35rem 0.7rem;
-	border-radius: var(--rentiva-radius-pill);
-	background-color: var(--rentiva-primary);
-	color: #FFFFFF;
-}
-
 .rentiva-rental-card__like {
 	position: absolute;
 	top: 0.75rem;

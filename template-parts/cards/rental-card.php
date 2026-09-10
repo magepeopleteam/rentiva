@@ -8,7 +8,6 @@
  *   title       string
  *   url         string
  *   image_id    int    Optional attachment ID.
- *   type        string Badge label, e.g. "Mountain Bike".
  *   rating      float  0–5.
  *   reviews     int    Review count.
  *   location    string
@@ -27,7 +26,6 @@ $rentiva_id       = isset( $args['id'] ) ? (int) $args['id'] : 0;
 $rentiva_title    = isset( $args['title'] ) ? $args['title'] : '';
 $rentiva_url      = isset( $args['url'] ) ? $args['url'] : '#';
 $rentiva_image_id = isset( $args['image_id'] ) ? (int) $args['image_id'] : 0;
-$rentiva_type     = isset( $args['type'] ) ? $args['type'] : '';
 $rentiva_rating   = isset( $args['rating'] ) ? (float) $args['rating'] : 0;
 $rentiva_reviews  = isset( $args['reviews'] ) ? (int) $args['reviews'] : 0;
 $rentiva_location = isset( $args['location'] ) ? $args['location'] : '';
@@ -41,10 +39,6 @@ $rentiva_compact  = ! empty( $args['compact'] );
 			<?php echo wp_get_attachment_image( $rentiva_image_id, 'rentiva-card', false, array( 'class' => 'rentiva-rental-card__image', 'alt' => $rentiva_title ) ); ?>
 		<?php else : ?>
 			<span class="rentiva-rental-card__image rentiva-rental-card__image--placeholder" aria-hidden="true"></span>
-		<?php endif; ?>
-
-		<?php if ( $rentiva_type ) : ?>
-			<span class="rentiva-rental-card__badge"><?php echo esc_html( $rentiva_type ); ?></span>
 		<?php endif; ?>
 	</a>
 
