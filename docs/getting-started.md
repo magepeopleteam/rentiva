@@ -1,9 +1,11 @@
 # Getting started
 
-1. Install and activate, in this order: **WooCommerce**, **Booking and
-   Rental Manager for WooCommerce**, **Elementor**, then **Rentiva**. (All
-   three are declared as required plugins in `style.css`, so WordPress
-   prompts for them on the Themes screen if any are missing.)
+1. Install and activate, in this order: **Booking and Rental Manager for
+   WooCommerce**, **Elementor**, then **Rentiva**. (Both are declared as
+   required plugins in `style.css`, so WordPress prompts for them on the
+   Themes screen if either is missing.) **WooCommerce** is optional — the
+   booking plugin has its own native checkout, so only install WooCommerce
+   if you want its cart/checkout flow instead.
 2. On activation (with Elementor active), Rentiva automatically creates a
    "Homepage" page — pre-built out of the theme's 9 Elementor section
    widgets — and sets it as your static front page, so the homepage is a

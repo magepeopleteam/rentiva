@@ -137,7 +137,11 @@ function rentiva_register_assets() {
 	wp_register_style( 'rentiva-booking', $css_dir . 'booking.css', $core_deps, $ver );
 	wp_register_style( 'rentiva-plugin-item-details', $css_dir . 'plugin-item-details.css', $core_deps, $ver );
 	wp_register_style( 'rentiva-content', $css_dir . 'content.css', $core_deps, $ver );
-	wp_register_style( 'rentiva-admin', $css_dir . 'admin.css', array(), $ver );
+	// filemtime(), not $ver — see the matching note on 'rentiva-admin-setup'
+	// below: this registration wins over any later wp_enqueue_style() call
+	// for the same handle, so it's the one that actually needs to bust cache
+	// on every edit to this actively-iterated admin stylesheet.
+	wp_register_style( 'rentiva-admin', $css_dir . 'admin.css', array(), (string) filemtime( RENTIVA_DIR . 'assets/css/admin.css' ) );
 	wp_register_style(
 		'rentiva-responsive',
 		$css_dir . 'responsive.css',
@@ -152,7 +156,20 @@ function rentiva_register_assets() {
 	wp_register_script( 'rentiva-search-suggest', $js_dir . 'search-suggest.js', array(), $ver, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	wp_register_script( 'rentiva-gallery-thumbnails', $js_dir . 'gallery-thumbnails.js', array(), $ver, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	wp_register_script( 'rentiva-sticky-card', $js_dir . 'sticky-card.js', array(), $ver, array( 'in_footer' => true, 'strategy' => 'defer' ) );
-	wp_register_script( 'rentiva-admin-setup', $js_dir . 'admin-setup.js', array( 'jquery' ), $ver, array( 'in_footer' => true ) );
+	// 'updates' (core's AJAX plugin installer/activator) must be a real
+	// dependency here, not just added on whichever wp_enqueue_script() call
+	// for this handle happens to run first — WP_Dependencies::add() ignores
+	// deps/src/version on every call after the first registration, so this
+	// is the one registration that actually takes effect. Without 'updates'
+	// declared here, admin-setup.js has no guaranteed load-order relative to
+	// updates.js and can execute before wp.updates exists, silently falling
+	// back to plain link navigation instead of running the AJAX install flow.
+	//
+	// Versioned by filemtime() rather than $ver (the fixed RENTIVA_VERSION)
+	// for the same reason: this file is actively iterated on, and since this
+	// registration wins, RENTIVA_VERSION would leave every edit silently
+	// served from whatever a browser already cached under that same ?ver=.
+	wp_register_script( 'rentiva-admin-setup', $js_dir . 'admin-setup.js', array( 'jquery', 'updates' ), (string) filemtime( RENTIVA_DIR . 'assets/js/admin-setup.js' ), array( 'in_footer' => true ) );
 }
 add_action( 'init', 'rentiva_register_assets' );
 

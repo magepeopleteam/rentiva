@@ -83,6 +83,24 @@
 	color: #fff;
 }
 
+.rentiva-admin-topbar__nav .is-locked {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3rem;
+	padding: 0.4rem 1rem;
+	border-radius: var(--rentiva-radius-pill);
+	font-weight: 600;
+	font-size: 0.875rem;
+	color: var(--rentiva-muted-foreground);
+	cursor: not-allowed;
+}
+
+.rentiva-admin-topbar__nav .is-locked .dashicons {
+	font-size: 1rem;
+	width: 1rem;
+	height: 1rem;
+}
+
 /* Step chips */
 
 .rentiva-steps {
@@ -183,6 +201,11 @@
 	color: var(--rentiva-danger-foreground);
 }
 
+.rentiva-badge--neutral {
+	background: var(--rentiva-muted);
+	color: var(--rentiva-muted-foreground);
+}
+
 /* Plugin rows */
 
 .rentiva-plugin-row {
@@ -198,6 +221,103 @@
 
 .rentiva-plugin-row:last-child {
 	margin-bottom: 0;
+}
+
+.rentiva-plugin-row__action {
+	display: inline-flex;
+}
+
+.rentiva-plugin-row__notice {
+	flex: 1 0 100%;
+	background: var(--rentiva-danger-bg);
+	color: var(--rentiva-danger-foreground);
+	border-radius: var(--rentiva-radius);
+	padding: 0.85rem 1rem;
+	margin-top: 0.25rem;
+}
+
+.rentiva-plugin-row__notice p {
+	margin: 0.4rem 0 0;
+}
+
+.rentiva-plugin-row__notice .button {
+	margin-top: 0.35rem;
+}
+
+/* Install All + progress bar */
+
+.rentiva-install-all.button {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	height: auto;
+	padding: 0.75rem 1.5rem !important;
+	margin-bottom: 1rem;
+	border: none;
+	border-radius: var(--rentiva-radius-pill);
+	background: linear-gradient(135deg, var(--rentiva-primary), var(--rentiva-primary-dark));
+	color: #fff;
+	font-size: 0.9375rem;
+	font-weight: 600;
+	line-height: 1;
+	box-shadow: 0 4px 14px rgba(27, 94, 59, 0.28);
+	text-shadow: none;
+	transition: box-shadow 150ms ease, transform 150ms ease, opacity 150ms ease;
+}
+
+.rentiva-install-all.button .dashicons {
+	width: 1.1rem;
+	height: 1.1rem;
+	font-size: 1.1rem;
+}
+
+.rentiva-install-all.button:hover,
+.rentiva-install-all.button:focus {
+	background: linear-gradient(135deg, var(--rentiva-primary-dark), var(--rentiva-primary-dark));
+	color: #fff;
+	box-shadow: 0 6px 18px rgba(27, 94, 59, 0.36);
+	transform: translateY(-1px);
+}
+
+.rentiva-install-all.button:disabled,
+.rentiva-install-all.button.updating-message {
+	opacity: 0.75;
+	box-shadow: none;
+	transform: none;
+	cursor: not-allowed;
+}
+
+.rentiva-plugin-progress {
+	margin-bottom: 1rem;
+}
+
+.rentiva-plugin-progress__bar {
+	height: 0.5rem;
+	border-radius: var(--rentiva-radius-pill);
+	background: var(--rentiva-muted);
+	overflow: hidden;
+}
+
+.rentiva-plugin-progress__bar span {
+	display: block;
+	height: 100%;
+	width: 0;
+	background: var(--rentiva-primary);
+	border-radius: var(--rentiva-radius-pill);
+	transition: width 300ms ease;
+}
+
+.rentiva-plugin-progress__text {
+	margin: 0.5rem 0 0;
+	font-size: 0.875rem;
+	color: var(--rentiva-muted-foreground);
+}
+
+/* Busy state — a spinning icon while an install/activate AJAX call is in flight */
+
+.rentiva-plugin-action.updating-message {
+	pointer-events: none;
+	opacity: 0.75;
 }
 
 .rentiva-plugin-row__icon {
@@ -223,6 +343,59 @@
 	font-size: 0.875rem;
 }
 
+/* Plugin action buttons (Install Now / Activate) — pill-shaped, on top of
+ * core's .button so a screen without admin.css (the Dashboard widget) still
+ * gets a sane native button. */
+
+.rentiva-plugin-action.button {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	height: auto;
+	padding: 0.5rem 1rem !important;
+	border-radius: var(--rentiva-radius-pill);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	line-height: 1;
+	box-shadow: none;
+	text-shadow: none;
+	transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+.rentiva-plugin-action.button .dashicons {
+	width: 1rem;
+	height: 1rem;
+	font-size: 1rem;
+}
+
+.rentiva-plugin-action--install.button {
+	background: var(--rentiva-primary);
+	border-color: var(--rentiva-primary);
+	color: #fff;
+}
+
+.rentiva-plugin-action--install.button:hover,
+.rentiva-plugin-action--install.button:focus {
+	background: var(--rentiva-primary-dark);
+	border-color: var(--rentiva-primary-dark);
+	color: #fff;
+	transform: translateY(-1px);
+}
+
+.rentiva-plugin-action--activate.button {
+	background: transparent;
+	border-color: var(--rentiva-primary);
+	color: var(--rentiva-primary-dark);
+}
+
+.rentiva-plugin-action--activate.button:hover,
+.rentiva-plugin-action--activate.button:focus {
+	background: var(--rentiva-chip-bg);
+	border-color: var(--rentiva-primary);
+	color: var(--rentiva-primary-dark);
+	transform: translateY(-1px);
+}
+
 /* Notices */
 
 .rentiva-notice {
@@ -237,6 +410,15 @@
 }
 
 .rentiva-notice--success p {
+	margin: 0.25rem 0 0;
+}
+
+.rentiva-notice--attention {
+	background: var(--rentiva-danger-bg);
+	color: var(--rentiva-danger-foreground);
+}
+
+.rentiva-notice--attention p {
 	margin: 0.25rem 0 0;
 }
 
@@ -280,6 +462,16 @@
 .rentiva-next-step-tile span:last-child {
 	color: var(--rentiva-muted-foreground);
 	font-size: 0.875rem;
+}
+
+.rentiva-next-step-tile.is-locked {
+	cursor: not-allowed;
+	color: var(--rentiva-muted-foreground);
+	background: var(--rentiva-muted);
+}
+
+.rentiva-next-step-tile.is-locked .dashicons {
+	color: var(--rentiva-muted-foreground);
 }
 
 /* Theme Settings: sidebar tab layout */

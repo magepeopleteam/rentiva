@@ -100,6 +100,15 @@ function rentiva_sanitize_settings( $input ) {
 	if ( ! is_array( $existing ) ) {
 		$existing = array();
 	}
+
+	// Theme Settings is locked in the UI until Setup's Step 1 (required
+	// plugins) is complete — refuse a direct options.php POST too, rather
+	// than trusting the UI lock alone.
+	if ( ! rentiva_required_plugins_ready() ) {
+		add_settings_error( 'rentiva_settings', 'rentiva_locked', __( 'Theme Settings is locked until the required plugins on Rentiva → Setup are active.', 'rentiva' ) );
+		return $existing;
+	}
+
 	$output = $existing;
 
 	$text_fields = array(
@@ -185,13 +194,47 @@ function rentiva_settings_page_assets( $hook ) {
 		return;
 	}
 	wp_enqueue_media();
-	wp_enqueue_style( 'rentiva-admin', RENTIVA_URI . 'assets/css/admin.css', array(), RENTIVA_VERSION );
-	wp_enqueue_script( 'rentiva-admin-setup', RENTIVA_URI . 'assets/js/admin-setup.js', array( 'jquery' ), RENTIVA_VERSION, true );
+	// Core's own AJAX plugin installer/activator (Plugins/Add Plugins screens)
+	// — queues one request per plugin (wp.updates.queue) instead of one long
+	// blocking call, so admin-setup.js can drive Step 1's Install/Activate
+	// buttons through it without risking a PHP execution-time timeout.
+	//
+	// 'rentiva-admin' and 'rentiva-admin-setup' are both already registered
+	// (with the 'updates' dependency and filemtime()-based versioning) by
+	// rentiva_register_assets() in inc/enqueue.php, which — being hooked to
+	// 'init' — always runs before this admin_enqueue_scripts callback; pass
+	// no src/deps/version here, since WP_Dependencies::add() silently
+	// ignores them on a handle that's already registered.
+	wp_enqueue_script( 'updates' );
+	wp_enqueue_style( 'rentiva-admin' );
+	wp_enqueue_script( 'rentiva-admin-setup' );
 	wp_localize_script(
 		'rentiva-admin-setup',
 		'rentivaAdmin',
 		array(
-			'selectImageTitle' => __( 'Select an image', 'rentiva' ),
+			'selectImageTitle'   => __( 'Select an image', 'rentiva' ),
+			'uploadPluginUrl'    => admin_url( 'plugin-install.php?tab=upload' ),
+			'pluginsScreenUrl'   => admin_url( 'plugins.php' ),
+			'installingText'     => __( 'Installing…', 'rentiva' ),
+			'activatingText'     => __( 'Activating…', 'rentiva' ),
+			'activeText'         => __( 'Active', 'rentiva' ),
+			'retryText'          => __( 'Retry', 'rentiva' ),
+			'installAllDoneText' => __( 'All set! Reloading…', 'rentiva' ),
+			/* translators: 1: number of plugins done, 2: total number of plugins, 3: name of the plugin currently being processed. */
+			'progressText'       => __( 'Step %1$d of %2$d — %3$s', 'rentiva' ),
+			/* translators: %s: plugin name. */
+			'phaseInstalling'    => __( 'Installing %s…', 'rentiva' ),
+			/* translators: %s: plugin name. */
+			'phaseInstalled'     => __( '%s installed — activating…', 'rentiva' ),
+			/* translators: %s: plugin name. */
+			'phaseActivating'    => __( 'Activating %s…', 'rentiva' ),
+			/* translators: %s: plugin name. */
+			'phaseDone'          => __( '%s is active!', 'rentiva' ),
+			'manualHeading'      => __( 'Automatic installation failed', 'rentiva' ),
+			'manualWporgHint'    => __( 'You can download it from WordPress.org and upload the zip instead, or install it manually via FTP/File Manager.', 'rentiva' ),
+			'manualPremiumHint'  => __( 'This plugin isn\'t available in the WordPress.org repository. Upload the zip file you received, or extract it into wp-content/plugins/ via FTP/File Manager, then click Activate.', 'rentiva' ),
+			'uploadLinkText'     => __( 'Upload plugin zip', 'rentiva' ),
+			'wporgLinkText'      => __( 'View on WordPress.org', 'rentiva' ),
 		)
 	);
 }
@@ -204,6 +247,27 @@ add_action( 'admin_enqueue_scripts', 'rentiva_settings_page_assets' );
  */
 function rentiva_render_settings_page() {
 	if ( ! current_user_can( 'edit_theme_options' ) ) {
+		return;
+	}
+
+	if ( ! rentiva_required_plugins_ready() ) {
+		?>
+		<div class="wrap rentiva-admin">
+			<?php rentiva_render_admin_topbar( 'settings' ); ?>
+
+			<h1><?php esc_html_e( 'Theme Settings', 'rentiva' ); ?></h1>
+
+			<div class="rentiva-card">
+				<div class="rentiva-notice rentiva-notice--attention">
+					<strong><?php esc_html_e( 'Locked until Step 1 is complete', 'rentiva' ); ?></strong>
+					<p><?php esc_html_e( 'Install and activate the required plugins on Rentiva → Setup before configuring Theme Settings.', 'rentiva' ); ?></p>
+				</div>
+				<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=rentiva-settings' ) ); ?>">
+					<?php esc_html_e( 'Go to Setup', 'rentiva' ); ?>
+				</a>
+			</div>
+		</div>
+		<?php
 		return;
 	}
 

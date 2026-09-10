@@ -41,7 +41,7 @@ function rentiva_welcome_notice() {
 	}
 	delete_transient( 'rentiva_show_welcome_notice' );
 
-	$missing_plugins = wp_list_pluck( array_filter( rentiva_get_required_plugins(), fn( $p ) => ! $p['is_active'] ), 'label' );
+	$missing_plugins = wp_list_pluck( array_filter( rentiva_get_required_plugins(), fn( $p ) => $p['required'] && ! $p['is_active'] ), 'label' );
 	?>
 	<div class="notice notice-success is-dismissible">
 		<p><strong><?php esc_html_e( 'Welcome to Rentiva!', 'rentiva' ); ?></strong></p>
@@ -154,11 +154,20 @@ function rentiva_register_setup_dashboard_widget() {
 add_action( 'wp_dashboard_setup', 'rentiva_register_setup_dashboard_widget' );
 
 /**
- * The three plugins Rentiva depends on (see style.css's `Requires Plugins`
- * header), with the metadata the Setup page/widget needs to show status and
- * offer one-click install/activate.
+ * The plugins Rentiva integrates with (see style.css's `Requires Plugins`
+ * header for the two hard dependencies), with the metadata the Setup
+ * page/widget needs to show status and offer one-click install/activate.
  *
- * @return array<int,array{label:string,description:string,icon:string,slug:string,file:string,is_active:bool}>
+ * WooCommerce is listed but not `required` — Booking and Rental Manager for
+ * WooCommerce has its own native checkout, so WooCommerce is only needed if
+ * the site owner wants its cart/checkout flow instead.
+ *
+ * `wporg` marks whether the slug is installable straight from the
+ * WordPress.org repository via the core AJAX installer — Elementor and
+ * WooCommerce are; the booking plugin is a premium download and never will
+ * be, so its install button always falls back to manual instructions.
+ *
+ * @return array<int,array{label:string,description:string,icon:string,slug:string,file:string,is_active:bool,required:bool,wporg:bool}>
  */
 function rentiva_get_required_plugins() {
 	return array(
@@ -169,6 +178,8 @@ function rentiva_get_required_plugins() {
 			'slug'        => 'elementor',
 			'file'        => 'elementor/elementor.php',
 			'is_active'   => rentiva_has_elementor(),
+			'required'    => true,
+			'wporg'       => true,
 		),
 		array(
 			'label'       => __( 'Booking and Rental Manager for WooCommerce', 'rentiva' ),
@@ -177,14 +188,18 @@ function rentiva_get_required_plugins() {
 			'slug'        => 'booking-and-rental-manager-for-woocommerce',
 			'file'        => 'booking-and-rental-manager-for-woocommerce/booking-and-rental-manager-for-woocommerce.php',
 			'is_active'   => rentiva_has_booking_plugin(),
+			'required'    => true,
+			'wporg'       => false,
 		),
 		array(
 			'label'       => __( 'WooCommerce', 'rentiva' ),
-			'description' => __( 'Required — cart & checkout', 'rentiva' ),
+			'description' => __( 'Optional — only needed if you use WooCommerce cart & checkout', 'rentiva' ),
 			'icon'        => 'dashicons-cart',
 			'slug'        => 'woocommerce',
 			'file'        => 'woocommerce/woocommerce.php',
 			'is_active'   => rentiva_has_woocommerce(),
+			'required'    => false,
+			'wporg'       => true,
 		),
 	);
 }
@@ -194,7 +209,17 @@ function rentiva_get_required_plugins() {
  * nothing if it's already active (or the current user lacks the capability
  * for whichever action applies).
  *
- * @param array{label:string,slug:string,file:string,is_active:bool} $plugin
+ * The button is a real link to core's normal (non-JS) install/activate
+ * handler — a safe fallback if JS fails to load — but carries the data-*
+ * attributes assets/js/admin-setup.js needs to instead drive it through
+ * `wp.updates.installPlugin()` / `activatePlugin()`, WordPress's own
+ * AJAX installer (used by the Add Plugins/Plugins screens): each plugin is
+ * one short, independent request queued through `wp.updates.queue` rather
+ * than one long blocking call, so installing several plugins back to back
+ * can't itself trip a PHP execution-time limit, and progress can be shown
+ * per plugin as each request resolves.
+ *
+ * @param array{label:string,slug:string,file:string,is_active:bool,required:bool,wporg:bool} $plugin
  * @return void
  */
 function rentiva_render_plugin_action_button( $plugin ) {
@@ -207,6 +232,13 @@ function rentiva_render_plugin_action_button( $plugin ) {
 	}
 
 	$is_installed = array_key_exists( $plugin['file'], get_plugins() );
+	$data_attrs   = sprintf(
+		' data-slug="%1$s" data-plugin-file="%2$s" data-name="%3$s" data-wporg="%4$s"',
+		esc_attr( $plugin['slug'] ),
+		esc_attr( $plugin['file'] ),
+		esc_attr( $plugin['label'] ),
+		$plugin['wporg'] ? '1' : '0'
+	);
 
 	if ( $is_installed ) {
 		if ( ! current_user_can( 'activate_plugins' ) ) {
@@ -217,7 +249,10 @@ function rentiva_render_plugin_action_button( $plugin ) {
 			'activate-plugin_' . $plugin['file']
 		);
 		?>
-		<a href="<?php echo esc_url( $url ); ?>" class="button button-small"><?php esc_html_e( 'Activate', 'rentiva' ); ?></a>
+		<a href="<?php echo esc_url( $url ); ?>" class="button button-small rentiva-plugin-action rentiva-plugin-action--activate" data-task="activate"<?php echo $data_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr() above. ?>>
+			<span class="dashicons dashicons-yes-alt" aria-hidden="true"></span>
+			<?php esc_html_e( 'Activate', 'rentiva' ); ?>
+		</a>
 		<?php
 		return;
 	}
@@ -230,18 +265,35 @@ function rentiva_render_plugin_action_button( $plugin ) {
 		'install-plugin_' . $plugin['slug']
 	);
 	?>
-	<a href="<?php echo esc_url( $url ); ?>" class="button button-small button-primary"><?php esc_html_e( 'Install Now', 'rentiva' ); ?></a>
+	<a href="<?php echo esc_url( $url ); ?>" class="button button-small button-primary rentiva-plugin-action rentiva-plugin-action--install" data-task="install"<?php echo $data_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr() above. ?>>
+		<span class="dashicons dashicons-download" aria-hidden="true"></span>
+		<?php esc_html_e( 'Install Now', 'rentiva' ); ?>
+	</a>
 	<?php
 }
 
 /**
+ * Whether every *required* plugin (Step 1 on Rentiva → Setup) is active yet
+ * — the gate that unlocks Theme Settings. Optional plugins (e.g. WooCommerce)
+ * don't factor in.
+ *
+ * @return bool
+ */
+function rentiva_required_plugins_ready() {
+	$required = array_filter( rentiva_get_required_plugins(), fn( $p ) => $p['required'] );
+	return ! in_array( false, wp_list_pluck( $required, 'is_active' ), true );
+}
+
+/**
  * Render the shared top bar (brand + Setup/Theme Settings tabs) both Rentiva
- * admin pages open with.
+ * admin pages open with. The Theme Settings tab is locked (still visible,
+ * but not a link) until Setup's Step 1 "Required plugins" is complete.
  *
  * @param string $active 'setup' or 'settings'.
  * @return void
  */
 function rentiva_render_admin_topbar( $active ) {
+	$plugins_ready = rentiva_required_plugins_ready();
 	?>
 	<div class="rentiva-admin-topbar">
 		<div class="rentiva-admin-topbar__brand">
@@ -252,9 +304,16 @@ function rentiva_render_admin_topbar( $active ) {
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=rentiva-settings' ) ); ?>" class="<?php echo 'setup' === $active ? 'is-active' : ''; ?>">
 				<?php esc_html_e( 'Setup', 'rentiva' ); ?>
 			</a>
-			<a href="<?php echo esc_url( admin_url( 'admin.php?page=rentiva-theme-settings' ) ); ?>" class="<?php echo 'settings' === $active ? 'is-active' : ''; ?>">
-				<?php esc_html_e( 'Theme Settings', 'rentiva' ); ?>
-			</a>
+			<?php if ( $plugins_ready ) : ?>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=rentiva-theme-settings' ) ); ?>" class="<?php echo 'settings' === $active ? 'is-active' : ''; ?>">
+					<?php esc_html_e( 'Theme Settings', 'rentiva' ); ?>
+				</a>
+			<?php else : ?>
+				<span class="is-locked" title="<?php esc_attr_e( 'Complete Step 1 (Required plugins) on Setup first', 'rentiva' ); ?>">
+					<span class="dashicons dashicons-lock" aria-hidden="true"></span>
+					<?php esc_html_e( 'Theme Settings', 'rentiva' ); ?>
+				</span>
+			<?php endif; ?>
 		</nav>
 	</div>
 	<?php
@@ -272,11 +331,15 @@ function rentiva_render_setup_dashboard_widget() {
 	?>
 	<ul style="margin-top:0;">
 		<?php foreach ( $plugins as $plugin ) : ?>
+			<?php
+			$dot_color = $plugin['is_active'] ? '#00a32a' : ( $plugin['required'] ? '#d63638' : '#7a7670' );
+			$status    = $plugin['is_active'] ? esc_html__( 'Active', 'rentiva' ) : ( $plugin['required'] ? esc_html__( 'Not active', 'rentiva' ) : esc_html__( 'Optional', 'rentiva' ) );
+			?>
 			<li style="margin-bottom:6px;">
-				<span style="color:<?php echo $plugin['is_active'] ? '#00a32a' : '#d63638'; ?>;">●</span>
+				<span style="color:<?php echo esc_attr( $dot_color ); ?>;">●</span>
 				<?php echo esc_html( $plugin['label'] ); ?>
 				&mdash;
-				<?php echo $plugin['is_active'] ? esc_html__( 'Active', 'rentiva' ) : esc_html__( 'Not active', 'rentiva' ); ?>
+				<?php echo $status; ?>
 				<?php rentiva_render_plugin_action_button( $plugin ); ?>
 			</li>
 		<?php endforeach; ?>
@@ -311,7 +374,7 @@ function rentiva_render_setup_page() {
 	}
 
 	$plugins        = rentiva_get_required_plugins();
-	$plugins_ready  = ! in_array( false, wp_list_pluck( $plugins, 'is_active' ), true );
+	$plugins_ready  = rentiva_required_plugins_ready();
 	$imported_at    = get_option( 'rentiva_demo_imported_at' );
 	$demo_imported  = ! empty( $imported_at );
 	$homepage_ready = rentiva_homepage_uses_custom_builder();
@@ -351,24 +414,49 @@ function rentiva_render_setup_page() {
 				<div>
 					<span class="rentiva-card__eyebrow"><?php esc_html_e( 'Step 1', 'rentiva' ); ?></span>
 					<h2><?php esc_html_e( 'Required plugins', 'rentiva' ); ?></h2>
-					<p><?php esc_html_e( 'Elementor powers the homepage builder, Booking and Rental Manager for WooCommerce powers rental items and booking, and WooCommerce powers checkout.', 'rentiva' ); ?></p>
+					<p><?php esc_html_e( 'Elementor powers the homepage builder and Booking and Rental Manager for WooCommerce powers rental items, pricing and booking. WooCommerce is optional — only needed if you use its cart & checkout instead of the plugin\'s own native checkout.', 'rentiva' ); ?></p>
 				</div>
 				<span class="rentiva-badge <?php echo $plugins_ready ? 'rentiva-badge--ready' : 'rentiva-badge--attention'; ?>">
 					<?php echo $plugins_ready ? esc_html__( 'Ready', 'rentiva' ) : esc_html__( 'Needs attention', 'rentiva' ); ?>
 				</span>
 			</div>
 
+			<button type="button" class="button button-primary rentiva-install-all" hidden>
+				<span class="dashicons dashicons-download" aria-hidden="true"></span>
+				<?php esc_html_e( 'Install & Activate All Required Plugins', 'rentiva' ); ?>
+			</button>
+
+			<div class="rentiva-plugin-progress" hidden>
+				<div class="rentiva-plugin-progress__bar"><span></span></div>
+				<p class="rentiva-plugin-progress__text"></p>
+			</div>
+
 			<?php foreach ( $plugins as $plugin ) : ?>
-				<div class="rentiva-plugin-row">
+				<?php
+				if ( $plugin['is_active'] ) {
+					$badge_class = 'rentiva-badge--ready';
+					$badge_text  = esc_html__( 'Active', 'rentiva' );
+				} elseif ( $plugin['required'] ) {
+					$badge_class = 'rentiva-badge--attention';
+					$badge_text  = esc_html__( 'Not active', 'rentiva' );
+				} else {
+					$badge_class = 'rentiva-badge--neutral';
+					$badge_text  = esc_html__( 'Optional', 'rentiva' );
+				}
+				?>
+				<div class="rentiva-plugin-row" data-plugin-row data-slug="<?php echo esc_attr( $plugin['slug'] ); ?>" data-required="<?php echo $plugin['required'] ? '1' : '0'; ?>">
 					<span class="rentiva-plugin-row__icon dashicons <?php echo esc_attr( $plugin['icon'] ); ?>" aria-hidden="true"></span>
 					<div class="rentiva-plugin-row__body">
 						<strong><?php echo esc_html( $plugin['label'] ); ?></strong>
 						<span><?php echo esc_html( $plugin['description'] ); ?></span>
 					</div>
-					<span class="rentiva-badge <?php echo $plugin['is_active'] ? 'rentiva-badge--ready' : 'rentiva-badge--attention'; ?>">
-						<?php echo $plugin['is_active'] ? esc_html__( 'Active', 'rentiva' ) : esc_html__( 'Not active', 'rentiva' ); ?>
+					<span class="rentiva-badge <?php echo esc_attr( $badge_class ); ?>" data-role="status-badge">
+						<?php echo $badge_text; ?>
 					</span>
-					<?php rentiva_render_plugin_action_button( $plugin ); ?>
+					<span class="rentiva-plugin-row__action">
+						<?php rentiva_render_plugin_action_button( $plugin ); ?>
+					</span>
+					<div class="rentiva-plugin-row__notice" hidden></div>
 				</div>
 			<?php endforeach; ?>
 		</div>
@@ -418,29 +506,62 @@ function rentiva_render_setup_page() {
 					<h2><?php esc_html_e( 'Next steps', 'rentiva' ); ?></h2>
 					<p><?php esc_html_e( 'Polish your brand, edit the homepage, and open the site your visitors will see.', 'rentiva' ); ?></p>
 				</div>
+				<?php if ( ! $plugins_ready ) : ?>
+					<span class="rentiva-badge rentiva-badge--attention">
+						<?php esc_html_e( 'Locked', 'rentiva' ); ?>
+					</span>
+				<?php endif; ?>
 			</div>
 
+			<?php
+			$next_steps = array(
+				array(
+					'icon'  => 'dashicons-edit',
+					'label' => __( 'Edit Homepage', 'rentiva' ),
+					'desc'  => __( 'Opens the Homepage page — use "Edit with Elementor" there for the full design.', 'rentiva' ),
+					'url'   => $homepage_edit_url,
+					'blank' => false,
+				),
+				array(
+					'icon'  => 'dashicons-admin-customizer',
+					'label' => __( 'Theme Settings', 'rentiva' ),
+					'desc'  => __( 'Colors, hero copy, footer, and social links.', 'rentiva' ),
+					'url'   => admin_url( 'admin.php?page=rentiva-theme-settings' ),
+					'blank' => false,
+				),
+				array(
+					'icon'  => 'dashicons-external',
+					'label' => __( 'View Homepage', 'rentiva' ),
+					'desc'  => __( 'Preview the live front-end experience.', 'rentiva' ),
+					'url'   => home_url( '/' ),
+					'blank' => true,
+				),
+				array(
+					'icon'  => 'dashicons-grid-view',
+					'label' => __( 'View Rentals', 'rentiva' ),
+					'desc'  => __( 'Browse the rentals archive page.', 'rentiva' ),
+					'url'   => rentiva_get_rentals_page_url(),
+					'blank' => true,
+				),
+			);
+			?>
+
 			<div class="rentiva-next-steps">
-				<a class="rentiva-next-step-tile" href="<?php echo esc_url( $homepage_edit_url ); ?>">
-					<span class="dashicons dashicons-edit" aria-hidden="true"></span>
-					<strong><?php esc_html_e( 'Edit Homepage', 'rentiva' ); ?></strong>
-					<span><?php esc_html_e( 'Opens the Homepage page — use "Edit with Elementor" there for the full design.', 'rentiva' ); ?></span>
-				</a>
-				<a class="rentiva-next-step-tile" href="<?php echo esc_url( admin_url( 'admin.php?page=rentiva-theme-settings' ) ); ?>">
-					<span class="dashicons dashicons-admin-customizer" aria-hidden="true"></span>
-					<strong><?php esc_html_e( 'Theme Settings', 'rentiva' ); ?></strong>
-					<span><?php esc_html_e( 'Colors, hero copy, footer, and social links.', 'rentiva' ); ?></span>
-				</a>
-				<a class="rentiva-next-step-tile" href="<?php echo esc_url( home_url( '/' ) ); ?>" target="_blank" rel="noopener noreferrer">
-					<span class="dashicons dashicons-external" aria-hidden="true"></span>
-					<strong><?php esc_html_e( 'View Homepage', 'rentiva' ); ?></strong>
-					<span><?php esc_html_e( 'Preview the live front-end experience.', 'rentiva' ); ?></span>
-				</a>
-				<a class="rentiva-next-step-tile" href="<?php echo esc_url( rentiva_get_rentals_page_url() ); ?>" target="_blank" rel="noopener noreferrer">
-					<span class="dashicons dashicons-grid-view" aria-hidden="true"></span>
-					<strong><?php esc_html_e( 'View Rentals', 'rentiva' ); ?></strong>
-					<span><?php esc_html_e( 'Browse the rentals archive page.', 'rentiva' ); ?></span>
-				</a>
+				<?php foreach ( $next_steps as $step ) : ?>
+					<?php if ( $plugins_ready ) : ?>
+						<a class="rentiva-next-step-tile" href="<?php echo esc_url( $step['url'] ); ?>" <?php echo $step['blank'] ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>>
+							<span class="dashicons <?php echo esc_attr( $step['icon'] ); ?>" aria-hidden="true"></span>
+							<strong><?php echo esc_html( $step['label'] ); ?></strong>
+							<span><?php echo esc_html( $step['desc'] ); ?></span>
+						</a>
+					<?php else : ?>
+						<span class="rentiva-next-step-tile is-locked" title="<?php esc_attr_e( 'Complete Step 1 (Required plugins) first', 'rentiva' ); ?>">
+							<span class="dashicons dashicons-lock" aria-hidden="true"></span>
+							<strong><?php echo esc_html( $step['label'] ); ?></strong>
+							<span><?php esc_html_e( 'Locked until Step 1 (Required plugins) is complete.', 'rentiva' ); ?></span>
+						</span>
+					<?php endif; ?>
+				<?php endforeach; ?>
 			</div>
 		</div>
 	</div>
