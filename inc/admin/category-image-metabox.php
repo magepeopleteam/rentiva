@@ -15,9 +15,31 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! rentiva_has_booking_plugin() ) {
-	return;
+/**
+ * Wires up the term-meta hooks once the booking plugin's `rbfw_item`
+ * post type actually exists.
+ *
+ * This can't be an unconditional top-level `if ( ! rentiva_has_booking_plugin() ) return;`
+ * guard: this file is `require_once`'d from functions.php, which runs
+ * before the `init` hook — the point where the plugin registers
+ * `rbfw_item` (admin/custom_post.php). Checking `post_type_exists()`
+ * that early always fails, so the add_action() calls below it would
+ * silently never run even on a site with the plugin active.
+ *
+ * @return void
+ */
+function rentiva_register_category_image_field_hooks() {
+	if ( ! rentiva_has_booking_plugin() ) {
+		return;
+	}
+
+	add_action( 'rbfw_item_caregory_add_form_fields', 'rentiva_category_image_add_field' );
+	add_action( 'rbfw_item_caregory_edit_form_fields', 'rentiva_category_image_edit_field' );
+	add_action( 'created_rbfw_item_caregory', 'rentiva_save_category_image_field' );
+	add_action( 'edited_rbfw_item_caregory', 'rentiva_save_category_image_field' );
+	add_action( 'admin_enqueue_scripts', 'rentiva_category_image_assets' );
 }
+add_action( 'init', 'rentiva_register_category_image_field_hooks', 20 );
 
 /**
  * "Add new term" form field.
@@ -39,7 +61,6 @@ function rentiva_category_image_add_field() {
 	</div>
 	<?php
 }
-add_action( 'rbfw_item_caregory_add_form_fields', 'rentiva_category_image_add_field' );
 
 /**
  * "Edit term" form field.
@@ -69,7 +90,6 @@ function rentiva_category_image_edit_field( $term ) {
 	</tr>
 	<?php
 }
-add_action( 'rbfw_item_caregory_edit_form_fields', 'rentiva_category_image_edit_field' );
 
 /**
  * Persist the field on both add and edit.
@@ -94,8 +114,6 @@ function rentiva_save_category_image_field( $term_id ) {
 		}
 	}
 }
-add_action( 'created_rbfw_item_caregory', 'rentiva_save_category_image_field' );
-add_action( 'edited_rbfw_item_caregory', 'rentiva_save_category_image_field' );
 
 /**
  * Load the media uploader script on the taxonomy's add/edit screens.
@@ -122,4 +140,3 @@ function rentiva_category_image_assets( $hook ) {
 		)
 	);
 }
-add_action( 'admin_enqueue_scripts', 'rentiva_category_image_assets' );
