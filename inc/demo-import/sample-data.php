@@ -13,27 +13,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Category terms to seed on `rbfw_item_caregory`, each paired with the
- * exact Unsplash photo id mockup/rentiva.html itself uses for that
- * category's "Explore What You Need" card — so a fresh demo import looks
- * identical to the mockup's photos too, not just its copy.
- * rentiva_import_demo_content() (inc/demo-import/importer.php) sideloads
- * these via rentiva_sideload_demo_photo() at `600×700` (that card's own
- * crop ratio, matching the mockup's own `w=600&h=700` params exactly) into
- * `rentiva_category_image_id` term meta — but only for a category that
- * doesn't already have an image, so a site that's already customized its
- * category photos is never overwritten.
+ * Category terms to seed on `rbfw_item_caregory`, each paired with its demo
+ * photo — a filename under assets/images/demo/, bundled with the theme
+ * (originally sourced from Unsplash, matching mockup/rentiva.html's
+ * "Explore What You Need" cards, then downloaded once and committed as a
+ * real theme asset so import never depends on outbound internet access).
+ * rentiva_import_demo_content() (inc/demo-import/importer.php) attaches
+ * these via rentiva_sideload_demo_photo() into `rentiva_category_image_id`
+ * term meta — but only for a category that doesn't already have an image,
+ * so a site that's already customized its category photos is never
+ * overwritten.
  *
- * @return array<string,string> Category name => Unsplash photo id.
+ * @return array<string,string> Category name => filename in assets/images/demo/.
  */
 function rentiva_demo_categories() {
 	return array(
-		'Bicycles'     => 'photo-1485965120184-e220f721d03e',
-		'Scooters'     => 'photo-1558981403-c5f9899a28bc',
-		'Camping'      => 'photo-1504280390367-361c6d9f38f4',
-		'Cameras'      => 'photo-1516035069371-29a1b244cc32',
-		'Water Sports' => 'photo-1507525428034-b723cf961d3e',
-		'Outdoor Gear' => 'photo-1551632811-561732d1e306',
+		'Bicycles'     => 'category-bicycles.jpg',
+		'Scooters'     => 'category-scooters.jpg',
+		'Camping'      => 'category-camping.jpg',
+		'Cameras'      => 'category-cameras.jpg',
+		'Water Sports' => 'category-water-sports.jpg',
+		'Outdoor Gear' => 'category-outdoor-gear.jpg',
 	);
 }
 
@@ -49,9 +49,10 @@ function rentiva_demo_locations() {
 /**
  * Demo `rbfw_item` posts, matching mockup/src/pages/HomePage.tsx's 4
  * products and mockup/src/pages/DetailPage.tsx's full Explorer X1 detail.
- * Each item's `photo` is the exact Unsplash photo id mockup/rentiva.html
- * itself uses for that item's rental card — rentiva_import_demo_content()
- * (inc/demo-import/importer.php) sideloads it as the item's featured
+ * Each item's `photo` is a filename under assets/images/demo/ (see
+ * rentiva_demo_categories() above for why these are bundled files, not
+ * live Unsplash ids) — rentiva_import_demo_content()
+ * (inc/demo-import/importer.php) attaches it as the item's featured
  * image via rentiva_sideload_demo_photo(), but only when the item doesn't
  * already have one, so re-running import never overwrites a photo an admin
  * has since changed. Each item also gets `rbfw_item_stock_quantity` set to
@@ -70,7 +71,7 @@ function rentiva_demo_items() {
 			'location'   => 'Dhaka',
 			'daily_rate' => 18,
 			'weekly_rate' => 85,
-			'photo'      => 'photo-1571068316344-75bc76f77890',
+			'photo'      => 'item-explorer-x1-mountain-bike.jpg',
 			'specs'      => array(
 				'Type: Mountain Bike',
 				'Gears: 21 Speed',
@@ -89,7 +90,7 @@ function rentiva_demo_items() {
 			'location'   => 'Dhaka',
 			'daily_rate' => 14,
 			'weekly_rate' => 0,
-			'photo'      => 'photo-1532298229144-0ec0c57515c7',
+			'photo'      => 'item-urban-cruiser.jpg',
 			'specs'      => array( 'Type: City Bike', 'Gears: 7 Speed', 'Frame: Steel', 'Suitable For: Adults' ),
 			'included'   => array( 'Bike Lock', 'Front Basket' ),
 		),
@@ -101,7 +102,7 @@ function rentiva_demo_items() {
 			'location'   => 'Chittagong',
 			'daily_rate' => 22,
 			'weekly_rate' => 0,
-			'photo'      => 'photo-1558618666-fcd25c85cd64',
+			'photo'      => 'item-trail-master.jpg',
 			'specs'      => array( 'Type: Adventure Bike', 'Gears: 24 Speed', 'Frame: Aluminum', 'Suitable For: Adults' ),
 			'included'   => array( 'Helmet', 'Repair Kit' ),
 		),
@@ -113,7 +114,7 @@ function rentiva_demo_items() {
 			'location'   => 'Sylhet',
 			'daily_rate' => 16,
 			'weekly_rate' => 0,
-			'photo'      => 'photo-1485965120184-e220f721d03e',
+			'photo'      => 'item-weekend-pro.jpg',
 			'specs'      => array( 'Type: Hybrid Bike', 'Gears: 18 Speed', 'Frame: Aluminum', 'Suitable For: Adults' ),
 			'included'   => array( 'Helmet', 'Bike Lock' ),
 		),
@@ -122,24 +123,24 @@ function rentiva_demo_items() {
 
 /**
  * The homepage-widget photos (Hero background, Promo Banner background,
- * Why Rentiva, Testimonial avatar) — the exact Unsplash photo id
- * mockup/rentiva.html itself uses for each. rentiva_import_demo_homepage_images()
- * sideloads these into the matching `rentiva_settings` key
+ * Why Rentiva, Testimonial avatar) — bundled files under assets/images/demo/
+ * (see rentiva_demo_categories() above). rentiva_import_demo_homepage_images()
+ * attaches these into the matching `rentiva_settings` key
  * (`hero_image_id` etc.), which — since inc/integrations/elementor-widgets.php
  * uses that same setting as each widget's live Elementor `default` — is
  * also what makes the Hero/Promo Banner/Why Rentiva/Testimonial widgets
  * show a real, on-brand photo pre-filled the moment they're opened,
- * instead of an empty Photo field. Only sideloaded when that specific
+ * instead of an empty Photo field. Only attached when that specific
  * setting is still unset, so a site that's already set its own image is
  * never overwritten.
  *
- * @return array<string,string> `rentiva_settings` key => Unsplash photo id.
+ * @return array<string,string> `rentiva_settings` key => filename in assets/images/demo/.
  */
 function rentiva_demo_homepage_images() {
 	return array(
-		'hero_image_id'         => 'photo-1476041800959-2f6bb412c8ce',
-		'promo_image_id'        => 'photo-1464822759023-fed622ff2c3b',
-		'why_image_id'          => 'photo-1506905925346-21bda4d32df4',
-		'testimonial_avatar_id' => 'photo-1500648767791-00dcc994a43e',
+		'hero_image_id'         => 'hero.jpg',
+		'promo_image_id'        => 'promo.jpg',
+		'why_image_id'          => 'why.jpg',
+		'testimonial_avatar_id' => 'testimonial-avatar.jpg',
 	);
 }

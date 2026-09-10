@@ -218,23 +218,28 @@ function rentiva_settings_page_assets( $hook ) {
 			'installingText'     => __( 'Installing…', 'rentiva' ),
 			'activatingText'     => __( 'Activating…', 'rentiva' ),
 			'activeText'         => __( 'Active', 'rentiva' ),
+			'installedText'      => __( 'Installed', 'rentiva' ),
+			'installButtonText'  => __( 'Install Now', 'rentiva' ),
+			'activateButtonText' => __( 'Activate', 'rentiva' ),
 			'retryText'          => __( 'Retry', 'rentiva' ),
-			'installAllDoneText' => __( 'All set! Reloading…', 'rentiva' ),
-			/* translators: 1: number of plugins done, 2: total number of plugins, 3: name of the plugin currently being processed. */
-			'progressText'       => __( 'Step %1$d of %2$d — %3$s', 'rentiva' ),
 			/* translators: %s: plugin name. */
 			'phaseInstalling'    => __( 'Installing %s…', 'rentiva' ),
 			/* translators: %s: plugin name. */
-			'phaseInstalled'     => __( '%s installed — activating…', 'rentiva' ),
+			'phaseInstalled'     => __( '%s installed! Click Activate to finish.', 'rentiva' ),
 			/* translators: %s: plugin name. */
 			'phaseActivating'    => __( 'Activating %s…', 'rentiva' ),
 			/* translators: %s: plugin name. */
 			'phaseDone'          => __( '%s is active!', 'rentiva' ),
-			'manualHeading'      => __( 'Automatic installation failed', 'rentiva' ),
-			'manualWporgHint'    => __( 'You can download it from WordPress.org and upload the zip instead, or install it manually via FTP/File Manager.', 'rentiva' ),
-			'manualPremiumHint'  => __( 'This plugin isn\'t available in the WordPress.org repository. Upload the zip file you received, or extract it into wp-content/plugins/ via FTP/File Manager, then click Activate.', 'rentiva' ),
-			'uploadLinkText'     => __( 'Upload plugin zip', 'rentiva' ),
-			'wporgLinkText'      => __( 'View on WordPress.org', 'rentiva' ),
+			'stallHeading'       => __( 'Still working…', 'rentiva' ),
+			'stallHint'          => __( 'This is taking longer than usual — a slow connection or a plugin with a heavier setup routine can do this. It hasn\'t failed; you can keep waiting, or check its status on the Plugins page.', 'rentiva' ),
+			'pluginsScreenLinkText' => __( 'Open Plugins page', 'rentiva' ),
+			'manualInstallHeading'  => __( 'Automatic installation failed', 'rentiva' ),
+			'manualActivateHeading' => __( 'Automatic activation failed', 'rentiva' ),
+			'manualWporgHint'       => __( 'You can download it from WordPress.org and upload the zip instead, or install it manually via FTP/File Manager.', 'rentiva' ),
+			'manualPremiumHint'     => __( 'This plugin isn\'t available in the WordPress.org repository. Upload the zip file you received, or extract it into wp-content/plugins/ via FTP/File Manager, then click Activate.', 'rentiva' ),
+			'manualActivateHint'    => __( 'The plugin is installed but WordPress couldn\'t activate it automatically — see the error above for the reason. You can try activating it directly from the Plugins page instead.', 'rentiva' ),
+			'uploadLinkText'        => __( 'Upload plugin zip', 'rentiva' ),
+			'wporgLinkText'         => __( 'View on WordPress.org', 'rentiva' ),
 		)
 	);
 }

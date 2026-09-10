@@ -236,6 +236,12 @@
 	margin-top: 0.25rem;
 }
 
+/* Informational (still working, not failed) — neutral, not red. */
+.rentiva-plugin-row__notice--stall {
+	background: var(--rentiva-muted);
+	color: var(--rentiva-foreground);
+}
+
 .rentiva-plugin-row__notice p {
 	margin: 0.4rem 0 0;
 }
@@ -244,15 +250,14 @@
 	margin-top: 0.35rem;
 }
 
-/* Install All + progress bar */
+/* Import Demo Content — pill-shaped hero CTA */
 
-.rentiva-install-all.button {
+.rentiva-import-demo-btn.button {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.5rem;
 	height: auto;
 	padding: 0.75rem 1.5rem !important;
-	margin-bottom: 1rem;
 	border: none;
 	border-radius: var(--rentiva-radius-pill);
 	background: linear-gradient(135deg, var(--rentiva-primary), var(--rentiva-primary-dark));
@@ -265,22 +270,21 @@
 	transition: box-shadow 150ms ease, transform 150ms ease, opacity 150ms ease;
 }
 
-.rentiva-install-all.button .dashicons {
+.rentiva-import-demo-btn.button .dashicons {
 	width: 1.1rem;
 	height: 1.1rem;
 	font-size: 1.1rem;
 }
 
-.rentiva-install-all.button:hover,
-.rentiva-install-all.button:focus {
+.rentiva-import-demo-btn.button:hover,
+.rentiva-import-demo-btn.button:focus {
 	background: linear-gradient(135deg, var(--rentiva-primary-dark), var(--rentiva-primary-dark));
 	color: #fff;
 	box-shadow: 0 6px 18px rgba(27, 94, 59, 0.36);
 	transform: translateY(-1px);
 }
 
-.rentiva-install-all.button:disabled,
-.rentiva-install-all.button.updating-message {
+.rentiva-import-demo-btn.button:disabled {
 	opacity: 0.75;
 	box-shadow: none;
 	transform: none;

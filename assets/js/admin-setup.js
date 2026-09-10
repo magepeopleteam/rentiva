@@ -108,11 +108,10 @@
 		return;
 	}
 
-	var $card          = $rows.first().closest( '.rentiva-card' );
-	var $installAllBtn = $card.find( '.rentiva-install-all' );
-	var $progress      = $card.find( '.rentiva-plugin-progress' );
-	var $progressFill  = $progress.find( '.rentiva-plugin-progress__bar span' );
-	var $progressText  = $progress.find( '.rentiva-plugin-progress__text' );
+	var $card         = $rows.first().closest( '.rentiva-card' );
+	var $progress     = $card.find( '.rentiva-plugin-progress' );
+	var $progressFill = $progress.find( '.rentiva-plugin-progress__bar span' );
+	var $progressText = $progress.find( '.rentiva-plugin-progress__text' );
 
 	function format( template, values ) {
 		var out = template;
@@ -122,33 +121,73 @@
 		return out;
 	}
 
-	function pendingRequiredButtons() {
-		return $rows
-			.filter( '[data-required="1"]' )
-			.find( '.rentiva-plugin-action' );
-	}
-
-	if ( pendingRequiredButtons().length > 1 ) {
-		$installAllBtn.removeAttr( 'hidden' );
-	}
-
 	function clearNotice( $row ) {
-		$row.find( '.rentiva-plugin-row__notice' ).attr( 'hidden', true ).empty();
+		$row.find( '.rentiva-plugin-row__notice' ).attr( 'class', 'rentiva-plugin-row__notice' ).attr( 'hidden', true ).empty();
 	}
 
-	function showNotice( $row, message, wporgFlag, slug ) {
-		var hint = '1' === wporgFlag ? rentivaAdmin.manualWporgHint : rentivaAdmin.manualPremiumHint;
-		var html = '<strong>' + rentivaAdmin.manualHeading + '</strong>';
+	/**
+	 * @param {jQuery} $row
+	 * @param {string} task      'install' or 'activate' — which step actually
+	 *                           failed, since the heading and the advice both
+	 *                           genuinely differ (a failed activate means the
+	 *                           plugin is already sitting there installed —
+	 *                           "download the zip" would be nonsense advice).
+	 * @param {string} message   response.errorMessage from wp.updates, if any.
+	 * @param {string} wporgFlag '1' or '0', from the button's data-wporg.
+	 * @param {string} slug
+	 */
+	function showNotice( $row, task, message, wporgFlag, slug ) {
+		var isInstall = 'install' === task;
+		var heading    = isInstall ? rentivaAdmin.manualInstallHeading : rentivaAdmin.manualActivateHeading;
+		var hint       = isInstall
+			? ( '1' === wporgFlag ? rentivaAdmin.manualWporgHint : rentivaAdmin.manualPremiumHint )
+			: rentivaAdmin.manualActivateHint;
+		var html = '<strong>' + heading + '</strong>';
 		if ( message ) {
 			html += '<p>' + message + '</p>';
 		}
 		html += '<p>' + hint + '</p><p>';
-		html += '<a href="' + rentivaAdmin.uploadPluginUrl + '" class="button button-small" target="_blank" rel="noopener noreferrer">' + rentivaAdmin.uploadLinkText + '</a> ';
-		if ( '1' === wporgFlag ) {
-			html += '<a href="https://wordpress.org/plugins/' + slug + '/" class="button button-small" target="_blank" rel="noopener noreferrer">' + rentivaAdmin.wporgLinkText + '</a> ';
+		if ( isInstall ) {
+			html += '<a href="' + rentivaAdmin.uploadPluginUrl + '" class="button button-small" target="_blank" rel="noopener noreferrer">' + rentivaAdmin.uploadLinkText + '</a> ';
+			if ( '1' === wporgFlag ) {
+				html += '<a href="https://wordpress.org/plugins/' + slug + '/" class="button button-small" target="_blank" rel="noopener noreferrer">' + rentivaAdmin.wporgLinkText + '</a> ';
+			}
+		} else {
+			html += '<a href="' + rentivaAdmin.pluginsScreenUrl + '" class="button button-small" target="_blank" rel="noopener noreferrer">' + rentivaAdmin.pluginsScreenLinkText + '</a> ';
 		}
 		html += '<button type="button" class="button button-small rentiva-retry-install">' + rentivaAdmin.retryText + '</button></p>';
-		$row.find( '.rentiva-plugin-row__notice' ).html( html ).removeAttr( 'hidden' );
+		$row.find( '.rentiva-plugin-row__notice' ).attr( 'class', 'rentiva-plugin-row__notice' ).html( html ).removeAttr( 'hidden' );
+	}
+
+	function showStallNotice( $row ) {
+		// Informational only — the real request is still in flight (aborting
+		// it client-side wouldn't stop it server-side anyway), so this never
+		// replaces the busy button and never offers Retry, which could fire a
+		// second, conflicting attempt. clearNotice() removes it as soon as
+		// the real success/error callback finally arrives.
+		var html = '<strong>' + rentivaAdmin.stallHeading + '</strong>';
+		html += '<p>' + rentivaAdmin.stallHint + '</p><p>';
+		html += '<a href="' + rentivaAdmin.pluginsScreenUrl + '" class="button button-small" target="_blank" rel="noopener noreferrer">' + rentivaAdmin.pluginsScreenLinkText + '</a>';
+		html += '</p>';
+		$row.find( '.rentiva-plugin-row__notice' ).attr( 'class', 'rentiva-plugin-row__notice rentiva-plugin-row__notice--stall' ).html( html ).removeAttr( 'hidden' );
+	}
+
+	/**
+	 * Warns via onStall if neither success nor error arrives within `ms` —
+	 * without abandoning the real request, since a client-side timeout can't
+	 * stop whatever's actually still running server-side. Whichever of
+	 * success()/error() the caller wires up should call the returned
+	 * `clear()` first, so a stall warning never appears after the fact.
+	 *
+	 * @param {number}   ms
+	 * @param {Function} onStall
+	 * @return {Function} clear
+	 */
+	function watchForStall( ms, onStall ) {
+		var timer = setTimeout( onStall, ms );
+		return function clear() {
+			clearTimeout( timer );
+		};
 	}
 
 	function markActive( $row ) {
@@ -156,6 +195,50 @@
 			.attr( 'class', 'rentiva-badge rentiva-badge--ready' )
 			.text( rentivaAdmin.activeText );
 		$row.find( '.rentiva-plugin-row__action' ).empty();
+		clearNotice( $row );
+	}
+
+	/**
+	 * Builds a fresh Install Now / Activate button matching what
+	 * rentiva_render_plugin_action_button() renders server-side, so the
+	 * install → activate handoff below can swap one in for the other
+	 * without a page reload. Built via attr()/text() rather than an HTML
+	 * string, so nothing in `data` needs manual escaping.
+	 *
+	 * @param {string} task 'install' or 'activate'.
+	 * @param {Object} data { slug, name, file, wporg }
+	 * @return {jQuery}
+	 */
+	function buildActionButton( task, data ) {
+		var isInstall = 'install' === task;
+		var $btn       = $( '<a>', {
+			href: '#',
+			'class': 'button button-small rentiva-plugin-action ' + ( isInstall ? 'button-primary rentiva-plugin-action--install' : 'rentiva-plugin-action--activate' ),
+			'data-task': task,
+			'data-slug': data.slug,
+			'data-plugin-file': data.file,
+			'data-name': data.name,
+			'data-wporg': data.wporg
+		} );
+		$( '<span>', { 'class': 'dashicons ' + ( isInstall ? 'dashicons-download' : 'dashicons-yes-alt' ), 'aria-hidden': 'true' } ).appendTo( $btn );
+		$btn.append( document.createTextNode( ' ' + ( isInstall ? rentivaAdmin.installButtonText : rentivaAdmin.activateButtonText ) ) );
+		return $btn;
+	}
+
+	/**
+	 * Installed, but not yet active — swaps in a fresh Activate button so
+	 * installing and activating stay two distinct, separately-clicked steps
+	 * instead of one chained flow (a single long AJAX chain was exactly what
+	 * made a slow or stalled activate step look like a stuck install).
+	 *
+	 * @param {jQuery} $row
+	 * @param {Object} data { slug, name, file, wporg }
+	 */
+	function markInstalled( $row, data ) {
+		$row.find( '[data-role="status-badge"]' )
+			.attr( 'class', 'rentiva-badge rentiva-badge--neutral' )
+			.text( rentivaAdmin.installedText );
+		$row.find( '.rentiva-plugin-row__action' ).empty().append( buildActionButton( 'activate', data ) );
 		clearNotice( $row );
 	}
 
@@ -205,25 +288,24 @@
 	}
 
 	/**
-	 * Installs (if needed) then activates one plugin via wp.updates. Always
-	 * resolves — with { success: bool } — never rejects, so code processing
-	 * several plugins in sequence (Install All) can carry on past a failure
-	 * instead of stopping the whole run.
+	 * Installs one plugin via wp.updates — and only installs it. On success
+	 * the row's button is swapped for a fresh Activate button (markInstalled())
+	 * rather than chaining straight into activation itself: a single
+	 * install-then-activate AJAX chain was exactly what made a slow or
+	 * stalled activate step look like a stuck/broken install, with no way to
+	 * tell which half had actually failed. Two separate clicks means two
+	 * separate, individually retryable outcomes.
 	 *
-	 * wp.updates itself only reports request success/failure, not real
-	 * byte-level download/unzip progress, so each phase's percentage creeps
-	 * through a few checkpoints while its request is in flight (via
-	 * creepProgress()) and then snaps to the phase's real end value the
-	 * moment the request actually resolves — an honest "still working, here's
-	 * roughly how far along" indicator rather than one that sits frozen for
-	 * however long the request takes, or a literal (unavailable) byte count.
+	 * Always resolves — with { success: bool } — never rejects, so code
+	 * processing several plugins in sequence (Install All) can carry on past
+	 * a failure instead of stopping the whole run.
 	 *
-	 * @param {jQuery}    $btn        The .rentiva-plugin-action button clicked.
-	 * @param {Function=} onProgress  Optional ( fraction, text ) callback; fraction
-	 *                                is 0..1, or null to signal failure (hide progress).
+	 * @param {jQuery}    $btn       The .rentiva-plugin-action[data-task="install"] button clicked.
+	 * @param {Function=} onProgress Optional ( fraction, text ) callback; fraction
+	 *                               is 0..1, or null to signal failure (hide progress).
 	 * @return {jQuery.Promise}
 	 */
-	function runPluginAction( $btn, onProgress ) {
+	function runInstall( $btn, onProgress ) {
 		onProgress    = onProgress || function () {};
 		var deferred  = $.Deferred();
 		var $row      = $btn.closest( '[data-plugin-row]' );
@@ -231,62 +313,113 @@
 		var name      = $btn.data( 'name' );
 		var file      = $btn.data( 'pluginFile' );
 		var wporgFlag = String( $btn.data( 'wporg' ) );
-		var task      = $btn.data( 'task' );
 
 		clearNotice( $row );
+		setBusy( $btn, rentivaAdmin.installingText );
 
-		function doActivate() {
-			setBusy( $btn, rentivaAdmin.activatingText );
-			var activateCheckpoints = 'install' === task ? [ 50, 70, 90 ] : [ 10, 20, 30, 50, 70, 90 ];
-			var stopCreep           = creepProgress( activateCheckpoints, function ( pct ) {
-				onProgress( pct / 100, format( rentivaAdmin.phaseActivating, { '%s': name } ) );
-			} );
-			wp.updates.activatePlugin( {
-				slug: slug,
-				name: name,
-				plugin: file,
-				success: function () {
-					stopCreep();
-					restore( $btn );
-					markActive( $row );
-					onProgress( 1, format( rentivaAdmin.phaseDone, { '%s': name } ) );
-					deferred.resolve( { success: true, slug: slug } );
-				},
-				error: function ( response ) {
-					stopCreep();
-					restore( $btn );
-					showNotice( $row, response && response.errorMessage ? response.errorMessage : '', wporgFlag, slug );
-					onProgress( null );
-					deferred.resolve( { success: false, slug: slug } );
-				}
-			} );
-		}
+		// wp.updates only reports request success/failure, not real
+		// byte-level download/unzip progress, so the percentage creeps
+		// through a few checkpoints while the request is in flight and then
+		// snaps to 100% the moment it actually resolves — an honest "still
+		// working" indicator rather than one that sits frozen the whole time.
+		var stopCreep = creepProgress( [ 5, 10, 15, 20, 30, 50, 70, 90 ], function ( pct ) {
+			onProgress( pct / 100, format( rentivaAdmin.phaseInstalling, { '%s': name } ) );
+		} );
+		// A client-side timeout can't actually stop whatever's still running
+		// server-side, so this only surfaces a "still working" notice at
+		// 15s — it never fails the row or stops waiting for the real
+		// success/error, which is handled normally whenever it does arrive.
+		var clearStall = watchForStall( 15000, function () {
+			showStallNotice( $row );
+		} );
 
-		if ( 'install' === task ) {
-			setBusy( $btn, rentivaAdmin.installingText );
-			var stopCreep = creepProgress( [ 5, 10, 15, 20, 30, 50 ], function ( pct ) {
-				onProgress( pct / 100, format( rentivaAdmin.phaseInstalling, { '%s': name } ) );
-			} );
-			wp.updates.installPlugin( {
-				slug: slug,
-				success: function () {
-					stopCreep();
-					onProgress( 0.5, format( rentivaAdmin.phaseInstalled, { '%s': name } ) );
-					doActivate();
-				},
-				error: function ( response ) {
-					stopCreep();
-					restore( $btn );
-					showNotice( $row, response && response.errorMessage ? response.errorMessage : '', wporgFlag, slug );
-					onProgress( null );
-					deferred.resolve( { success: false, slug: slug } );
-				}
-			} );
-		} else {
-			doActivate();
-		}
+		wp.updates.installPlugin( {
+			slug: slug,
+			success: function () {
+				clearStall();
+				stopCreep();
+				onProgress( 1, format( rentivaAdmin.phaseInstalled, { '%s': name } ) );
+				markInstalled( $row, { slug: slug, name: name, file: file, wporg: wporgFlag } );
+				deferred.resolve( { success: true, slug: slug } );
+			},
+			error: function ( response ) {
+				clearStall();
+				stopCreep();
+				restore( $btn );
+				showNotice( $row, 'install', response && response.errorMessage ? response.errorMessage : '', wporgFlag, slug );
+				onProgress( null );
+				deferred.resolve( { success: false, slug: slug } );
+			}
+		} );
 
 		return deferred.promise();
+	}
+
+	/**
+	 * Activates one already-installed plugin via wp.updates — and only
+	 * activates it (see runInstall()'s docs for why install and activate are
+	 * two separate functions/clicks rather than one chained flow). Always
+	 * resolves — with { success: bool } — never rejects.
+	 *
+	 * @param {jQuery}    $btn       The .rentiva-plugin-action[data-task="activate"] button clicked.
+	 * @param {Function=} onProgress Optional ( fraction, text ) callback; fraction
+	 *                               is 0..1, or null to signal failure (hide progress).
+	 * @return {jQuery.Promise}
+	 */
+	function runActivate( $btn, onProgress ) {
+		onProgress    = onProgress || function () {};
+		var deferred  = $.Deferred();
+		var $row      = $btn.closest( '[data-plugin-row]' );
+		var slug      = $btn.data( 'slug' );
+		var name      = $btn.data( 'name' );
+		var file      = $btn.data( 'pluginFile' );
+		var wporgFlag = String( $btn.data( 'wporg' ) );
+
+		clearNotice( $row );
+		setBusy( $btn, rentivaAdmin.activatingText );
+
+		var stopCreep = creepProgress( [ 10, 20, 30, 50, 70, 90 ], function ( pct ) {
+			onProgress( pct / 100, format( rentivaAdmin.phaseActivating, { '%s': name } ) );
+		} );
+		var clearStall = watchForStall( 15000, function () {
+			showStallNotice( $row );
+		} );
+
+		wp.updates.activatePlugin( {
+			slug: slug,
+			name: name,
+			plugin: file,
+			success: function () {
+				clearStall();
+				stopCreep();
+				restore( $btn );
+				markActive( $row );
+				onProgress( 1, format( rentivaAdmin.phaseDone, { '%s': name } ) );
+				deferred.resolve( { success: true, slug: slug } );
+			},
+			error: function ( response ) {
+				clearStall();
+				stopCreep();
+				restore( $btn );
+				showNotice( $row, 'activate', response && response.errorMessage ? response.errorMessage : '', wporgFlag, slug );
+				onProgress( null );
+				deferred.resolve( { success: false, slug: slug } );
+			}
+		} );
+
+		return deferred.promise();
+	}
+
+	/**
+	 * Dispatches to runInstall() or runActivate() based on which button was
+	 * clicked — the shared entry point for the click handlers below.
+	 *
+	 * @param {jQuery}    $btn
+	 * @param {Function=} onProgress
+	 * @return {jQuery.Promise}
+	 */
+	function runPluginAction( $btn, onProgress ) {
+		return 'install' === $btn.data( 'task' ) ? runInstall( $btn, onProgress ) : runActivate( $btn, onProgress );
 	}
 
 	/**
@@ -325,75 +458,5 @@
 		var $row = $( this ).closest( '[data-plugin-row]' );
 		clearNotice( $row );
 		runPluginAction( $row.find( '.rentiva-plugin-action' ), showSingleProgress );
-	} );
-
-	$installAllBtn.on( 'click', function () {
-		var $btns = pendingRequiredButtons();
-		var total = $btns.length;
-		if ( ! total ) {
-			return;
-		}
-
-		// Hide our own icon rather than swapping it for a spinning one — core
-		// already renders a spinning :before icon on any .button.updating-message
-		// (see wp-admin/css/common.css), so keeping ours too would double up.
-		$installAllBtn
-			.prop( 'disabled', true )
-			.addClass( 'updating-message' )
-			.find( '.dashicons' ).hide();
-		$progress.removeAttr( 'hidden' );
-
-		var completed = 0;
-		var failures  = 0;
-
-		function next( index ) {
-			if ( index >= total ) {
-				$progressFill.css( 'width', '100%' );
-				if ( failures ) {
-					$installAllBtn
-						.prop( 'disabled', false )
-						.removeClass( 'updating-message' )
-						.find( '.dashicons' ).show();
-					$progressText.text(
-						format( rentivaAdmin.progressText, { '%1$d': completed - failures, '%2$d': total, '%3$s': '' } )
-					);
-				} else {
-					$progressText.text( rentivaAdmin.installAllDoneText );
-					setTimeout( function () {
-						window.location.reload();
-					}, 1200 );
-				}
-				return;
-			}
-
-			var $btn = $btns.eq( index );
-			var name = $btn.data( 'name' );
-
-			// Combine this plugin's own 0..1 progress with its position in the
-			// queue so the bar advances smoothly across the whole run, not just
-			// in one jump per plugin.
-			function onStepProgress( fraction ) {
-				if ( null === fraction ) {
-					return;
-				}
-				var overall = Math.round( ( ( index + fraction ) / total ) * 100 );
-				$progressFill.css( 'width', overall + '%' );
-				$progressText.text(
-					format( rentivaAdmin.progressText, { '%1$d': index + 1, '%2$d': total, '%3$s': name } ) + ' — ' + overall + '%'
-				);
-			}
-
-			onStepProgress( 0 );
-
-			runPluginAction( $btn, onStepProgress ).done( function ( result ) {
-				completed++;
-				if ( ! result.success ) {
-					failures++;
-				}
-				next( index + 1 );
-			} );
-		}
-
-		next( 0 );
 	} );
 } )( jQuery );

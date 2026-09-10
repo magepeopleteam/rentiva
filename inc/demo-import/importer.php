@@ -68,7 +68,7 @@ function rentiva_import_demo_content() {
 		$category_ids[ $category_name ] = $term_id;
 
 		if ( $term_id && ! get_term_meta( $term_id, 'rentiva_category_image_id', true ) ) {
-			$image_id = rentiva_sideload_demo_photo( $category_photo, 600, 700, $category_name . ' category' );
+			$image_id = rentiva_sideload_demo_photo( $category_photo, $category_name . ' category' );
 			if ( $image_id ) {
 				update_term_meta( $term_id, 'rentiva_category_image_id', $image_id );
 			}
@@ -158,7 +158,7 @@ function rentiva_import_demo_content() {
 		}
 
 		if ( ! empty( $item['photo'] ) && ! get_post_thumbnail_id( $post_id ) ) {
-			$image_id = rentiva_sideload_demo_photo( $item['photo'], 600, 450, $item['title'] );
+			$image_id = rentiva_sideload_demo_photo( $item['photo'], $item['title'] );
 			if ( $image_id ) {
 				set_post_thumbnail( $post_id, $image_id );
 			}
@@ -183,26 +183,18 @@ function rentiva_import_demo_content() {
  * @return void
  */
 function rentiva_import_demo_homepage_images() {
-	$sizes = array(
-		'hero_image_id'         => array( 1920, 1080 ),
-		'promo_image_id'        => array( 1920, 900 ),
-		'why_image_id'          => array( 800, 1000 ),
-		'testimonial_avatar_id' => array( 400, 400 ),
-	);
-
 	$settings = get_option( 'rentiva_settings', array() );
 	if ( ! is_array( $settings ) ) {
 		$settings = array();
 	}
 
 	$changed = false;
-	foreach ( rentiva_demo_homepage_images() as $key => $photo_id ) {
+	foreach ( rentiva_demo_homepage_images() as $key => $filename ) {
 		if ( ! empty( $settings[ $key ] ) ) {
 			continue;
 		}
 
-		list( $width, $height ) = $sizes[ $key ];
-		$image_id = rentiva_sideload_demo_photo( $photo_id, $width, $height, $key );
+		$image_id = rentiva_sideload_demo_photo( $filename, $key );
 		if ( $image_id ) {
 			$settings[ $key ] = $image_id;
 			$changed = true;
@@ -215,48 +207,39 @@ function rentiva_import_demo_homepage_images() {
 }
 
 /**
- * Sideload one Unsplash demo photo into the media library. Network calls
- * can legitimately fail (no outbound internet, Unsplash unreachable, a
- * photo id no longer resolving) — every caller treats a `0` return as
- * "skip this image, keep going", never as a reason to abort the rest of
- * the import.
+ * Attaches one bundled demo photo (assets/images/demo/$filename — see
+ * rentiva_demo_categories() in sample-data.php for why these are permanent
+ * theme files rather than fetched live) into the media library. These used
+ * to be sideloaded from Unsplash at import time; downloaded once and
+ * committed as real files instead, so import never depends on outbound
+ * internet access and the homepage/catalog are ready immediately on theme
+ * activation (see rentiva_maybe_auto_provision_demo() below). Every caller
+ * still treats a `0` return as "skip this image, keep going" — a missing or
+ * unreadable bundled file shouldn't abort the rest of the import.
  *
- * Uses download_url() + media_handle_sideload() rather than
- * media_sideload_image(): Unsplash's image URLs carry no file extension
- * (it's an image ID plus query-string crop params), and
- * media_sideload_image() derives its filename — and therefore its
- * filetype check — straight from the URL, so it rejects the URL outright
- * with "Invalid image URL" before ever downloading it. Fetching the file
- * first and handing sideload an explicit `.jpg` filename (matching
- * `fm=jpg`, which forces Unsplash to actually serve JPEG) sidesteps that.
- *
- * @param string $photo_id Unsplash photo id, e.g. 'photo-xxxxxxxx'.
- * @param int    $width
- * @param int    $height
+ * @param string $filename    Filename under assets/images/demo/.
  * @param string $description Used only to build a descriptive attachment title.
  * @return int Attachment id, or 0 on failure.
  */
-function rentiva_sideload_demo_photo( $photo_id, $width, $height, $description = '' ) {
+function rentiva_sideload_demo_photo( $filename, $description = '' ) {
 	if ( ! function_exists( 'media_handle_sideload' ) ) {
 		require_once ABSPATH . 'wp-admin/includes/media.php';
 		require_once ABSPATH . 'wp-admin/includes/file.php';
 		require_once ABSPATH . 'wp-admin/includes/image.php';
 	}
 
-	$url = sprintf(
-		'https://images.unsplash.com/%s?w=%d&h=%d&fit=crop&auto=format&fm=jpg&q=80',
-		rawurlencode( $photo_id ),
-		(int) $width,
-		(int) $height
-	);
+	$source = RENTIVA_DIR . 'assets/images/demo/' . $filename;
+	if ( ! is_readable( $source ) ) {
+		return 0;
+	}
 
-	$tmp_file = download_url( $url );
-	if ( is_wp_error( $tmp_file ) ) {
+	$tmp_file = wp_tempnam( $filename );
+	if ( ! copy( $source, $tmp_file ) ) {
 		return 0;
 	}
 
 	$file_array = array(
-		'name'     => sanitize_file_name( $photo_id ) . '.jpg',
+		'name'     => $filename,
 		'tmp_name' => $tmp_file,
 	);
 

@@ -16,19 +16,52 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Flag that Rentiva was just activated, so the welcome notice shows once,
- * and auto-provision the Elementor-editable "Homepage" page if the site
- * doesn't already have a static front page of its own.
+ * and run full auto-provisioning (see rentiva_maybe_auto_provision_demo()
+ * below) in case both required plugins already happen to be active at
+ * theme-activation time.
  *
  * @return void
  */
 function rentiva_flag_activation() {
 	set_transient( 'rentiva_show_welcome_notice', 1, DAY_IN_SECONDS );
-
-	if ( rentiva_has_elementor() && 'page' !== get_option( 'show_on_front' ) ) {
-		rentiva_setup_homepage_page();
-	}
+	rentiva_maybe_auto_provision_demo();
 }
 add_action( 'after_switch_theme', 'rentiva_flag_activation' );
+
+/**
+ * Makes a fresh install look fully ready with zero manual clicks: the
+ * Elementor-editable "Homepage" page (if the site has no static front page
+ * of its own yet) and the full demo catalog — categories, pickup locations,
+ * rental items, nav menus, and the Hero/Promo/Why/Testimonial homepage
+ * images (rentiva_import_demo_content(), inc/demo-import/importer.php).
+ *
+ * Both halves need a plugin the theme doesn't control the activation order
+ * of — Elementor for the homepage, the booking plugin for the catalog — so
+ * this runs from two trigger points: theme activation (in case the plugins
+ * are already active) and every plugin activation (in case the theme was
+ * already active first, e.g. after a reset, which is normally the case).
+ * Both underlying steps are idempotent — rentiva_setup_homepage_page() reuses
+ * an existing "Homepage" page rather than duplicating it, and
+ * rentiva_import_demo_content() skips anything that already exists by title
+ * — so running this more than once, or on a site an admin has already
+ * customized, never overwrites or duplicates anything.
+ *
+ * @return void
+ */
+function rentiva_maybe_auto_provision_demo() {
+	if ( ! rentiva_has_elementor() || ! rentiva_has_booking_plugin() ) {
+		return;
+	}
+
+	if ( 'page' !== get_option( 'show_on_front' ) ) {
+		rentiva_setup_homepage_page();
+	}
+
+	if ( ! get_option( 'rentiva_demo_imported_at' ) ) {
+		rentiva_import_demo_content();
+	}
+}
+add_action( 'activated_plugin', 'rentiva_maybe_auto_provision_demo' );
 
 /**
  * Show the welcome notice once, then clear the flag.
@@ -101,6 +134,59 @@ function rentiva_hide_rbfw_payment_notice_on_setup_page() {
 	}
 }
 add_action( 'current_screen', 'rentiva_hide_rbfw_payment_notice_on_setup_page' );
+
+/**
+ * Elementor, the booking plugin, and WooCommerce each queue their own
+ * "welcome" redirect for the next admin page load when activated — a
+ * transient set inside their own activation hook and consumed on a later
+ * `admin_init`:
+ *  - Elementor:       `elementor_activation_redirect` → `admin.php?page=elementor-app#onboarding`
+ *  - Booking plugin:  `rbfw_plugin_activated` → `edit.php?post_type=rbfw_item`
+ *  - WooCommerce:     `_wc_activation_redirect` → the WC setup wizard
+ * Rentiva's own Setup page is meant to be the one onboarding flow for all
+ * three, so left alone this hijacks the very page load meant to land back
+ * on Setup — including Step 1's Install & Activate All flow, which reloads
+ * the page once every plugin is active. Worse, the booking plugin's check
+ * doesn't skip AJAX requests the way Elementor's does, so a stale transient
+ * can trigger a mid-AJAX redirect and corrupt the JSON response `wp.updates`
+ * is expecting, which is what makes Step 1's Activating… step look stuck.
+ *
+ * Cleared in two layers rather than editing any plugin file (an update
+ * would just clobber that): immediately after Rentiva activates one of its
+ * three companion plugins, and defensively on every AJAX request / load of
+ * Rentiva's own admin pages, in case a transient was left over from an
+ * earlier interrupted attempt.
+ *
+ * @return void
+ */
+function rentiva_clear_companion_activation_redirects() {
+	delete_transient( 'elementor_activation_redirect' );
+	delete_transient( 'rbfw_plugin_activated' );
+	delete_transient( '_wc_activation_redirect' );
+}
+
+add_action(
+	'activated_plugin',
+	function ( $plugin ) {
+		if ( in_array( $plugin, wp_list_pluck( rentiva_get_required_plugins(), 'file' ), true ) ) {
+			rentiva_clear_companion_activation_redirects();
+		}
+	},
+	999
+);
+
+add_action(
+	'admin_init',
+	function () {
+		$rentiva_pages = array( 'rentiva-settings', 'rentiva-theme-settings' );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only screen/request-type check, no state change.
+		$on_rentiva_page = isset( $_GET['page'] ) && in_array( $_GET['page'], $rentiva_pages, true );
+		if ( wp_doing_ajax() || $on_rentiva_page ) {
+			rentiva_clear_companion_activation_redirects();
+		}
+	},
+	0
+);
 
 /**
  * Handles the "Create editable Homepage page" action — creates (or reuses)
@@ -186,7 +272,7 @@ function rentiva_get_required_plugins() {
 			'description' => __( 'Required — rental items, pricing & booking', 'rentiva' ),
 			'icon'        => 'dashicons-calendar-alt',
 			'slug'        => 'booking-and-rental-manager-for-woocommerce',
-			'file'        => 'booking-and-rental-manager-for-woocommerce/booking-and-rental-manager-for-woocommerce.php',
+			'file'        => 'booking-and-rental-manager-for-woocommerce/rent-manager.php',
 			'is_active'   => rentiva_has_booking_plugin(),
 			'required'    => true,
 			'wporg'       => false,
@@ -421,11 +507,6 @@ function rentiva_render_setup_page() {
 				</span>
 			</div>
 
-			<button type="button" class="button button-primary rentiva-install-all" hidden>
-				<span class="dashicons dashicons-download" aria-hidden="true"></span>
-				<?php esc_html_e( 'Install & Activate All Required Plugins', 'rentiva' ); ?>
-			</button>
-
 			<div class="rentiva-plugin-progress" hidden>
 				<div class="rentiva-plugin-progress__bar"><span></span></div>
 				<p class="rentiva-plugin-progress__text"></p>
@@ -492,7 +573,10 @@ function rentiva_render_setup_page() {
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 					<input type="hidden" name="action" value="rentiva_import_demo">
 					<?php wp_nonce_field( 'rentiva_import_demo' ); ?>
-					<button type="submit" class="button button-primary button-hero"><?php esc_html_e( 'Import Demo Content', 'rentiva' ); ?></button>
+					<button type="submit" class="button button-primary button-hero rentiva-import-demo-btn">
+						<span class="dashicons dashicons-database-import" aria-hidden="true"></span>
+						<?php esc_html_e( 'Import Demo Content', 'rentiva' ); ?>
+					</button>
 				</form>
 			<?php else : ?>
 				<p><em><?php esc_html_e( 'Install and activate Booking and Rental Manager for WooCommerce to import demo content.', 'rentiva' ); ?></em></p>
