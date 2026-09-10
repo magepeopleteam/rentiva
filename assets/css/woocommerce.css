@@ -1,0 +1,300 @@
+/**
+ * Cart & Checkout — Rentiva restyle of WooCommerce Blocks (the block-based
+ * Cart/Checkout, not the classic shortcode templates: this site's Cart and
+ * Checkout pages are built from `<!-- wp:woocommerce/cart -->` /
+ * `<!-- wp:woocommerce/checkout -->`, largely React-rendered client-side).
+ *
+ * Targets WC Blocks' own class names (.wc-block-*, .wc-block-components-*)
+ * exactly as defined in the plugin's bundled
+ * assets/client/blocks/{cart,checkout}.css — verified against that file
+ * rather than guessed, since this markup doesn't exist in the page source
+ * until the block's JS renders it. Only visual properties are touched
+ * (color, spacing, radius, shadow, border) — nothing here changes layout
+ * structure, so WC Blocks' own responsive/interactive behavior (the
+ * floating labels on text inputs, the shipping-method accordion, etc.)
+ * is left intact.
+ */
+
+/* ==========================================================================
+   Shared building blocks — reused across both cart and checkout
+   ========================================================================== */
+
+.wc-block-cart,
+.wc-block-checkout {
+	font-family: var(--rentiva-font-sans);
+	color: var(--rentiva-foreground);
+}
+
+.wc-block-cart h2,
+.wc-block-checkout h2,
+.wc-block-components-checkout-order-summary__title-text,
+.wc-block-cart__totals-title {
+	font-family: var(--rentiva-font-display);
+	font-weight: 700;
+}
+
+/* Card panels — order summary sidebar, coupon panel, shipping options. */
+.wc-block-components-totals-wrapper,
+.wc-block-components-panel,
+.wc-block-components-order-summary,
+.wc-block-checkout__payment-method,
+.wc-block-components-shipping-rates-control__package {
+	background: var(--rentiva-card);
+	border: 1px solid var(--rentiva-border);
+	border-radius: var(--rentiva-radius);
+}
+
+/* Buttons — every WC Blocks button (Proceed to Checkout, Place Order,
+   Apply coupon, quantity +/-) shares this component; restyled once here,
+   pill-shaped and green to match the rest of the theme's CTAs. */
+.wc-block-components-button {
+	font-family: var(--rentiva-font-sans);
+	font-weight: 600;
+	border-radius: var(--rentiva-radius-pill) !important;
+	transition: background-color var(--rentiva-transition), box-shadow var(--rentiva-transition), transform var(--rentiva-transition);
+}
+
+.wc-block-components-button.wp-element-button:not(.is-link) {
+	background-color: var(--rentiva-primary);
+	color: #fff;
+	box-shadow: 0 4px 14px rgba(27, 94, 59, 0.28);
+}
+
+.wc-block-components-button.wp-element-button:not(.is-link):hover {
+	background-color: var(--rentiva-primary-dark);
+	transform: translateY(-1px);
+	box-shadow: 0 6px 18px rgba(27, 94, 59, 0.36);
+}
+
+.wc-block-components-button.wp-element-button:not(.is-link):disabled,
+.wc-block-components-button.wp-element-button:not(.is-link)[aria-disabled="true"] {
+	background-color: var(--rentiva-muted);
+	color: var(--rentiva-muted-foreground);
+	box-shadow: none;
+	transform: none;
+}
+
+/* Text/select inputs — WC Blocks positions the floating label via its own
+   JS/CSS relationship with the input; only cosmetic properties are touched
+   here so that mechanism keeps working untouched. */
+.wc-block-components-text-input input,
+.wc-block-components-select-input select,
+.wc-block-components-country-input .components-combobox-control__input,
+.wc-block-components-state-input .components-combobox-control__input {
+	border-radius: var(--rentiva-radius-sm) !important;
+	border-color: var(--rentiva-border) !important;
+	font-family: var(--rentiva-font-sans);
+}
+
+.wc-block-components-text-input input:focus,
+.wc-block-components-select-input select:focus,
+.wc-block-components-country-input .components-combobox-control__input:focus,
+.wc-block-components-state-input .components-combobox-control__input:focus {
+	border-color: var(--rentiva-primary) !important;
+	box-shadow: 0 0 0 3px var(--rentiva-chip-bg) !important;
+}
+
+/* Radio cards — shipping method options, payment methods. WC Blocks marks
+   the selected option with --selected / a checked input; both are used
+   here to draw the same "picked" state as a green-bordered card. */
+.wc-block-components-radio-control__option,
+.wc-block-checkout__shipping-method-option {
+	border: 1px solid var(--rentiva-border) !important;
+	border-radius: var(--rentiva-radius-sm) !important;
+	transition: border-color var(--rentiva-transition), background-color var(--rentiva-transition);
+}
+
+.wc-block-components-radio-control__option:has(input:checked),
+.wc-block-checkout__shipping-method-option--selected {
+	border-color: var(--rentiva-primary) !important;
+	background-color: var(--rentiva-chip-bg);
+}
+
+.wc-block-components-radio-control__input:checked {
+	background-color: var(--rentiva-primary) !important;
+	border-color: var(--rentiva-primary) !important;
+}
+
+.wc-block-components-checkbox svg {
+	color: var(--rentiva-primary);
+}
+
+/* Totals rows (subtotal, shipping, tax, discount, grand total). */
+.wc-block-components-totals-item__label {
+	color: var(--rentiva-muted-foreground);
+	font-size: var(--rentiva-text-sm);
+}
+
+.wc-block-components-totals-item__value,
+.wc-block-components-formatted-money-amount {
+	font-weight: 600;
+	font-family: var(--rentiva-font-display);
+}
+
+.wc-block-components-totals-footer-item .wc-block-components-totals-item__label,
+.wc-block-components-totals-footer-item .wc-block-components-totals-item__value {
+	font-size: var(--rentiva-text-lg);
+	font-weight: 700;
+	color: var(--rentiva-foreground);
+}
+
+/* Coupon form — pill input + button on one row. */
+.wc-block-components-totals-coupon__content {
+	padding-top: 0.75rem;
+}
+
+.wc-block-components-totals-coupon__input input {
+	border-radius: var(--rentiva-radius-pill) !important;
+}
+
+.wc-block-components-totals-coupon__button.wp-element-button {
+	border-radius: var(--rentiva-radius-pill) !important;
+}
+
+/* ==========================================================================
+   Cart page
+   ========================================================================== */
+
+.wc-block-cart-items {
+	background: var(--rentiva-card);
+	border: 1px solid var(--rentiva-border);
+	border-radius: var(--rentiva-radius-lg);
+	overflow: hidden;
+}
+
+.wc-block-cart-items__header {
+	background: var(--rentiva-muted);
+	font-size: var(--rentiva-text-xs);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--rentiva-muted-foreground);
+}
+
+.wc-block-cart-items__row {
+	border-bottom: 1px solid var(--rentiva-border);
+	padding-block: 1.25rem;
+}
+
+.wc-block-cart-items__row:last-child {
+	border-bottom: none;
+}
+
+.wc-block-cart-item__image img {
+	border-radius: var(--rentiva-radius-sm);
+}
+
+.wc-block-components-product-name {
+	font-family: var(--rentiva-font-display);
+	font-weight: 600;
+	color: var(--rentiva-foreground) !important;
+}
+
+.wc-block-cart-item__remove-link {
+	color: var(--rentiva-muted-foreground) !important;
+	font-weight: 500;
+}
+
+.wc-block-cart-item__remove-link:hover {
+	color: var(--rentiva-like, #ef4444) !important;
+}
+
+/* Quantity stepper — pill with circular +/- buttons, matching the booking
+   card's own numeric inputs elsewhere in the theme. */
+.wc-block-components-quantity-selector {
+	border: 1px solid var(--rentiva-border);
+	border-radius: var(--rentiva-radius-pill);
+	overflow: hidden;
+}
+
+.wc-block-components-quantity-selector__button {
+	color: var(--rentiva-foreground);
+}
+
+.wc-block-components-quantity-selector__button:hover {
+	background-color: var(--rentiva-muted);
+}
+
+.wc-block-components-quantity-selector__input {
+	font-weight: 600;
+}
+
+.wc-block-cart__sidebar .wc-block-components-totals-wrapper {
+	padding: 1.5rem;
+	box-shadow: var(--rentiva-shadow-card);
+}
+
+.wc-block-cart__submit-button.wp-element-button {
+	width: 100%;
+	padding-block: 0.95rem !important;
+	font-size: var(--rentiva-text-base);
+}
+
+/* ==========================================================================
+   Checkout page
+   ========================================================================== */
+
+.wc-block-checkout__form {
+	gap: 2rem;
+}
+
+.wc-block-components-checkout-step__description-payments-aligned,
+.wc-block-checkout__billing-fields,
+.wc-block-checkout__shipping-fields {
+	background: var(--rentiva-card);
+	border: 1px solid var(--rentiva-border);
+	border-radius: var(--rentiva-radius-lg);
+	padding: 1.5rem;
+}
+
+.wc-block-components-checkout-order-summary__content {
+	padding: 1.5rem;
+}
+
+.wc-block-components-order-summary-item__image img {
+	border-radius: var(--rentiva-radius-sm);
+}
+
+.wc-block-components-order-summary-item__description .wc-block-components-product-name {
+	font-size: var(--rentiva-text-sm);
+}
+
+.wc-block-checkout__terms {
+	font-size: var(--rentiva-text-sm);
+	color: var(--rentiva-muted-foreground);
+}
+
+.wc-block-components-checkout-place-order-button.wp-element-button {
+	width: 100%;
+	padding-block: 1rem !important;
+	font-size: var(--rentiva-text-base);
+	background: linear-gradient(135deg, var(--rentiva-primary), var(--rentiva-primary-dark)) !important;
+	box-shadow: 0 4px 14px rgba(27, 94, 59, 0.4) !important;
+}
+
+.wc-block-components-checkout-place-order-button.wp-element-button:hover {
+	box-shadow: 0 6px 18px rgba(27, 94, 59, 0.5) !important;
+}
+
+.wc-block-components-checkout-return-to-cart-button {
+	color: var(--rentiva-primary-dark) !important;
+	font-weight: 600;
+}
+
+/* Empty cart / checkout state. */
+.wc-block-cart__empty-cart__title,
+.wc-block-checkout-empty__title {
+	font-family: var(--rentiva-font-display);
+}
+
+/* ==========================================================================
+   Mobile
+   ========================================================================== */
+
+@media (max-width: 768px) {
+	.wc-block-components-checkout-step__description-payments-aligned,
+	.wc-block-checkout__billing-fields,
+	.wc-block-checkout__shipping-fields,
+	.wc-block-components-checkout-order-summary__content {
+		padding: 1.25rem;
+	}
+}

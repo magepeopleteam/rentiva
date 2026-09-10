@@ -125,6 +125,34 @@ function rentiva_get_signin_url() {
 	return wp_login_url();
 }
 
+/**
+ * URL for the header's cart icon. WooCommerce is optional (the booking
+ * plugin has its own native checkout — see docs/architecture.md), so this
+ * only ever returns a URL when WooCommerce is actually active; callers
+ * should skip rendering the icon entirely on an empty string.
+ *
+ * @return string
+ */
+function rentiva_get_cart_url() {
+	if ( rentiva_has_woocommerce() && function_exists( 'wc_get_cart_url' ) ) {
+		return wc_get_cart_url();
+	}
+	return '';
+}
+
+/**
+ * Number of items in the current visitor's WooCommerce cart, for the
+ * header cart icon's count badge. Always 0 when WooCommerce isn't active.
+ *
+ * @return int
+ */
+function rentiva_get_cart_count() {
+	if ( rentiva_has_woocommerce() && function_exists( 'WC' ) && WC()->cart ) {
+		return WC()->cart->get_cart_contents_count();
+	}
+	return 0;
+}
+
 /* -------------------------------------------------------------------------
  * Rental cards / grids — the single funnel every template and Elementor
  * widget uses to render item cards, so the markup never drifts between

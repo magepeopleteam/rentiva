@@ -1,19 +1,247 @@
 /**
  * "Plugin" single-item layout mode (Rentiva → Theme Settings → Single item
- * layout). The plugin's own bundled design renders untouched here — this
- * file only aligns its outer container width/spacing with the rest of the
- * theme, it never restyles the plugin's internal markup.
+ * layout) — the plugin's own bundled markup, restyled from the theme rather
+ * than edited in place so a plugin update never clobbers it. Two kinds of
+ * rules live here: documented bug fixes (a genuine gap in the plugin's own
+ * CSS, explained inline) and intentional Rentiva-branded redesigns of
+ * specific components (the hero banner below). Both need `!important` for
+ * the same reason — this stylesheet loads before the plugin's own
+ * rbfw_style.css in the page <head>, so on equal specificity the plugin's
+ * later, unqualified rule would otherwise win the cascade regardless of
+ * which of these two categories a given rule falls into.
  */
 
 .rbfw-single-container {
 	max-width: var(--rentiva-container);
 	margin-inline: auto;
-	padding-inline: var(--rentiva-gutter);
 	font-family: var(--rentiva-font-sans);
 }
 
-@media (min-width: 1024px) {
+/*
+ * Bug fix, not a design opinion: the plugin's own rbfw_style.css sets
+ * `.rbfw-single-container { display: flex; }` (its two-column layout —
+ * `.rbfw-single-left-container` + `.rbfw-single-right-container`, the
+ * booking summary card) with no `flex-wrap` and no mobile breakpoint
+ * anywhere in that stylesheet to stack them. Below ~768px the booking
+ * card and the Specifications/What's Included chip grid both get squeezed
+ * into that fixed side-by-side row and overflow past the right edge of the
+ * viewport instead of wrapping to full width. `!important` is used
+ * deliberately here (and nowhere else in this file) because our stylesheet
+ * loads before the plugin's in the page <head>, so equal specificity alone
+ * would lose the cascade to its later, unqualified `.rbfw-single-container`
+ * rule.
+ */
+@media (max-width: 767px) {
 	.rbfw-single-container {
-		padding-inline: var(--rentiva-gutter-lg);
+		flex-direction: column !important;
 	}
+
+	.rbfw-single-left-container,
+	.rbfw-single-right-container {
+		width: 100% !important;
+		max-width: 100% !important;
+	}
+}
+
+/*
+ * Two more instances of the same underlying bug: a `1fr`/plain-flex row
+ * with no `minmax(0, 1fr)` or `flex-wrap` sizes its tracks to its content's
+ * min-content width rather than the space actually available, so longer
+ * text ("Suitable For: Adults", the "Best Seller" badge) forces the row
+ * wider than the card and pushes everything after it off the right edge of
+ * the viewport instead of wrapping — the booking card's badges row, and
+ * the Specifications/What's Included chip grid.
+ */
+.rbfw-sd-rate-box-badges {
+	flex-wrap: wrap !important;
+	row-gap: 8px !important;
+}
+
+.mp_default_theme .rbfw-features h3.rbfw-sub-heading {
+	margin-top: 20px;
+}
+
+.mp_default_theme ul.rbfw-feature-lists {
+	grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.mp_default_theme ul.rbfw-feature-lists li {
+	min-width: 0;
+}
+
+.mp_default_theme ul.rbfw-feature-lists li span {
+	min-width: 0;
+	overflow-wrap: break-word;
+}
+
+@media (max-width: 768px) {
+	.mp_default_theme ul.rbfw-feature-lists {
+		grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+	}
+}
+
+@media (max-width: 400px) {
+	.rbfw-drp-row {
+		grid-template-columns: minmax(0, 1fr) !important;
+	}
+}
+
+/*
+ * Same overflow bug, fourth instance: the hero's JS-driven slider widget
+ * (.superSlider / [data-bg-image], RBFW_Super_Slider.php) doesn't constrain
+ * its own width to its container on narrow viewports, so it (and the whole
+ * page after it, since nothing upstream clips it) bleeds past the right
+ * edge. `!important` here specifically to win over any inline width the
+ * slider's own JS sets, not just its stylesheet.
+ */
+.rbfw_default_hero_wrap,
+.rbfw_default_hero_wrap .superSlider,
+.rbfw_default_hero_wrap .sliderAllItem {
+	max-width: 100% !important;
+	width: 100% !important;
+}
+
+/* ==========================================================================
+   Hero banner redesign — Rentiva-branded restyle of the plugin's default
+   item hero (.rbfw_default_hero_wrap): the floating content moves from
+   plain text-on-gradient into a frosted glass card, the CTA and price
+   switch from the plugin's flat red to Rentiva's own green gradient/pill
+   language (matching .rentiva-import-demo-btn etc. elsewhere in this
+   theme), and the category tag reuses the site's own pill styling. The
+   "Best Seller" badge keeps its red — that's a deliberate urgency signal,
+   not a brand color, so it stays as-is.
+   ========================================================================== */
+
+.rbfw_default_hero_wrap {
+	border-radius: var(--rentiva-radius-lg) !important;
+	box-shadow: var(--rentiva-shadow-card);
+}
+
+/*
+ * The plugin's own overlay is a 52%-wide, top-aligned, left-to-right
+ * gradient (content pinned to the top-left). Rebuilt full-width and
+ * bottom-anchored instead — the gradient now does the darkening, so the
+ * content sits directly on it rather than in its own separate card panel.
+ */
+.rbfw_default_hero_overlay {
+	width: 100% !important;
+	align-items: flex-end !important;
+	background: linear-gradient(to top, rgba(8, 8, 8, 0.88) 0%, rgba(8, 8, 8, 0.45) 45%, transparent 85%) !important;
+	padding: 40px 42px 34px !important;
+}
+
+/*
+ * Badge / title / category tag each keep their own full-width line (that's
+ * still the right call — a title needs its own line), but price + Book Now
+ * used to be two more full-width blocks stacked under that (price label,
+ * then price, then the button on its own row below): four lines of vertical
+ * space for what's really one decision. Grid (not flex — see below) collapses
+ * that to a single row: price on the left, button on the right.
+ *
+ * This is a 2-column grid rather than a flex row specifically because the
+ * plugin sets a plain `width` on some of these children directly (e.g.
+ * `width: fit-content` on the badge) that wins over a flex-basis percentage
+ * for actual rendered size, and in testing also produced an unexplained
+ * self-centering on that item's own line despite justify-content:flex-start
+ * on the container. Grid's `grid-column` + `justify-self` place each item
+ * deterministically regardless of its own width property, sidestepping both.
+ */
+.rbfw_default_hero_content {
+	display: grid !important;
+	grid-template-columns: 1fr auto;
+	align-items: center;
+	column-gap: 18px;
+	row-gap: 8px;
+	width: 100%;
+	max-width: 640px !important;
+	text-align: left !important;
+}
+
+.rbfw_default_hero_badge,
+.rbfw_default_hero_title,
+.rbfw-item-categories,
+.rbfw_default_hero_price_wrap {
+	text-align: left !important;
+}
+
+.rbfw_default_hero_badge,
+.rbfw_default_hero_title,
+.rbfw-item-categories {
+	grid-column: 1 / -1;
+	justify-self: start;
+}
+
+.rbfw_default_hero_price_wrap {
+	grid-column: 1;
+	justify-self: start;
+}
+
+.rbfw_default_hero_book_btn {
+	grid-column: 2;
+	justify-self: end;
+}
+
+.rbfw_default_hero_badge {
+	border-radius: var(--rentiva-radius-pill) !important;
+	padding: 6px 14px !important;
+	box-shadow: 0 2px 8px rgba(224, 50, 72, 0.35);
+	letter-spacing: 0.04em;
+}
+
+.rbfw_default_hero_title {
+	font-family: var(--rentiva-font-display);
+	font-size: 34px !important;
+	letter-spacing: -0.01em;
+	margin-bottom: 0 !important;
+}
+
+.rbfw-item-categories {
+	margin: 0 !important;
+}
+
+.rbfw-item-category {
+	border: none !important;
+	background: rgba(255, 255, 255, 0.92) !important;
+	color: var(--rentiva-primary-dark) !important;
+	font-weight: 600;
+}
+
+.rbfw-item-category:hover,
+.rbfw-item-category:focus {
+	background: var(--rentiva-primary) !important;
+	color: #fff !important;
+}
+
+/* The one remaining stacked pair — label above, big price below — becomes
+   a single baseline-aligned line, freeing it to share a row with the button. */
+.rbfw_default_hero_price_wrap {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	margin-bottom: 0 !important;
+}
+
+.rbfw_default_hero_price_label {
+	margin-bottom: 0 !important;
+	white-space: nowrap;
+}
+
+.rbfw_default_hero_price_amount {
+	color: #fff !important;
+	font-family: var(--rentiva-font-display);
+}
+
+.rbfw_default_hero_book_btn {
+	background: linear-gradient(135deg, var(--rentiva-primary), var(--rentiva-primary-dark)) !important;
+	border-radius: var(--rentiva-radius-pill) !important;
+	padding: 13px 28px !important;
+	box-shadow: 0 4px 14px rgba(27, 94, 59, 0.4);
+	transition: box-shadow 150ms ease, transform 150ms ease, gap 150ms ease;
+	flex: 0 0 auto;
+}
+
+.rbfw_default_hero_book_btn:hover {
+	background: linear-gradient(135deg, var(--rentiva-primary-dark), var(--rentiva-primary-dark)) !important;
+	box-shadow: 0 6px 18px rgba(27, 94, 59, 0.5);
+	gap: 13px;
 }

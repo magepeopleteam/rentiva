@@ -135,6 +135,12 @@ function rentiva_register_assets() {
 	wp_register_style( 'rentiva-archive', $css_dir . 'archive.css', $core_deps, $ver );
 	wp_register_style( 'rentiva-single-item', $css_dir . 'single-item.css', $core_deps, $ver );
 	wp_register_style( 'rentiva-booking', $css_dir . 'booking.css', $core_deps, $ver );
+	// Depends on WC Blocks' own stylesheets (present only on the pages that
+	// actually enqueue them — WP silently skips a dependency that isn't
+	// enqueued) purely for load order: this must print after them to win
+	// equal-specificity cascades against WC Blocks' own fairly specific
+	// selectors, without needing !important everywhere.
+	wp_register_style( 'rentiva-woocommerce', $css_dir . 'woocommerce.css', array_merge( $core_deps, array( 'wc-blocks-style', 'wc-blocks-style-cart', 'wc-blocks-packages-style' ) ), $ver );
 	wp_register_style( 'rentiva-plugin-item-details', $css_dir . 'plugin-item-details.css', $core_deps, $ver );
 	wp_register_style( 'rentiva-content', $css_dir . 'content.css', $core_deps, $ver );
 	// filemtime(), not $ver — see the matching note on 'rentiva-admin-setup'
@@ -234,6 +240,10 @@ function rentiva_enqueue_assets() {
 
 	if ( rentiva_has_woocommerce() && ( is_cart() || is_checkout() || is_account_page() || is_shop() || is_product() ) ) {
 		wp_enqueue_style( 'rentiva-booking' );
+	}
+
+	if ( rentiva_has_woocommerce() && ( is_cart() || is_checkout() ) ) {
+		wp_enqueue_style( 'rentiva-woocommerce' );
 	}
 
 	wp_enqueue_style( 'rentiva-responsive' );

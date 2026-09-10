@@ -19,6 +19,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</nav>
 
 		<div class="site-header__actions">
+			<?php $cart_url = rentiva_get_cart_url(); ?>
+			<?php if ( $cart_url ) : ?>
+				<a href="<?php echo esc_url( $cart_url ); ?>" class="site-header__cart" aria-label="<?php esc_attr_e( 'Cart', 'rentiva' ); ?>">
+					<?php rentiva_icon( 'cart' ); ?>
+					<?php $cart_count = rentiva_get_cart_count(); ?>
+					<?php if ( $cart_count > 0 ) : ?>
+						<span class="site-header__cart-count"><?php echo esc_html( $cart_count ); ?></span>
+					<?php endif; ?>
+				</a>
+			<?php endif; ?>
 			<a href="<?php echo esc_url( rentiva_get_signin_url() ); ?>" class="site-header__text-btn">
 				<?php esc_html_e( 'Sign In', 'rentiva' ); ?>
 			</a>
@@ -38,6 +48,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div class="site-header__mobile-menu" id="rentiva-mobile-menu">
 		<?php rentiva_primary_nav(); ?>
 		<div class="site-header__mobile-actions">
+			<?php if ( $cart_url ) : ?>
+				<a href="<?php echo esc_url( $cart_url ); ?>" class="btn--ghost site-header__cart site-header__cart--mobile">
+					<?php rentiva_icon( 'cart' ); ?>
+					<?php esc_html_e( 'Cart', 'rentiva' ); ?>
+					<?php if ( $cart_count > 0 ) : ?>
+						<span class="site-header__cart-count"><?php echo esc_html( $cart_count ); ?></span>
+					<?php endif; ?>
+				</a>
+			<?php endif; ?>
 			<a href="<?php echo esc_url( rentiva_get_signin_url() ); ?>" class="btn--ghost">
 				<?php esc_html_e( 'Sign In', 'rentiva' ); ?>
 			</a>

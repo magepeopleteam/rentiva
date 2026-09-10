@@ -122,6 +122,43 @@ function rentiva_demo_items() {
 }
 
 /**
+ * 5 FAQ entries seeded onto every demo item (rentiva_import_demo_content(),
+ * inc/demo-import/importer.php) as `mep_event_faq` post meta — the exact
+ * shape admin/settings/Faq.php itself reads and writes, so these render
+ * through the plugin's own FAQ accordion on the details page exactly like
+ * one an admin added by hand, and stay editable/deletable there the same
+ * way. Generic enough to reuse across every item type the demo catalog
+ * currently has (all bikes) without needing per-item variants.
+ *
+ * @param string $item_title Used only to personalize the booking-flow answer.
+ * @return array<int,array{rbfw_faq_title:string,rbfw_faq_content:string}>
+ */
+function rentiva_demo_faqs( $item_title ) {
+	return array(
+		array(
+			'rbfw_faq_title'   => 'How do I book ' . $item_title . '?',
+			'rbfw_faq_content' => 'Pick your pickup and return dates above, then click Book Now — price and availability update instantly as you choose.',
+		),
+		array(
+			'rbfw_faq_title'   => "What's included in the rental price?",
+			'rbfw_faq_content' => 'The rate shown includes the item itself and everything listed under "What\'s Included" above. Anything not listed there is arranged separately.',
+		),
+		array(
+			'rbfw_faq_title'   => 'Can I cancel or change my booking?',
+			'rbfw_faq_content' => 'Yes — free cancellation is available up until 24 hours before your pickup time. To change dates instead, contact us before that window and we\'ll do our best to accommodate it.',
+		),
+		array(
+			'rbfw_faq_title'   => 'Where do I pick up and return the item?',
+			'rbfw_faq_content' => 'Pickup and return both happen at the location shown for this item. Exact address and instructions are emailed to you as soon as your booking is confirmed.',
+		),
+		array(
+			'rbfw_faq_title'   => 'What happens if the item is damaged during my rental?',
+			'rbfw_faq_content' => 'Please report any damage as soon as it happens so we can assess it fairly. Where a security deposit applies, it covers minor wear and is released after a normal-condition return.',
+		),
+	);
+}
+
+/**
  * The homepage-widget photos (Hero background, Promo Banner background,
  * Why Rentiva, Testimonial avatar) — bundled files under assets/images/demo/
  * (see rentiva_demo_categories() above). rentiva_import_demo_homepage_images()

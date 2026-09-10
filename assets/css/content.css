@@ -51,7 +51,6 @@
 }
 
 .rentiva-prose {
-	max-width: var(--rentiva-container-narrow);
 	margin-inline: auto;
 }
 

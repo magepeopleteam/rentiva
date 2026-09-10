@@ -17,6 +17,26 @@
 	box-shadow: none;
 }
 
+/*
+ * WordPress's admin toolbar (#wpadminbar) is also `position: fixed; top: 0`
+ * for a logged-in user, at a far higher z-index than anything a theme
+ * should compete with — it pushes the rest of the document down via
+ * `html { margin-top }`, but that margin does nothing for an already-fixed
+ * element like our header, which just sits at the same top:0 and ends up
+ * overlapped/clipped by the toolbar's own height. `body.admin-bar` is the
+ * class core adds whenever the toolbar is showing; 32px/46px match its
+ * two heights (46px on core's own <783px breakpoint, matched below).
+ */
+body.admin-bar .site-header {
+	top: 32px;
+}
+
+@media screen and (max-width: 782px) {
+	body.admin-bar .site-header {
+		top: 46px;
+	}
+}
+
 .site-header.is-scrolled,
 body:not(.rentiva-header-on-media) .site-header {
 	background-color: rgba(249, 248, 245, 0.97);
@@ -193,6 +213,73 @@ body:not(.rentiva-header-on-media) .site-header__nav a.is-current {
 .site-header.is-scrolled .site-header__text-btn,
 body:not(.rentiva-header-on-media) .site-header__text-btn {
 	color: var(--rentiva-foreground);
+}
+
+/* Cart icon -------------------------------------------------------------- */
+
+.site-header__cart {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.25rem;
+	height: 2.25rem;
+	border-radius: 50%;
+	color: rgba(255, 255, 255, 0.9);
+	transition: color var(--rentiva-transition), background-color var(--rentiva-transition);
+}
+
+.site-header__cart svg {
+	width: 1.15rem;
+	height: 1.15rem;
+}
+
+.site-header__cart:hover {
+	background-color: rgba(255, 255, 255, 0.12);
+}
+
+.site-header.is-scrolled .site-header__cart,
+body:not(.rentiva-header-on-media) .site-header__cart {
+	color: var(--rentiva-foreground);
+}
+
+.site-header.is-scrolled .site-header__cart:hover,
+body:not(.rentiva-header-on-media) .site-header__cart:hover {
+	background-color: var(--rentiva-muted);
+}
+
+.site-header__cart-count {
+	position: absolute;
+	top: -0.15rem;
+	right: -0.15rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 1.05rem;
+	height: 1.05rem;
+	padding: 0 0.25rem;
+	border-radius: var(--rentiva-radius-pill);
+	background-color: var(--rentiva-primary);
+	color: #fff;
+	font-size: 0.625rem;
+	font-weight: 700;
+	line-height: 1;
+}
+
+/* Mobile menu variant — icon + label inline like the other action buttons,
+   the count badge sits right after the label instead of overlapping the icon. */
+.site-header__cart--mobile {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	width: auto;
+	height: auto;
+	border-radius: var(--rentiva-radius-pill);
+}
+
+.site-header__cart--mobile .site-header__cart-count {
+	position: static;
+	margin-left: 0.15rem;
 }
 
 /* Mobile hamburger ------------------------------------------------------- */

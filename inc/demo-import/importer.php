@@ -163,6 +163,18 @@ function rentiva_import_demo_content() {
 				set_post_thumbnail( $post_id, $image_id );
 			}
 		}
+
+		// Backfilled the same way as stock quantity above — only when the
+		// item has no FAQ entries of its own yet, so an admin who's already
+		// written real FAQs (or deliberately cleared the demo ones) never
+		// has them silently replaced by re-running this importer. Renders
+		// via the plugin's own FAQ accordion (admin/settings/Faq.php,
+		// `mep_event_faq` post meta) — nothing in the theme renders these.
+		$existing_faqs = get_post_meta( $post_id, 'mep_event_faq', true );
+		if ( empty( $existing_faqs ) ) {
+			update_post_meta( $post_id, 'mep_event_faq', rentiva_demo_faqs( $item['title'] ) );
+			update_post_meta( $post_id, 'rbfw_enable_faq_content', 'yes' );
+		}
 	}
 
 	rentiva_import_demo_menus();
