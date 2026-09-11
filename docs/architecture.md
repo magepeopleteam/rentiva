@@ -17,6 +17,15 @@ docs/booking-integration.md for the full ownership split.
 | `rbfw_item_location` term | `taxonomy-rbfw_item_location.php` |
 | Everything else | `page.php` / `single.php` (via `index.php` fallback) / `search.php` / `404.php` |
 
+`search.php` is effectively dead code while the booking plugin is active:
+`rentiva_redirect_native_search_to_rentals()` (`inc/template-hooks.php`)
+302-redirects any `is_search()` request to `archive-rbfw_item.php` (as an
+`item_search` GET param — see the note on that function for why not `s`).
+There's no header search box wired to anything else on this site, so
+"search" only ever has the one, rental-grid-with-sidebar design; the file is
+kept only as the template WordPress would otherwise pick, not as something a
+visitor is meant to reach.
+
 ## Bootstrap order (`functions.php`)
 
 ```

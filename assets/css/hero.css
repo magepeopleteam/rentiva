@@ -401,6 +401,12 @@
 	transition: border-color var(--rentiva-transition);
 }
 
+/* The "Item Name" field's clear (×) button needs room on the right that the
+ * other search-panel fields (plain date/select inputs) don't. */
+.rentiva-search-panel__field.rentiva-field--autocomplete .rentiva-input {
+	padding-right: 2.25rem;
+}
+
 .rentiva-search-panel__field .rentiva-input::placeholder {
 	color: var(--rentiva-field-muted);
 }

@@ -837,11 +837,13 @@ class Rentiva_Rental_Adapter {
 	 * an optional free-text term — used by the archive template.
 	 *
 	 * @param array $args {
-	 *     @type string $category Category term slug.
-	 *     @type string $location Location term slug.
-	 *     @type string $search   Free-text search term.
-	 *     @type int    $paged
-	 *     @type int    $per_page
+	 *     @type string|string[] $category Category term slug(s).
+	 *     @type string|string[] $location Location term slug(s).
+	 *     @type string          $search   Free-text search term.
+	 *     @type string          $orderby  WP_Query 'orderby' value. Default 'date'.
+	 *     @type string          $order    'ASC'|'DESC'. Default 'DESC'.
+	 *     @type int             $paged
+	 *     @type int             $per_page
 	 * }
 	 * @return WP_Query
 	 */
@@ -850,6 +852,8 @@ class Rentiva_Rental_Adapter {
 			'category' => '',
 			'location' => '',
 			'search'   => '',
+			'orderby'  => 'date',
+			'order'    => 'DESC',
 			'paged'    => 1,
 			'per_page' => 12,
 		);
@@ -860,6 +864,8 @@ class Rentiva_Rental_Adapter {
 			'post_status'    => 'publish',
 			'posts_per_page' => $args['per_page'],
 			'paged'          => $args['paged'],
+			'orderby'        => $args['orderby'],
+			'order'          => $args['order'],
 		);
 
 		if ( $args['search'] ) {
@@ -907,11 +913,13 @@ class Rentiva_Rental_Adapter {
 	}
 
 	/**
-	 * Lightweight autocomplete suggestions for the header/hero search.
+	 * Lightweight autocomplete suggestions for the header/hero search — one
+	 * thumbnail + title + type/price line per row, enough for the dropdown
+	 * to render a real card without a second round-trip per suggestion.
 	 *
 	 * @param string $term
 	 * @param int    $limit
-	 * @return array<int,array{title:string,url:string}>
+	 * @return array<int,array{id:int,title:string,url:string,image:string,type:string,price:string}>
 	 */
 	public static function suggest_items( $term, $limit = 8 ) {
 		if ( ! self::is_active() || '' === trim( $term ) ) {
@@ -930,9 +938,20 @@ class Rentiva_Rental_Adapter {
 
 		$results = array();
 		foreach ( $query->posts as $post_id ) {
+			$image_id = self::get_thumbnail_id( $post_id );
+			$price    = self::get_display_price( $post_id );
+
 			$results[] = array(
+				'id'    => $post_id,
 				'title' => get_the_title( $post_id ),
 				'url'   => get_permalink( $post_id ),
+				'image' => $image_id ? wp_get_attachment_image_url( $image_id, 'thumbnail' ) : '',
+				'type'  => self::get_subtitle( $post_id ),
+				// get_display_price()'s 'formatted' is WooCommerce price HTML
+				// (wc_price() markup, currency symbol included as an HTML
+				// entity) — plain-text it here since the JS dropdown row
+				// renders this via textContent, not innerHTML.
+				'price' => $price['formatted'] ? html_entity_decode( wp_strip_all_tags( $price['formatted'] ), ENT_QUOTES, 'UTF-8' ) . ' ' . $price['unit'] : '',
 			);
 		}
 

@@ -1,5 +1,6 @@
 /**
- * Rentals archive / category / location listing pages.
+ * Rentals archive / category / location listing pages — left filter
+ * sidebar + result toolbar (count, sort, grid/list view) + card grid.
  */
 
 .rentiva-archive-header {
@@ -12,26 +13,283 @@
 	margin-block: 0.5rem 0.5rem;
 }
 
-.rentiva-archive-filters {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: end;
-	gap: 1rem;
-	margin-top: 2rem;
-	padding: 1.25rem;
+/* Layout: sidebar + results ------------------------------------------------ */
+
+.rentiva-archive-layout {
+	display: grid;
+	grid-template-columns: 280px minmax(0, 1fr);
+	gap: 2rem;
+	align-items: start;
+}
+
+@media (max-width: 900px) {
+	.rentiva-archive-layout {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* Sidebar ------------------------------------------------------------------ */
+
+.rentiva-archive-sidebar {
 	background-color: var(--rentiva-card);
 	border: 1px solid var(--rentiva-border);
-	border-radius: var(--rentiva-radius);
+	border-radius: var(--rentiva-radius-lg);
 }
 
-.rentiva-archive-filters__field {
-	flex: 1;
-	min-width: 180px;
+@media (min-width: 901px) {
+	.rentiva-archive-sidebar {
+		position: sticky;
+		top: calc(var(--rentiva-header-height-lg) + 1.5rem);
+	}
 }
 
-.rentiva-archive-filters__submit {
+.rentiva-archive-sidebar__summary {
+	display: none;
+}
+
+.rentiva-archive-sidebar__summary-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.6rem;
+	font-family: var(--rentiva-font-display);
+	font-weight: 700;
+}
+
+.rentiva-filter-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 1.35rem;
+	height: 1.35rem;
+	padding-inline: 0.35rem;
+	border-radius: var(--rentiva-radius-pill);
+	background-color: var(--rentiva-primary);
+	color: #FFFFFF;
+	font-size: var(--rentiva-text-xs);
+	font-weight: 700;
+}
+
+.rentiva-archive-sidebar__caret {
+	transition: transform var(--rentiva-transition);
+}
+
+.rentiva-archive-sidebar__body {
+	display: flex;
+	flex-direction: column;
+	gap: 1.75rem;
+	padding: 1.5rem;
+}
+
+@media (max-width: 900px) {
+	.rentiva-archive-sidebar__summary {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 1.1rem 1.5rem;
+		cursor: pointer;
+		list-style: none;
+	}
+
+	.rentiva-archive-sidebar__summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.rentiva-archive-sidebar__panel[open] .rentiva-archive-sidebar__summary {
+		border-bottom: 1px solid var(--rentiva-border);
+	}
+
+	.rentiva-archive-sidebar__panel[open] .rentiva-archive-sidebar__caret {
+		transform: rotate(90deg);
+	}
+}
+
+/* Filter groups + checkboxes ------------------------------------------------ */
+
+.rentiva-filter-group__title {
+	display: block;
+	font-size: var(--rentiva-text-xs);
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--rentiva-muted-foreground);
+	margin-bottom: 0.75rem;
+}
+
+.rentiva-filter-group__options {
+	display: flex;
+	flex-direction: column;
+	gap: 0.65rem;
+	max-height: 13rem;
+	overflow-y: auto;
+}
+
+.rentiva-filter-checkbox {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	cursor: pointer;
+	font-size: var(--rentiva-text-sm);
+}
+
+.rentiva-filter-checkbox input[type="checkbox"] {
+	width: 1rem;
+	height: 1rem;
+	accent-color: var(--rentiva-primary);
 	flex-shrink: 0;
 }
+
+.rentiva-filter-checkbox__label {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rentiva-filter-checkbox__count {
+	color: var(--rentiva-muted-foreground);
+	font-size: var(--rentiva-text-xs);
+}
+
+.rentiva-filter-actions {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	padding-top: 0.25rem;
+	border-top: 1px solid var(--rentiva-border);
+}
+
+.rentiva-filter-actions__apply {
+	flex: 1;
+	text-align: center;
+	padding-block: 0.75rem;
+}
+
+.rentiva-filter-actions__clear {
+	font-size: var(--rentiva-text-sm);
+	font-weight: 600;
+	color: var(--rentiva-muted-foreground);
+	white-space: nowrap;
+}
+
+.rentiva-filter-actions__clear:hover {
+	color: var(--rentiva-primary);
+}
+
+/* Result toolbar ------------------------------------------------------------ */
+
+.rentiva-archive-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-bottom: 1.5rem;
+	padding-bottom: 1.25rem;
+	border-bottom: 1px solid var(--rentiva-border);
+}
+
+.rentiva-archive-toolbar__count {
+	color: var(--rentiva-muted-foreground);
+	font-size: var(--rentiva-text-sm);
+}
+
+.rentiva-archive-toolbar__count strong {
+	color: var(--rentiva-foreground);
+}
+
+.rentiva-archive-toolbar__controls {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.rentiva-archive-sort .rentiva-select {
+	border: 1.5px solid var(--rentiva-border);
+	background-color: var(--rentiva-card);
+	border-radius: var(--rentiva-radius-sm);
+	padding: 0.6rem 2rem 0.6rem 0.9rem;
+	font-size: var(--rentiva-text-sm);
+	font-weight: 600;
+	appearance: none;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%237A7670' stroke-width='1.5'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 0.65rem center;
+}
+
+.rentiva-archive-view-toggle {
+	display: flex;
+	gap: 0.25rem;
+	padding: 0.25rem;
+	border: 1px solid var(--rentiva-border);
+	border-radius: var(--rentiva-radius-sm);
+	background-color: var(--rentiva-card);
+}
+
+.rentiva-archive-view-toggle__btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.25rem;
+	height: 2.25rem;
+	border-radius: calc(var(--rentiva-radius-sm) - 4px);
+	color: var(--rentiva-muted-foreground);
+	transition: background-color var(--rentiva-transition), color var(--rentiva-transition);
+}
+
+.rentiva-archive-view-toggle__btn:hover {
+	color: var(--rentiva-foreground);
+}
+
+.rentiva-archive-view-toggle__btn.is-active {
+	background-color: var(--rentiva-primary);
+	color: #FFFFFF;
+}
+
+/* List view — same card markup, laid out as a row -------------------------- */
+
+.rentiva-archive-results.is-list-view .rentiva-rental-grid {
+	grid-template-columns: 1fr;
+}
+
+.rentiva-archive-results.is-list-view .rentiva-rental-card {
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+}
+
+.rentiva-archive-results.is-list-view .rentiva-rental-card__media {
+	width: 300px;
+	height: auto;
+	flex-shrink: 0;
+}
+
+.rentiva-archive-results.is-list-view .rentiva-rental-card__body {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	padding: 1.25rem 1.5rem;
+}
+
+.rentiva-archive-results.is-list-view .rentiva-rental-card__footer {
+	margin-top: auto;
+}
+
+@media (max-width: 640px) {
+	.rentiva-archive-results.is-list-view .rentiva-rental-card {
+		flex-direction: column;
+	}
+
+	.rentiva-archive-results.is-list-view .rentiva-rental-card__media {
+		width: 100%;
+		height: 200px;
+	}
+}
+
+/* Pagination ---------------------------------------------------------------- */
 
 .rentiva-archive__pagination {
 	display: flex;

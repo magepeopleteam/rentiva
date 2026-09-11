@@ -165,6 +165,7 @@ function rentiva_register_assets() {
 	wp_register_script( 'rentiva-mobile-nav', $js_dir . 'mobile-nav.js', array(), $ver, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	wp_register_script( 'rentiva-favorites', $js_dir . 'favorites.js', array(), $ver, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	wp_register_script( 'rentiva-search-suggest', $js_dir . 'search-suggest.js', array(), $ver, array( 'in_footer' => true, 'strategy' => 'defer' ) );
+	wp_register_script( 'rentiva-archive-filters', $js_dir . 'archive-filters.js', array(), $ver, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	wp_register_script( 'rentiva-gallery-thumbnails', $js_dir . 'gallery-thumbnails.js', array(), $ver, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	wp_register_script( 'rentiva-sticky-card', $js_dir . 'sticky-card.js', array(), $ver, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	// 'updates' (core's AJAX plugin installer/activator) must be a real
@@ -208,21 +209,33 @@ function rentiva_enqueue_assets() {
 	if ( is_front_page() && ! is_paged() ) {
 		wp_enqueue_style( 'rentiva-home' );
 		wp_enqueue_script( 'rentiva-favorites' );
-		wp_enqueue_script( 'rentiva-search-suggest' );
-		wp_localize_script(
-			'rentiva-search-suggest',
-			'rentivaSearch',
-			array(
-				'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
-				'nonce'    => wp_create_nonce( 'rentiva_search_suggest' ),
-				'minChars' => 2,
-			)
-		);
 	}
 
 	if ( $is_item_archive_context ) {
 		wp_enqueue_style( 'rentiva-archive' );
 		wp_enqueue_script( 'rentiva-favorites' );
+		wp_enqueue_script( 'rentiva-archive-filters' );
+	}
+
+	// Item-name autocomplete: the hero search panel (front page) and the
+	// archive "Search" filter both use it, so it's keyed off either context
+	// rather than duplicated per-template.
+	if ( ( is_front_page() && ! is_paged() ) || $is_item_archive_context ) {
+		wp_enqueue_script( 'rentiva-search-suggest' );
+		wp_localize_script(
+			'rentiva-search-suggest',
+			'rentivaSearch',
+			array(
+				'ajaxUrl'       => admin_url( 'admin-ajax.php' ),
+				'nonce'         => wp_create_nonce( 'rentiva_search_suggest' ),
+				'minChars'      => 2,
+				'i18nSearching' => __( 'Searching…', 'rentiva' ),
+				/* translators: %s: the search term typed so far. */
+				'i18nNoResults' => __( 'No items found for “%s”.', 'rentiva' ),
+				/* translators: %s: the search term typed so far. */
+				'i18nSeeAll'    => __( 'See all results for “%s”', 'rentiva' ),
+			)
+		);
 	}
 
 	if ( $is_single_item && rentiva_use_theme_single_item_layout() ) {

@@ -45,8 +45,8 @@ $rentiva_cta_secondary_url  = $rentiva_arg( 'cta_secondary_url', rentiva_get_lis
 $rentiva_search_label = $rentiva_arg( 'search_label', __( 'FIND YOUR RENTAL', 'rentiva' ) );
 $rentiva_submit_text  = $rentiva_arg( 'submit_text', __( 'Find Rentals', 'rentiva' ) );
 
-$rentiva_field_where_label       = $rentiva_arg( 'field_where_label', __( 'Where', 'rentiva' ) );
-$rentiva_field_where_placeholder = $rentiva_arg( 'field_where_placeholder', __( 'Choose location', 'rentiva' ) );
+$rentiva_field_where_label       = $rentiva_arg( 'field_where_label', __( 'Item Name', 'rentiva' ) );
+$rentiva_field_where_placeholder = $rentiva_arg( 'field_where_placeholder', __( 'Search item name…', 'rentiva' ) );
 $rentiva_field_pickup_label      = $rentiva_arg( 'field_pickup_label', __( 'Pickup', 'rentiva' ) );
 $rentiva_field_return_label      = $rentiva_arg( 'field_return_label', __( 'Return', 'rentiva' ) );
 $rentiva_field_category_label    = $rentiva_arg( 'field_category_label', __( 'Category', 'rentiva' ) );
@@ -135,12 +135,27 @@ $rentiva_categories = rentiva_get_homepage_categories();
 				<span class="rentiva-search-panel__label-text"><?php echo esc_html( $rentiva_search_label ); ?></span>
 			</div>
 			<div class="rentiva-search-panel__grid">
-				<div class="rentiva-field rentiva-search-panel__field">
+				<div class="rentiva-field rentiva-search-panel__field rentiva-field--autocomplete" data-rentiva-autocomplete="items">
 					<label class="rentiva-field__label" for="rentiva-search-where"><?php echo esc_html( $rentiva_field_where_label ); ?></label>
 					<div class="rentiva-field__input-wrap">
-						<span class="rentiva-field__icon"><?php echo rentiva_get_icon( 'map-pin' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
-						<input class="rentiva-input" type="text" id="rentiva-search-where" name="location" placeholder="<?php echo esc_attr( $rentiva_field_where_placeholder ); ?>">
+						<span class="rentiva-field__icon"><?php echo rentiva_get_icon( 'search' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+						<input
+							class="rentiva-input"
+							type="text"
+							id="rentiva-search-where"
+							name="item_search" <?php // "s" is WP's reserved search var; using it here would flip is_search() true and skip archive-rbfw_item.php entirely — see the matching note in archive-rbfw_item.php. ?>
+							placeholder="<?php echo esc_attr( $rentiva_field_where_placeholder ); ?>"
+							autocomplete="off"
+							role="combobox"
+							aria-expanded="false"
+							aria-autocomplete="list"
+							aria-controls="rentiva-search-where-results"
+						>
+						<button type="button" class="rentiva-autocomplete-clear" aria-label="<?php esc_attr_e( 'Clear search', 'rentiva' ); ?>" hidden>
+							<?php echo rentiva_get_icon( 'close' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						</button>
 					</div>
+					<ul class="rentiva-autocomplete-list" id="rentiva-search-where-results" role="listbox" hidden></ul>
 				</div>
 				<div class="rentiva-field rentiva-search-panel__field">
 					<label class="rentiva-field__label" for="rentiva-search-pickup"><?php echo esc_html( $rentiva_field_pickup_label ); ?></label>
@@ -160,7 +175,21 @@ $rentiva_categories = rentiva_get_homepage_categories();
 					<label class="rentiva-field__label" for="rentiva-search-category"><?php echo esc_html( $rentiva_field_category_label ); ?></label>
 					<div class="rentiva-field__input-wrap">
 						<span class="rentiva-field__icon"><?php echo rentiva_get_icon( 'list' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
-						<select class="rentiva-select" id="rentiva-search-category" name="rbfw_item_caregory">
+						<?php
+						/*
+						 * name="item_category", never the real taxonomy slug
+						 * "rbfw_item_caregory" — WordPress registers that as the
+						 * taxonomy's own query var, so a request carrying it flips
+						 * is_tax() true (and the plugin's own taxonomy template takes
+						 * over) instead of reaching archive-rbfw_item.php at all.
+						 * archive-rbfw_item.php reads this GET param and passes it to
+						 * Rentiva_Rental_Adapter::query_items()'s 'category' arg,
+						 * which builds its own explicit tax_query — a separate, safe
+						 * thing from the URL's own query string.
+						 */
+						?>
+						<select class="rentiva-select" id="rentiva-search-category" name="item_category">
+							<option value=""><?php esc_html_e( 'All Categories', 'rentiva' ); ?></option>
 							<?php foreach ( $rentiva_categories as $rentiva_category ) : ?>
 								<option value="<?php echo esc_attr( $rentiva_category['slug'] ); ?>"><?php echo esc_html( $rentiva_category['name'] ); ?></option>
 							<?php endforeach; ?>

@@ -257,8 +257,8 @@ class Rentiva_Elementor_Widget_Hero extends Rentiva_Elementor_Section_Widget {
 			)
 		);
 		$this->add_control( 'search_label', array( 'label' => __( 'Panel Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'FIND YOUR RENTAL', 'rentiva' ) ) );
-		$this->add_control( 'field_where_label', array( 'label' => __( '"Where" Field Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Where', 'rentiva' ) ) );
-		$this->add_control( 'field_where_placeholder', array( 'label' => __( '"Where" Field Placeholder', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Choose location', 'rentiva' ) ) );
+		$this->add_control( 'field_where_label', array( 'label' => __( '"Item Name" Field Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Item Name', 'rentiva' ) ) );
+		$this->add_control( 'field_where_placeholder', array( 'label' => __( '"Item Name" Field Placeholder', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Search item name…', 'rentiva' ) ) );
 		$this->add_control( 'field_pickup_label', array( 'label' => __( '"Pickup" Field Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Pickup', 'rentiva' ) ) );
 		$this->add_control( 'field_return_label', array( 'label' => __( '"Return" Field Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Return', 'rentiva' ) ) );
 		$this->add_control( 'field_category_label', array( 'label' => __( '"Category" Field Label', 'rentiva' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => __( 'Category', 'rentiva' ) ) );
