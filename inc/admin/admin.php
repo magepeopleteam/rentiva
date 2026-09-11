@@ -16,4 +16,3 @@ if ( ! is_admin() ) {
 
 require_once RENTIVA_DIR . 'inc/admin/theme-settings.php';
 require_once RENTIVA_DIR . 'inc/admin/setup-wizard.php';
-require_once RENTIVA_DIR . 'inc/admin/category-image-metabox.php';

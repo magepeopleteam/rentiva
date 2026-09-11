@@ -114,6 +114,17 @@ function rentiva_import_demo_content() {
 
 			if ( ! empty( $category_ids[ $item['category'] ] ) ) {
 				wp_set_object_terms( $post_id, (int) $category_ids[ $item['category'] ], 'rbfw_item_caregory' );
+				// The plugin's own front-end listing/search (rbfw_shortcodes.php,
+				// used by the category archive template and the homepage) filters
+				// by this postmeta, NOT by the rbfw_item_caregory taxonomy
+				// relationship set above — the two are separate, undocumented
+				// storage for "category" on this plugin. Without this, an item
+				// shows correctly in wp-admin (real term assignment, real count)
+				// but never appears on that category's own front-end page.
+				// Format required by rbfw_build_category_meta_clause(): a
+				// serialized array of category name strings — update_post_meta()
+				// serializes the array automatically.
+				update_post_meta( $post_id, 'rbfw_categories', array( $item['category'] ) );
 			}
 			if ( ! empty( $location_ids[ $item['location'] ] ) ) {
 				wp_set_object_terms( $post_id, (int) $location_ids[ $item['location'] ], 'rbfw_item_location' );
