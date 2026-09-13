@@ -59,6 +59,14 @@ function rentiva_demo_locations() {
  * `10` (matching the plugin's own bundled demo importer), so freshly
  * imported items never show as "out of stock".
  *
+ * 8 items total (not the original 4): the homepage's Popular Rentals grid
+ * (template-parts/home/popular-rentals.php) is 4 columns wide and now asks
+ * for 8 cards so it fills two full rows instead of one — a fresh demo
+ * import needs to actually have that many items on hand, and one from
+ * each of 4 more of the 6 seeded categories (rentiva_demo_categories()
+ * above) rather than more bicycles, so the homepage doesn't look like a
+ * single-category site.
+ *
  * @return array<int,array<string,mixed>>
  */
 function rentiva_demo_items() {
@@ -117,6 +125,54 @@ function rentiva_demo_items() {
 			'photo'      => 'item-weekend-pro.jpg',
 			'specs'      => array( 'Type: Hybrid Bike', 'Gears: 18 Speed', 'Frame: Aluminum', 'Suitable For: Adults' ),
 			'included'   => array( 'Helmet', 'Bike Lock' ),
+		),
+		array(
+			'title'      => 'City Glide E-Scooter',
+			'excerpt'    => 'A lightweight electric scooter built for quick hops across town.',
+			'content'    => 'City Glide gets you there without breaking a sweat — folds down in seconds and easily covers a full day of errands on a single charge.',
+			'category'   => 'Scooters',
+			'location'   => 'Dhaka',
+			'daily_rate' => 12,
+			'weekly_rate' => 60,
+			'photo'      => 'item-city-glide-e-scooter.jpg',
+			'specs'      => array( 'Type: Electric Scooter', 'Range: 25 km', 'Top Speed: 25 km/h', 'Suitable For: Adults' ),
+			'included'   => array( 'Helmet', 'Charging Cable', 'Lock' ),
+		),
+		array(
+			'title'      => 'Capture Pro DSLR Kit',
+			'excerpt'    => 'A full-frame DSLR kit ready for events, portraits and everything between.',
+			'content'    => 'Capture Pro pairs a 24MP body with a fast 50mm prime lens, so you\'re shooting sharp, low-light-ready photos within minutes of pickup.',
+			'category'   => 'Cameras',
+			'location'   => 'Chittagong',
+			'daily_rate' => 30,
+			'weekly_rate' => 160,
+			'photo'      => 'item-capture-pro-dslr-kit.jpg',
+			'specs'      => array( 'Type: DSLR Camera', 'Lens: 50mm f/1.4', 'Resolution: 24 MP', 'Suitable For: Photographers' ),
+			'included'   => array( 'Camera Bag', 'Spare Battery', '64GB SD Card' ),
+		),
+		array(
+			'title'      => 'Alpine 2-Person Tent',
+			'excerpt'    => 'A weatherproof dome tent that sets up in minutes for two.',
+			'content'    => 'Alpine keeps you dry and warm through wind and rain, with enough room inside for two sleepers and their gear.',
+			'category'   => 'Camping',
+			'location'   => 'Sylhet',
+			'daily_rate' => 15,
+			'weekly_rate' => 75,
+			'photo'      => 'item-alpine-2-person-tent.jpg',
+			'specs'      => array( 'Type: Dome Tent', 'Capacity: 2 Person', 'Weight: 2.8 kg', 'Waterproof: Yes' ),
+			'included'   => array( 'Tent', 'Ground Sheet', 'Repair Kit' ),
+		),
+		array(
+			'title'      => 'Sunset Paddleboard Duo',
+			'excerpt'    => 'A pair of inflatable paddleboards ready for a calm evening on the water.',
+			'content'    => 'Stable enough for beginners and light enough to carry solo, this duo set is the easiest way to get out on the water for a sunset paddle.',
+			'category'   => 'Water Sports',
+			'location'   => 'Chittagong',
+			'daily_rate' => 20,
+			'weekly_rate' => 0,
+			'photo'      => 'item-sunset-paddleboard-duo.jpg',
+			'specs'      => array( 'Type: Inflatable SUP (Pair)', 'Length: 10 ft', 'Suitable For: Adults', 'Paddle Included: Yes' ),
+			'included'   => array( 'Paddles', 'Life Vests', 'Pump' ),
 		),
 	);
 }

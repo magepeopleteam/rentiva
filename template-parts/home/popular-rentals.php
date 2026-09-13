@@ -14,9 +14,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 // remove/reorder rows wholly define the set; only an entirely empty picker
 // falls back to the built-in "most popular" query) — see
 // Rentiva_Elementor_Widget_Popular_Rentals::render().
+// 8, not 4: the grid below is 4 columns wide, so 8 cards fill two full rows
+// instead of leaving the section just one row tall.
 $rentiva_items = ( ! empty( $args['items'] ) && is_array( $args['items'] ) )
 	? $args['items']
-	: rentiva_get_rental_cards( 4, 'popular' );
+	: rentiva_get_rental_cards( 8, 'popular' );
 
 // $args overrides when rendering as the Rentiva: Popular Rentals Elementor widget.
 $rentiva_heading   = ! empty( $args['heading'] ) ? $args['heading'] : __( 'Popular Rentals', 'rentiva' );
