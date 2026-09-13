@@ -160,14 +160,17 @@ function rentiva_get_default_how_it_works_steps() {
 		array(
 			'title' => __( 'Find', 'rentiva' ),
 			'desc'  => __( 'Discover the perfect equipment near you.', 'rentiva' ),
+			'icon'  => 'search',
 		),
 		array(
 			'title' => __( 'Book', 'rentiva' ),
 			'desc'  => __( 'Choose your dates and reserve in seconds.', 'rentiva' ),
+			'icon'  => 'calendar',
 		),
 		array(
 			'title' => __( 'Enjoy', 'rentiva' ),
 			'desc'  => __( 'Pick it up and start your adventure.', 'rentiva' ),
+			'icon'  => 'check',
 		),
 	);
 }
@@ -285,15 +288,17 @@ function rentiva_get_rental_item_picker_options() {
 
 /**
  * Default rows for that same repeater — the items currently shown
- * (rentiva_get_rental_cards( 4, 'popular' )), as {item_id} rows, so opening
- * the widget shows the current picks pre-filled and ready to edit/reorder
- * instead of an empty repeater with nothing to click.
+ * (rentiva_get_rental_cards( 8, 'popular' ), matching the 8 the homepage
+ * section itself now asks for — see popular-rentals.php), as {item_id}
+ * rows, so opening the widget shows the current picks pre-filled and
+ * ready to edit/reorder instead of an empty repeater with nothing to
+ * click.
  *
  * @return array<int,array{item_id:int}>
  */
 function rentiva_get_default_rental_item_repeater_rows() {
 	$rows = array();
-	foreach ( rentiva_get_rental_cards( 4, 'popular' ) as $card ) {
+	foreach ( rentiva_get_rental_cards( 8, 'popular' ) as $card ) {
 		if ( ! empty( $card['id'] ) ) {
 			$rows[] = array( 'item_id' => $card['id'] );
 		}
