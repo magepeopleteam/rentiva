@@ -120,8 +120,22 @@
 	display: flex;
 	flex-direction: column;
 	gap: 0.65rem;
-	max-height: 13rem;
+}
+
+/* Capped list: only added by the template when a group actually has more
+   options than should show at once (Category: over 20 terms — see
+   archive-rbfw_item.php), so a short list never gets a scrollbar it
+   doesn't need. 41rem fits exactly 20 rows (each row + its gap measures
+   ~2.0625rem here, so 20 rows − 1 gap ≈ 40.6rem; the extra headroom is
+   just rounding slack) — a 21st row is what first crosses this height
+   and starts the scroll. */
+.rentiva-filter-group__options--capped {
+	max-height: 41rem;
 	overflow-y: auto;
+	/* Own scrollbar sits right at the container's edge — flush against the
+	   count badge at the end of each row with no gutter. Padding here gives
+	   every row (not just the count) breathing room from the scrollbar. */
+	padding-right: 0.6rem;
 }
 
 .rentiva-filter-checkbox {
@@ -320,4 +334,242 @@
 .rentiva-archive__pagination .page-numbers:not(.current):not(.dots):hover {
 	border-color: var(--rentiva-primary);
 	color: var(--rentiva-primary);
+}
+
+/* ==========================================================================
+   Category / location archive header ("Bicycles" etc. — the plugin's own
+   templates/archive/rbfw-category.php, rendered for /?rbfw_item_caregory=…
+   and the rbfw_item_location taxonomy). Its head band and body wrapper ship
+   the plugin's own gutter/max-width system (rbfw_style.css: .rbfw-archive-head
+   padding + .rbfw-archive-head-inner / .rbfw-archive-body max-width), which
+   doesn't match .rentiva-container — the container the header bar and every
+   other page body on the site actually uses. Rebuilt here to that same box
+   model instead, so the crumbs/title/count and the card grid below line up
+   with the header above and the rest of the site. `!important` because this
+   stylesheet loads before the plugin's own in the page <head> (see
+   plugin-item-details.css for the same situation), so equal specificity
+   would otherwise lose to its later, unqualified rule.
+   ========================================================================== */
+
+.rbfw-archive-head {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+
+.rbfw-archive-head-inner,
+.rbfw-archive-body {
+	max-width: var(--rentiva-container) !important;
+	margin-left: auto !important;
+	margin-right: auto !important;
+	padding-left: 1.25rem !important;
+	padding-right: 1.25rem !important;
+}
+
+@media (min-width: 641px) {
+	.rbfw-archive-head-inner,
+	.rbfw-archive-body {
+		padding-left: 2rem !important;
+		padding-right: 2rem !important;
+	}
+}
+
+@media (min-width: 1025px) {
+	.rbfw-archive-head-inner,
+	.rbfw-archive-body {
+		padding-left: var(--rentiva-gutter-lg) !important;
+		padding-right: var(--rentiva-gutter-lg) !important;
+	}
+}
+
+/* ==========================================================================
+   [rent-list] grid card — the plugin's own rental card markup
+   (rbfw_style.css / rbfw_rent_items.css: .rbfw_rent_list_inner_wrapper and
+   its children), used by rbfw-category.php's "Bicycles" etc. listing. Its
+   default look (flat 1px gray border, 15px radius, plain gray spec pills,
+   red brand button) doesn't match the theme's own rental-card language —
+   .rentiva-card / .rentiva-rental-card in components.css, the same card
+   system Popular Rentals and the /rentals archive already use. Restyled
+   here to that: white card + border + shadow-card, radius-lg, hover lift
+   with an image zoom, .rentiva-pill-style spec tags, and a primary pill
+   CTA. `!important` because this stylesheet loads before the plugin's own
+   in the page <head> (see plugin-item-details.css for the same situation),
+   so equal specificity would otherwise lose to its later, unqualified rule.
+   ========================================================================== */
+
+.rbfw_rent_list_style_grid .rbfw_rent_list_inner_wrapper {
+	background-color: var(--rentiva-card) !important;
+	border: 1px solid var(--rentiva-border) !important;
+	border-radius: var(--rentiva-radius-lg) !important;
+	box-shadow: var(--rentiva-shadow-card) !important;
+	transition: box-shadow var(--rentiva-transition), transform var(--rentiva-transition);
+}
+
+.rbfw_rent_list_style_grid .rbfw_rent_list_inner_wrapper:hover {
+	box-shadow: var(--rentiva-shadow-card-hover) !important;
+	transform: translateY(-4px);
+}
+
+/* Image ------------------------------------------------------------------ */
+
+.rbfw_rent_list_grid_view_top_img {
+	height: 220px !important;
+	min-height: unset !important;
+}
+
+.rbfw_rent_list_grid_view_top_img img {
+	transition: transform 500ms ease !important;
+}
+
+.rbfw_rent_list_inner_wrapper:hover .rbfw_rent_list_grid_view_top_img img {
+	transform: scale(1.06) !important;
+}
+
+/* Body --------------------------------------------------------------------- */
+
+.rbfw_inner_details {
+	padding: 1.25rem !important;
+}
+
+h2.rbfw_rent_list_grid_title,
+.rbfw_rent_list_grid_title a {
+	font-family: var(--rentiva-font-display) !important;
+	font-weight: 700 !important;
+	font-size: var(--rentiva-text-lg) !important;
+	color: var(--rentiva-foreground) !important;
+}
+
+h2.rbfw_rent_list_grid_title {
+	line-height: var(--rentiva-leading-snug);
+	margin: 0 0 0.6rem !important;
+	min-height: unset !important;
+}
+
+.rbfw_rent_list_grid_title a:hover {
+	color: var(--rentiva-primary) !important;
+}
+
+.rbfw_rent_item_description_text {
+	color: var(--rentiva-muted-foreground);
+	font-size: var(--rentiva-text-sm);
+	line-height: var(--rentiva-leading-normal);
+}
+
+/* Spec chips — same pill look as .rentiva-pill (components.css) ----------- */
+
+.rbfw_rent_list_info {
+	margin-bottom: 0.9rem !important;
+	gap: 0.5rem !important;
+}
+
+.bfw_rent_list_items {
+	background: var(--rentiva-secondary) !important;
+	color: var(--rentiva-foreground) !important;
+	font-size: var(--rentiva-text-xs) !important;
+	font-weight: 500 !important;
+	padding: 0.4rem 0.85rem !important;
+	border-radius: var(--rentiva-radius-pill) !important;
+}
+
+.bfw_rent_list_items .bfw_rent_list_items_icon,
+.rbfw_rent_list_info i {
+	color: var(--rentiva-primary) !important;
+}
+
+.rbfw_see_more_category {
+	color: var(--rentiva-primary) !important;
+	font-family: var(--rentiva-font-sans);
+	font-weight: 600;
+	font-size: var(--rentiva-text-xs);
+}
+
+/* Price + Book Now row ------------------------------------------------------ */
+
+.rbfw_rent_list_btn_holder {
+	padding-top: 1rem;
+	border-top: 1px solid var(--rentiva-border);
+	margin-top: auto;
+}
+
+.rbfw_rent_list_row_price_level {
+	font-size: var(--rentiva-text-xs) !important;
+	color: var(--rentiva-muted-foreground) !important;
+	font-weight: 500 !important;
+}
+
+.rbfw_rent_list_row_price {
+	font-family: var(--rentiva-font-display) !important;
+	color: var(--rentiva-foreground) !important;
+	font-size: var(--rentiva-text-xl) !important;
+}
+
+.rbfw_rent_list_row_price .woocommerce-Price-amount,
+.rbfw_rent_list_row_price .woocommerce-Price-currencySymbol {
+	color: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+}
+
+/*
+ * Selector specificity note: rbfw_style.css already carries an unscoped
+ * `.rbfw_rent_list_btn_holder a.rbfw_rent_list_btn { ... !important }` rule
+ * from an earlier customization of a *different* card variant (the one
+ * wrapped in `.rbfw_rent_list_col`) that happens to match this markup too —
+ * a red outline button. Its selector is more specific than a bare
+ * `a.rbfw_rent_list_btn`, and on a tie between two `!important` rules,
+ * specificity (not load order) decides — so matching its two-class
+ * `.rbfw_rent_list_btn_holder a.rbfw_rent_list_btn` shape isn't enough; the
+ * extra `.rbfw_rent_list_link` class (also on this anchor) pushes ours
+ * ahead deliberately.
+ */
+.rbfw_rent_list_btn_holder a.rbfw_rent_list_link.rbfw_rent_list_btn {
+	background: var(--rentiva-primary) !important;
+	color: var(--rentiva-primary-foreground) !important;
+	border: none !important;
+	border-radius: var(--rentiva-radius-pill) !important;
+	padding: 0.7rem 1.3rem !important;
+	font-family: var(--rentiva-font-sans) !important;
+	font-size: var(--rentiva-text-sm) !important;
+	font-weight: 600 !important;
+	text-transform: none !important;
+	box-shadow: 0 4px 20px rgba(27, 94, 59, 0.35) !important;
+	transition: background-color var(--rentiva-transition), transform var(--rentiva-transition) !important;
+}
+
+.rbfw_rent_list_btn_holder a.rbfw_rent_list_link.rbfw_rent_list_btn:hover {
+	background: var(--rentiva-primary-dark) !important;
+	color: var(--rentiva-primary-foreground) !important;
+	transform: translateY(-2px);
+}
+
+.rbfw_rent_list_btn .button-icon {
+	font-size: 0.85em;
+}
+
+/* Full-specs popup ("See more") — light restyle of the plugin's own plain
+   white box (rbfw_rent_items.css: .rbfw_rent_cat_info_popup and friends) to
+   match the theme's radius/shadow/type instead of its flat 8px/system-font
+   default. */
+
+.rbfw_rent_cat_info_popup {
+	border-radius: var(--rentiva-radius-lg) !important;
+	box-shadow: var(--rentiva-shadow-floating) !important;
+	font-family: var(--rentiva-font-sans);
+}
+
+.rbfw_popup_fearure_title.rbfw_popup_fearure_title_color {
+	font-family: var(--rentiva-font-display) !important;
+	color: var(--rentiva-foreground) !important;
+}
+
+ul.rbfw_popup_fearure_lists li {
+	border-bottom-color: var(--rentiva-border) !important;
+	font-size: var(--rentiva-text-sm);
+}
+
+ul.rbfw_popup_fearure_lists li .bfw_rent_list_items_icon {
+	color: var(--rentiva-primary) !important;
+}
+
+.rbfw_popup_close_btn:hover {
+	color: var(--rentiva-primary) !important;
 }

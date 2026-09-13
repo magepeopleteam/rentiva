@@ -11,6 +11,80 @@
  * which of these two categories a given rule falls into.
  */
 
+/* ==========================================================================
+   Colour system — unify with the theme
+   --------------------------------------------------------------------------
+   The "plugin details" single-item layout carries its own accent colours,
+   independent of the theme's green: `--rbfw_color_primary` (rbfw_style.css,
+   red #ff3726 — icons, links, buttons, calendar selection, switches, the
+   hero CTA...), and a *second*, separate system in mp_style.css
+   (`--color_theme` + its precomputed alpha shades `_ee/_cc/_aa/_88/_77`,
+   pink #f12971 — gallery/slider buttons and active states) plus
+   `--color_active` (blue #0E6BB7 — the gallery thumbnail strip's
+   active-slide indicator). Nearly every rule in both plugin stylesheets
+   reads its colour from one of these custom properties rather than a
+   literal hex, so redeclaring them here — scoped to the details-page
+   wrapper, not :root, so nothing outside this page is touched — recolours
+   almost the entire page to the theme's green in one place instead of
+   hunting down every individual selector.
+   `!important` because rbfw_style.css's own :root value, and the
+   per-site colour-picker override PHP prints (rbfw_dynamic_css.php via
+   wp_add_inline_style), both load after this stylesheet.
+   `.rbfw_donut_template` / `.rbfw_muffin_template` are the two other
+   plugin-provided single-item skins (Rentiva → Theme Settings → chosen
+   template) — included so this still applies if that setting changes. */
+.mp_default_theme,
+.rbfw_donut_template,
+.rbfw_muffin_template {
+	--rbfw_color_primary: var(--rentiva-primary) !important;
+	--color_theme: var(--rentiva-primary) !important;
+	--color_theme_ee: #1B5E3Bee !important;
+	--color_theme_cc: #1B5E3Bcc !important;
+	--color_theme_aa: #1B5E3Baa !important;
+	--color_theme_88: #1B5E3B88 !important;
+	--color_theme_77: #1B5E3B77 !important;
+	--color_active: var(--rentiva-primary) !important;
+}
+
+/* A few spots read a hand-picked literal hex instead of the variables
+   above, so the remap doesn't reach them — overridden individually: */
+
+/* Book Now button hover — "a darker shade of primary" was hand-picked as
+   a literal red (#e12d1c, rbfw_style.css ~line 14110) instead of being
+   computed from --rbfw_color_primary, so it doesn't move when that
+   variable does. Selector list mirrors the plugin's own (with an extra
+   .mp_default_theme ancestor) so it wins on specificity, not just load
+   order — the plugin's rule already carries !important too. */
+.mp_default_theme .mp_right_section button.rbfw-book-now-btn:hover:not([disabled]):not(.rbfw_disabled_button),
+.mp_default_theme .mp_right_section button.rbfw-book-now-btn:focus:not([disabled]):not(.rbfw_disabled_button) {
+	background: var(--rentiva-primary-dark) !important;
+	background-color: var(--rentiva-primary-dark) !important;
+	border-color: var(--rentiva-primary-dark) !important;
+}
+
+/* Pickup-location card "selected" state — a third, one-off literal purple
+   (#7b6ff0, rbfw_style.css ~line 12869), also not variable-driven. */
+.mp_default_theme .rbfw_loc_card_selected,
+.rbfw_muffin_template .rbfw_loc_card_selected {
+	border-color: var(--rentiva-primary) !important;
+	box-shadow: 0 8px 20px rgba(27, 94, 59, 0.22) !important;
+}
+
+/* Calendar "available date" row tint — a fourth literal, pale pink
+   (#FFF4F3, rbfw_style.css ~line 11323) rather than derived from the
+   primary colour. Reuses --rentiva-chip-bg, the same pale-green tint the
+   feature-list icon badges above already use. The plugin's own selector
+   includes an #id, so ours repeats it (plus an extra ancestor) to win on
+   specificity rather than just !important. */
+.mp_default_theme .mp_right_section #rbfw-bikecarsd-calendar .ui-datepicker table td.av {
+	background: var(--rentiva-chip-bg) !important;
+}
+
+/* "Best Seller" badges (hero + booking-summary card) are deliberately left
+   out of this remap — see the hero redesign note further down: red there
+   is an urgency signal, not a brand colour, same convention as errors/
+   sold-out states staying red regardless of the primary colour. */
+
 .rbfw-single-container {
 	max-width: var(--rentiva-container);
 	margin-inline: auto;
@@ -78,6 +152,52 @@
 	.mp_default_theme ul.rbfw-feature-lists {
 		grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 	}
+}
+
+/*
+ * Specifications / What's Included redesign: the plugin's own look is a
+ * grid of bordered, light-indigo "chip cards" with its brand red icon
+ * (rbfw_style.css, further up in this same cascade). Restyled here to the
+ * theme's own checklist language instead — a plain row with a small
+ * circular tinted icon badge, exactly `.rentiva-item-about__included-item` /
+ * `.rentiva-checklist__icon` (single-item.css / components.css), the look
+ * the theme's own single-item "About" section already uses for the same
+ * kind of list — so this (the plugin-details layout mode) reads as the same
+ * design system rather than a second, differently-skinned one.
+ */
+.mp_default_theme ul.rbfw-feature-lists li {
+	background: transparent !important;
+	border: none !important;
+	border-radius: 0 !important;
+	padding: 0 !important;
+	box-shadow: none !important;
+	transition: none !important;
+}
+
+.mp_default_theme ul.rbfw-feature-lists li:hover {
+	border-color: transparent !important;
+	box-shadow: none !important;
+}
+
+.mp_default_theme ul.rbfw-feature-lists li span {
+	gap: 0.75rem !important;
+	font-size: var(--rentiva-text-sm) !important;
+	color: var(--rentiva-foreground) !important;
+	font-family: var(--rentiva-font-sans);
+}
+
+.mp_default_theme ul.rbfw-feature-lists li i {
+	display: inline-flex !important;
+	align-items: center;
+	justify-content: center;
+	width: 1.5rem !important;
+	height: 1.5rem;
+	flex-shrink: 0;
+	border-radius: 50%;
+	background-color: var(--rentiva-chip-bg) !important;
+	color: var(--rentiva-primary) !important;
+	font-size: 0.7rem !important;
+	margin-right: 0 !important;
 }
 
 @media (max-width: 400px) {

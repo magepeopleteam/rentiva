@@ -177,7 +177,12 @@ $rentiva_pagination_base = esc_url_raw( add_query_arg( 'paged', '%#%' ) );
 						<?php if ( ! empty( $rentiva_category_terms ) ) : ?>
 							<div class="rentiva-filter-group">
 								<h3 class="rentiva-filter-group__title"><?php esc_html_e( 'Category', 'rentiva' ); ?></h3>
-								<div class="rentiva-filter-group__options">
+								<?php
+								// Only scroll once there are more terms than comfortably fit — a
+								// short list should never grow a scrollbar it doesn't need.
+								$rentiva_category_options_class = 'rentiva-filter-group__options' . ( count( $rentiva_category_terms ) > 20 ? ' rentiva-filter-group__options--capped' : '' );
+								?>
+								<div class="<?php echo esc_attr( $rentiva_category_options_class ); ?>">
 									<?php foreach ( $rentiva_category_terms as $rentiva_term ) : ?>
 										<label class="rentiva-filter-checkbox">
 											<input type="checkbox" name="item_category[]" value="<?php echo esc_attr( $rentiva_term->slug ); ?>" <?php checked( in_array( $rentiva_term->slug, $rentiva_categories_selected, true ) ); ?>>
@@ -192,7 +197,8 @@ $rentiva_pagination_base = esc_url_raw( add_query_arg( 'paged', '%#%' ) );
 						<?php if ( ! empty( $rentiva_location_terms ) ) : ?>
 							<div class="rentiva-filter-group">
 								<h3 class="rentiva-filter-group__title"><?php esc_html_e( 'Location', 'rentiva' ); ?></h3>
-								<div class="rentiva-filter-group__options">
+								<?php $rentiva_location_options_class = 'rentiva-filter-group__options' . ( count( $rentiva_location_terms ) > 20 ? ' rentiva-filter-group__options--capped' : '' ); ?>
+								<div class="<?php echo esc_attr( $rentiva_location_options_class ); ?>">
 									<?php foreach ( $rentiva_location_terms as $rentiva_term ) : ?>
 										<label class="rentiva-filter-checkbox">
 											<input type="checkbox" name="location[]" value="<?php echo esc_attr( $rentiva_term->slug ); ?>" <?php checked( in_array( $rentiva_term->slug, $rentiva_locations_selected, true ) ); ?>>

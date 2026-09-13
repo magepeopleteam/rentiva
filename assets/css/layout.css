@@ -32,9 +32,13 @@ body.rentiva-front-page .site-main {
 @media (min-width: 1025px) {
 	.rentiva-container {
 		padding-inline: var(--rentiva-gutter-lg);
-		max-width: 1200px;
 	}
 }
+/* No max-width override above: .rentiva-container stays at
+   var(--rentiva-container) at every breakpoint, same as .site-header__inner
+   (header.css) — it used to cap to a hardcoded 1200px here at desktop while
+   the header stayed at the full var(--rentiva-container) (1440px), so the
+   body column and the header bar above it didn't line up. */
 
 .rentiva-container--content {
 	max-width: var(--rentiva-container-content);
