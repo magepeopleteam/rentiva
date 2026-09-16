@@ -153,6 +153,18 @@ body:not(.rentiva-header-on-media) .site-header__nav a.is-current {
 	color: var(--rentiva-primary);
 }
 
+/* Dropdowns ------------------------------------------------------------
+ *
+ * The <li> has to be the dropdown's positioning context: .site-header is
+ * `position: fixed`, so without this the panel resolves against the whole
+ * header bar and opens at the left edge of the viewport instead of under
+ * its own menu item. Mega-menu parents deliberately stay `static` below —
+ * that's what makes their panel span the header rather than the item. */
+
+.site-header__nav > li {
+	position: relative;
+}
+
 /* Mega menu (only triggers for parents with 9+ children — rentiva_mark_multi_column_menu_items()) */
 
 .site-header__nav li.has-multi-column {
@@ -162,14 +174,27 @@ body:not(.rentiva-header-on-media) .site-header__nav a.is-current {
 .site-header__nav .sub-menu {
 	display: none;
 	position: absolute;
-	top: 100%;
+	/* Offset via `top`, not margin: the gap has to stay inside the panel's
+	 * own hover area (see ::before) or the dropdown closes while the
+	 * pointer crosses it. */
+	top: calc(100% + 0.75rem);
 	left: 0;
-	margin-top: 1rem;
 	padding: 1.5rem;
 	min-width: 220px;
 	background-color: var(--rentiva-card);
 	border-radius: var(--rentiva-radius);
 	box-shadow: var(--rentiva-shadow-floating);
+}
+
+/* Invisible bridge across the gap, so moving the pointer from the menu item
+ * down to the panel never leaves the hovered <li>. */
+.site-header__nav .sub-menu::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 100%;
+	height: 0.75rem;
 }
 
 .site-header__nav li:hover > .sub-menu,
@@ -334,6 +359,22 @@ body:not(.rentiva-header-on-media) .site-header__toggle span {
 	font-size: var(--rentiva-text-sm);
 	font-weight: 500;
 	color: var(--rentiva-foreground);
+}
+
+/* Drawer sub-menus: a plain indented list, always open. There's no hover on
+ * touch, so the desktop dropdown treatment would make child items
+ * unreachable; nesting them under the parent keeps the hierarchy readable. */
+.site-header__mobile-menu .sub-menu {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	margin-top: 0.75rem;
+	padding-left: 0.9rem;
+	border-left: 1px solid var(--rentiva-border);
+}
+
+.site-header__mobile-menu .sub-menu a {
+	color: var(--rentiva-muted-foreground);
 }
 
 .site-header__mobile-actions {
