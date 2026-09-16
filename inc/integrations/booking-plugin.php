@@ -765,14 +765,23 @@ class Rentiva_Rental_Adapter {
 			return array();
 		}
 
+		// 'date' => 'DESC' as a tiebreaker: on a fresh/demo site every item
+		// ties at comment_count = 0, so without it this fell back to post ID
+		// order — surfacing whichever items happened to be created first
+		// (e.g. the booking plugin's own bundled placeholder listings like
+		// "Muffin Template") ahead of real, newer catalog items.
 		$query_args = wp_parse_args(
 			$args,
 			array(
 				'post_type'      => self::get_cpt_name(),
 				'post_status'    => 'publish',
 				'posts_per_page' => $count,
-				'orderby'        => 'newest' === $context ? 'date' : 'comment_count',
-				'order'          => 'DESC',
+				'orderby'        => 'newest' === $context
+					? array( 'date' => 'DESC' )
+					: array(
+						'comment_count' => 'DESC',
+						'date'          => 'DESC',
+					),
 			)
 		);
 
