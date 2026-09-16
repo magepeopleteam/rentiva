@@ -240,6 +240,31 @@ function rentiva_settings_page_assets( $hook ) {
 			'manualActivateHint'    => __( 'The plugin is installed but WordPress couldn\'t activate it automatically — see the error above for the reason. You can try activating it directly from the Plugins page instead.', 'rentiva' ),
 			'uploadLinkText'        => __( 'Upload plugin zip', 'rentiva' ),
 			'wporgLinkText'         => __( 'View on WordPress.org', 'rentiva' ),
+			// Step 1's "Upload & Install" for premium plugins (rentiva_ajax_upload_plugin()).
+			'ajaxUrl'               => admin_url( 'admin-ajax.php' ),
+			'uploadNonce'           => wp_create_nonce( 'rentiva_upload_plugin' ),
+			'maxUploadBytes'        => wp_max_upload_size(),
+			'uploadingText'         => __( 'Uploading…', 'rentiva' ),
+			'uploadFailedHeading'   => __( 'Upload failed', 'rentiva' ),
+			/* translators: %s: plugin name. */
+			'phaseUploading'        => __( 'Uploading and installing %s…', 'rentiva' ),
+			'uploadWrongType'       => __( 'Choose the plugin\'s .zip file.', 'rentiva' ),
+			'uploadTooLarge'        => sprintf(
+				/* translators: %s: maximum upload file size, e.g. "64 MB". */
+				__( 'This file is larger than %s, the maximum upload size on this site.', 'rentiva' ),
+				size_format( wp_max_upload_size() )
+			),
+			'uploadServerError'     => __( 'The server didn\'t return a valid response — the upload may be too large for this site, or it timed out.', 'rentiva' ),
+			// Step 2's in-place Import Demo Content (rentiva_ajax_import_demo_step()).
+			'importButtonText'      => __( 'Import Demo Content', 'rentiva' ),
+			'importingText'         => __( 'Importing…', 'rentiva' ),
+			/* translators: 1: checklist row being imported, e.g. "Rental items". 2: overall progress, e.g. "45%". */
+			'importProgressText'    => __( '%1$s… %2$s', 'rentiva' ),
+			'importDoneText'        => __( 'Demo content imported — your homepage, rentals, and menus are ready.', 'rentiva' ),
+			'importFailedText'      => __( 'The server didn\'t respond as expected. Check your connection and click Retry — finished steps won\'t run twice.', 'rentiva' ),
+			'importLeaveWarning'    => __( 'The demo import is still running. Leave anyway?', 'rentiva' ),
+			'importedBadgeText'     => __( 'Imported', 'rentiva' ),
+			'continueText'          => __( 'Continue', 'rentiva' ),
 		)
 	);
 }

@@ -142,6 +142,94 @@
 	background: var(--rentiva-primary);
 }
 
+/* Setup wizard: chips double as step navigation */
+
+a.rentiva-step-chip {
+	color: var(--rentiva-foreground);
+	text-decoration: none;
+	transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+a.rentiva-step-chip:hover {
+	border-color: var(--rentiva-primary);
+	color: var(--rentiva-foreground);
+	box-shadow: var(--rentiva-shadow-card);
+}
+
+.rentiva-step-chip.is-current {
+	border-color: var(--rentiva-primary);
+	box-shadow: 0 0 0 1px var(--rentiva-primary);
+}
+
+.rentiva-step-chip.is-current .rentiva-step-chip__check {
+	background: var(--rentiva-primary);
+}
+
+.rentiva-step-chip.is-locked {
+	background: var(--rentiva-muted);
+	color: var(--rentiva-muted-foreground);
+	cursor: not-allowed;
+}
+
+/* Setup wizard: Back / Continue footer inside the step card */
+
+.rentiva-wizard-nav {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	margin-top: 1.5rem;
+	padding-top: 1.25rem;
+	border-top: 1px solid var(--rentiva-border);
+}
+
+.rentiva-wizard-nav__forward {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	margin-left: auto;
+}
+
+.rentiva-wizard-nav__hint {
+	color: var(--rentiva-muted-foreground);
+	font-size: 0.875rem;
+}
+
+/* Pill buttons matching the Install/Activate actions above. Core's own
+ * `.button.disabled` rules (all !important) still win for a locked Continue. */
+.rentiva-wizard-nav .button {
+	height: auto;
+	min-height: 0;
+	padding: 0.6rem 1.25rem;
+	border-color: var(--rentiva-border);
+	border-radius: var(--rentiva-radius-pill);
+	background: var(--rentiva-card);
+	color: var(--rentiva-foreground);
+	font-weight: 600;
+	line-height: 1.2;
+}
+
+.rentiva-wizard-nav .button:hover,
+.rentiva-wizard-nav .button:focus {
+	border-color: var(--rentiva-primary);
+	background: var(--rentiva-chip-bg);
+	color: var(--rentiva-primary-dark);
+}
+
+.rentiva-wizard-nav .button-primary {
+	border-color: var(--rentiva-primary);
+	background: var(--rentiva-primary);
+	color: #fff;
+}
+
+.rentiva-wizard-nav .button-primary:hover,
+.rentiva-wizard-nav .button-primary:focus {
+	border-color: var(--rentiva-primary-dark);
+	background: var(--rentiva-primary-dark);
+	color: #fff;
+}
+
 /* Cards */
 
 .rentiva-card {
@@ -276,6 +364,24 @@
 	font-size: 1.1rem;
 }
 
+/* Elementor's admin CSS recolors every core button icon
+ * (`[class*="branch-7"].wp-core-ui .button .dashicons`) — out-rank it so the
+ * icon follows the button's own text color. */
+.wp-core-ui .rentiva-admin .rentiva-import-demo-btn.button .dashicons,
+.wp-core-ui .rentiva-admin .rentiva-plugin-action.button .dashicons {
+	color: inherit;
+}
+
+/* In-place import running (assets/js/admin-setup.js) — stays branded. */
+.rentiva-import-demo-btn.button.is-busy,
+.rentiva-import-demo-btn.button.is-busy:hover,
+.rentiva-import-demo-btn.button.is-busy:focus {
+	color: #fff;
+	cursor: progress;
+	opacity: 0.85;
+	transform: none;
+}
+
 .rentiva-import-demo-btn.button:hover,
 .rentiva-import-demo-btn.button:focus {
 	background: linear-gradient(135deg, var(--rentiva-primary-dark), var(--rentiva-primary-dark));
@@ -315,6 +421,122 @@
 	margin: 0.5rem 0 0;
 	font-size: 0.875rem;
 	color: var(--rentiva-muted-foreground);
+}
+
+/* Setup Step 2: in-place demo import — bar + per-group checklist */
+
+.rentiva-import-progress {
+	margin-top: 1.25rem;
+}
+
+.rentiva-import-checklist {
+	display: grid;
+	gap: 0.5rem;
+	margin: 1rem 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.rentiva-import-checklist__item {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin: 0;
+	padding: 0.65rem 1rem;
+	border: 1px solid var(--rentiva-border);
+	border-radius: var(--rentiva-radius);
+	color: var(--rentiva-muted-foreground);
+	transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease;
+}
+
+.rentiva-import-checklist__label {
+	flex: 1 1 auto;
+	font-weight: 600;
+}
+
+.rentiva-import-checklist__count {
+	font-size: 0.8125rem;
+	font-variant-numeric: tabular-nums;
+}
+
+.rentiva-import-checklist__icon {
+	position: relative;
+	flex: none;
+	box-sizing: border-box;
+	width: 1.25rem;
+	height: 1.25rem;
+	border: 2px solid var(--rentiva-border);
+	border-radius: 50%;
+}
+
+.rentiva-import-checklist__item[data-state="active"] {
+	border-color: var(--rentiva-primary);
+	color: var(--rentiva-foreground);
+}
+
+.rentiva-import-checklist__item[data-state="active"] .rentiva-import-checklist__icon {
+	border-color: var(--rentiva-primary);
+	border-top-color: transparent;
+	animation: rentiva-spin 800ms linear infinite;
+}
+
+.rentiva-import-checklist__item[data-state="done"] {
+	background: var(--rentiva-chip-bg);
+	border-color: var(--rentiva-chip-bg);
+	color: var(--rentiva-primary-dark);
+}
+
+.rentiva-import-checklist__item[data-state="done"] .rentiva-import-checklist__icon {
+	background: var(--rentiva-primary);
+	border-color: var(--rentiva-primary);
+}
+
+/* Checkmark */
+.rentiva-import-checklist__item[data-state="done"] .rentiva-import-checklist__icon::after {
+	content: "";
+	position: absolute;
+	top: 2px;
+	left: 5px;
+	width: 4px;
+	height: 8px;
+	border: solid #fff;
+	border-width: 0 2px 2px 0;
+	transform: rotate(45deg);
+}
+
+.rentiva-import-checklist__item[data-state="failed"] {
+	background: var(--rentiva-danger-bg);
+	border-color: var(--rentiva-danger-bg);
+	color: var(--rentiva-danger-foreground);
+}
+
+.rentiva-import-checklist__item[data-state="failed"] .rentiva-import-checklist__icon {
+	border-color: var(--rentiva-danger-foreground);
+}
+
+.rentiva-import-progress__error {
+	margin: 1rem 0 0;
+}
+
+.rentiva-import-progress__error p:last-child .button {
+	margin-top: 0.35rem;
+}
+
+.rentiva-spin {
+	animation: rentiva-spin 1s linear infinite;
+}
+
+@keyframes rentiva-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.rentiva-spin,
+	.rentiva-import-checklist__item[data-state="active"] .rentiva-import-checklist__icon {
+		animation: none;
+	}
 }
 
 /* Busy state — a spinning icon while an install/activate AJAX call is in flight */
@@ -426,6 +648,15 @@
 	margin: 0.25rem 0 0;
 }
 
+.rentiva-notice__list {
+	margin: 0.4rem 0 0 1.1rem;
+	list-style: disc;
+}
+
+.rentiva-notice__list li {
+	margin: 0.15rem 0;
+}
+
 .button-hero {
 	padding: 0.5rem 1.5rem !important;
 	height: auto !important;
@@ -466,16 +697,6 @@
 .rentiva-next-step-tile span:last-child {
 	color: var(--rentiva-muted-foreground);
 	font-size: 0.875rem;
-}
-
-.rentiva-next-step-tile.is-locked {
-	cursor: not-allowed;
-	color: var(--rentiva-muted-foreground);
-	background: var(--rentiva-muted);
-}
-
-.rentiva-next-step-tile.is-locked .dashicons {
-	color: var(--rentiva-muted-foreground);
 }
 
 /* Theme Settings: sidebar tab layout */

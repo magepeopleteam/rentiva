@@ -127,7 +127,7 @@
 
 	/**
 	 * @param {jQuery} $row
-	 * @param {string} task      'install' or 'activate' — which step actually
+	 * @param {string} task      'install', 'upload' or 'activate' — which step actually
 	 *                           failed, since the heading and the advice both
 	 *                           genuinely differ (a failed activate means the
 	 *                           plugin is already sitting there installed —
@@ -137,8 +137,8 @@
 	 * @param {string} slug
 	 */
 	function showNotice( $row, task, message, wporgFlag, slug ) {
-		var isInstall = 'install' === task;
-		var heading    = isInstall ? rentivaAdmin.manualInstallHeading : rentivaAdmin.manualActivateHeading;
+		var isInstall = 'activate' !== task;
+		var heading    = 'upload' === task ? rentivaAdmin.uploadFailedHeading : ( isInstall ? rentivaAdmin.manualInstallHeading : rentivaAdmin.manualActivateHeading );
 		var hint       = isInstall
 			? ( '1' === wporgFlag ? rentivaAdmin.manualWporgHint : rentivaAdmin.manualPremiumHint )
 			: rentivaAdmin.manualActivateHint;
@@ -191,11 +191,29 @@
 	}
 
 	function markActive( $row ) {
+		$row.attr( 'data-active', '1' );
 		$row.find( '[data-role="status-badge"]' )
 			.attr( 'class', 'rentiva-badge rentiva-badge--ready' )
 			.text( rentivaAdmin.activeText );
 		$row.find( '.rentiva-plugin-row__action' ).empty();
 		clearNotice( $row );
+		unlockWizardNext();
+	}
+
+	/**
+	 * Setup wizard, Step 1: Continue is rendered without an href while any
+	 * required plugin is still inactive (rentiva_render_setup_wizard_nav()).
+	 * Once the last one activates here, restore it from data-href so the
+	 * admin can move on without reloading — the next step's own page load
+	 * then re-checks plugin status server-side anyway.
+	 */
+	function unlockWizardNext() {
+		var $next = $( '[data-rentiva-wizard-next]' );
+		if ( ! $next.length || $rows.filter( '[data-required="1"]' ).not( '[data-active="1"]' ).length ) {
+			return;
+		}
+		$next.attr( 'href', $next.data( 'href' ) ).removeAttr( 'aria-disabled role' ).removeClass( 'disabled' );
+		$( '[data-rentiva-wizard-hint]' ).attr( 'hidden', true );
 	}
 
 	/**
@@ -356,6 +374,110 @@
 	}
 
 	/**
+	 * Uploads and installs a premium plugin's zip — the Upload & Install button
+	 * on rows whose plugin isn't on WordPress.org — through
+	 * rentiva_ajax_upload_plugin(), which runs core's own Plugin_Upgrader.
+	 * Opens the file picker first, synchronously inside the click so browsers
+	 * allow it; nothing turns busy until a file is actually chosen, so
+	 * cancelling the picker changes nothing. Like runInstall(), success swaps
+	 * in an Activate button rather than activating straight away.
+	 *
+	 * Resolves with { success: bool } once an upload finishes (never, if the
+	 * picker is cancelled); never rejects.
+	 *
+	 * @param {jQuery}    $btn       The .rentiva-plugin-action[data-task="upload"] button clicked.
+	 * @param {Function=} onProgress Optional ( fraction, text ) callback; fraction
+	 *                               is 0..1, or null to signal failure (hide progress).
+	 * @return {jQuery.Promise}
+	 */
+	function runUpload( $btn, onProgress ) {
+		onProgress    = onProgress || function () {};
+		var deferred  = $.Deferred();
+		var $row      = $btn.closest( '[data-plugin-row]' );
+		var input     = $row.find( '.rentiva-plugin-upload-input' ).get( 0 );
+		var slug      = $btn.data( 'slug' );
+		var name      = $btn.data( 'name' );
+		var file      = $btn.data( 'pluginFile' );
+		var wporgFlag = String( $btn.data( 'wporg' ) );
+
+		// No picker to open, or no FormData to send it with: fall back to the
+		// link's own target, core's Upload Plugin screen.
+		if ( ! input || ! window.FormData ) {
+			window.location.href = $btn.attr( 'href' );
+			return deferred.promise();
+		}
+
+		function fail( message ) {
+			restore( $btn );
+			showNotice( $row, 'upload', message, wporgFlag, slug );
+			onProgress( null );
+			deferred.resolve( { success: false, slug: slug } );
+		}
+
+		$( input ).off( 'change.rentivaUpload' ).one( 'change.rentivaUpload', function () {
+			var zip = input.files && input.files[ 0 ];
+			input.value = ''; // So choosing the same file again still fires change.
+
+			if ( ! zip ) {
+				return;
+			}
+
+			clearNotice( $row );
+
+			if ( ! /\.zip$/i.test( zip.name ) ) {
+				showNotice( $row, 'upload', rentivaAdmin.uploadWrongType, wporgFlag, slug );
+				return;
+			}
+			if ( rentivaAdmin.maxUploadBytes && zip.size > rentivaAdmin.maxUploadBytes ) {
+				showNotice( $row, 'upload', rentivaAdmin.uploadTooLarge, wporgFlag, slug );
+				return;
+			}
+
+			var data = new window.FormData();
+			data.append( 'action', 'rentiva_upload_plugin' );
+			data.append( '_ajax_nonce', rentivaAdmin.uploadNonce );
+			data.append( 'slug', slug );
+			data.append( 'pluginzip', zip );
+
+			setBusy( $btn, rentivaAdmin.uploadingText );
+
+			var stopCreep = creepProgress( [ 5, 10, 20, 30, 50, 70, 90 ], function ( pct ) {
+				onProgress( pct / 100, format( rentivaAdmin.phaseUploading, { '%s': name } ) );
+			} );
+			var clearStall = watchForStall( 15000, function () {
+				showStallNotice( $row );
+			} );
+
+			$.ajax( {
+				url: rentivaAdmin.ajaxUrl,
+				type: 'POST',
+				data: data,
+				processData: false,
+				contentType: false,
+				dataType: 'json'
+			} ).done( function ( response ) {
+				clearStall();
+				stopCreep();
+				if ( response && response.success ) {
+					onProgress( 1, format( rentivaAdmin.phaseInstalled, { '%s': name } ) );
+					markInstalled( $row, { slug: slug, name: name, file: file, wporg: wporgFlag } );
+					deferred.resolve( { success: true, slug: slug } );
+					return;
+				}
+				fail( response && response.data && response.data.errorMessage ? response.data.errorMessage : rentivaAdmin.uploadServerError );
+			} ).fail( function ( xhr ) {
+				clearStall();
+				stopCreep();
+				var json = xhr.responseJSON;
+				fail( json && json.data && json.data.errorMessage ? json.data.errorMessage : rentivaAdmin.uploadServerError );
+			} );
+		} );
+
+		input.click();
+		return deferred.promise();
+	}
+
+	/**
 	 * Activates one already-installed plugin via wp.updates — and only
 	 * activates it (see runInstall()'s docs for why install and activate are
 	 * two separate functions/clicks rather than one chained flow). Always
@@ -411,7 +533,7 @@
 	}
 
 	/**
-	 * Dispatches to runInstall() or runActivate() based on which button was
+	 * Dispatches to runUpload(), runInstall() or runActivate() based on which button was
 	 * clicked — the shared entry point for the click handlers below.
 	 *
 	 * @param {jQuery}    $btn
@@ -419,7 +541,11 @@
 	 * @return {jQuery.Promise}
 	 */
 	function runPluginAction( $btn, onProgress ) {
-		return 'install' === $btn.data( 'task' ) ? runInstall( $btn, onProgress ) : runActivate( $btn, onProgress );
+		var task = $btn.data( 'task' );
+		if ( 'upload' === task ) {
+			return runUpload( $btn, onProgress );
+		}
+		return 'install' === task ? runInstall( $btn, onProgress ) : runActivate( $btn, onProgress );
 	}
 
 	/**
@@ -458,5 +584,213 @@
 		var $row = $( this ).closest( '[data-plugin-row]' );
 		clearNotice( $row );
 		runPluginAction( $row.find( '.rentiva-plugin-action' ), showSingleProgress );
+	} );
+} )( jQuery );
+
+/**
+ * Rentiva → Setup, Step 2: runs Import Demo Content in place — one small AJAX
+ * request per import step (rentiva_ajax_import_demo_step()), in order, with a
+ * live progress bar and checklist and no page reload. Every step is
+ * idempotent server-side, so Retry simply resumes from the step that failed,
+ * and running the whole import again never duplicates anything. Without JS
+ * the same form posts to admin-post.php and imports everything in one request.
+ */
+( function ( $ ) {
+	'use strict';
+
+	var $form = $( '[data-rentiva-demo-import]' );
+	if ( ! $form.length || 'undefined' === typeof rentivaAdmin ) {
+		return;
+	}
+
+	var steps   = $form.data( 'steps' ) || []; // jQuery parses the JSON attribute.
+	var nonce   = $form.find( 'input[name="_wpnonce"]' ).val();
+	var $button = $form.find( 'button[type="submit"]' );
+	var $icon   = $button.find( '[data-rentiva-import-icon]' );
+	var $label  = $button.find( '[data-rentiva-import-label]' );
+	var $panel  = $( '[data-rentiva-import-progress]' );
+	var $bar    = $panel.find( '.rentiva-plugin-progress__bar' );
+	var $fill   = $bar.find( 'span' );
+	var $text   = $panel.find( '.rentiva-plugin-progress__text' );
+	var $error  = $panel.find( '[data-rentiva-import-error]' );
+
+	var totals          = {};
+	var nextIndex       = 0;
+	var running         = false;
+	var failed          = false;
+	var importedMessage = '';
+
+	$.each( steps, function ( i, step ) {
+		totals[ step.group ] = ( totals[ step.group ] || 0 ) + 1;
+	} );
+
+	function format( template, values ) {
+		var out = template;
+		$.each( values, function ( token, value ) {
+			out = out.replace( token, value );
+		} );
+		return out;
+	}
+
+	function percent() {
+		return steps.length ? Math.round( ( nextIndex / steps.length ) * 100 ) : 100;
+	}
+
+	/**
+	 * Repaints the bar, the status line, and every checklist row from
+	 * nextIndex — the single source of truth for how far the import got.
+	 */
+	function render() {
+		var done    = {};
+		var current = steps[ nextIndex ] ? steps[ nextIndex ].group : '';
+		var pct     = percent();
+
+		for ( var i = 0; i < nextIndex; i++ ) {
+			done[ steps[ i ].group ] = ( done[ steps[ i ].group ] || 0 ) + 1;
+		}
+
+		$panel.find( '[data-group]' ).each( function () {
+			var $row  = $( this );
+			var group = $row.attr( 'data-group' );
+			var total = totals[ group ] || 0;
+			var count = done[ group ] || 0;
+			var state = 'pending';
+
+			if ( total && count >= total ) {
+				state = 'done';
+			} else if ( group === current ) {
+				state = failed ? 'failed' : 'active';
+			}
+
+			$row.attr( 'data-state', state );
+			$row.find( '.rentiva-import-checklist__count' ).text( total > 1 ? count + '/' + total : '' );
+		} );
+
+		$fill.css( 'width', pct + '%' );
+		$bar.attr( 'aria-valuenow', pct );
+
+		if ( running ) {
+			var $currentRow = $panel.find( '[data-group="' + current + '"] .rentiva-import-checklist__label' );
+			$text.text( $currentRow.length ? format( rentivaAdmin.importProgressText, { '%1$s': $.trim( $currentRow.text() ), '%2$s': pct + '%' } ) : rentivaAdmin.importingText );
+		}
+	}
+
+	function setBusy( busy ) {
+		// aria-busy rather than disabled/aria-disabled: core styles both as a
+		// greyed-out button (with !important), and start() already ignores
+		// clicks while running.
+		$button.attr( 'aria-busy', busy ? 'true' : null ).toggleClass( 'is-busy', busy );
+		$icon.attr( 'class', 'dashicons ' + ( busy ? 'dashicons-update rentiva-spin' : 'dashicons-database-import' ) );
+		$label.text( busy ? rentivaAdmin.importingText : rentivaAdmin.importButtonText );
+
+		// Leaving mid-import is harmless (every step is idempotent), but it
+		// would silently stop the import halfway, so ask first.
+		$( window ).off( 'beforeunload.rentivaImport' );
+		if ( busy ) {
+			$( window ).on( 'beforeunload.rentivaImport', function ( event ) {
+				event.preventDefault();
+				event.originalEvent.returnValue = rentivaAdmin.importLeaveWarning;
+				return rentivaAdmin.importLeaveWarning;
+			} );
+		}
+	}
+
+	function complete() {
+		running = false;
+		setBusy( false );
+		render();
+		$text.text( rentivaAdmin.importDoneText );
+
+		$( '[data-rentiva-demo-badge]' )
+			.attr( 'class', 'rentiva-badge rentiva-badge--ready' )
+			.text( rentivaAdmin.importedBadgeText );
+
+		var $notice = $( '[data-rentiva-demo-notice]' );
+		if ( importedMessage ) {
+			$notice.find( '[data-rentiva-demo-notice-text]' ).text( importedMessage );
+		}
+		$notice.removeAttr( 'hidden' );
+		$( '[data-rentiva-demo-problems]' ).attr( 'hidden', true );
+
+		// "Skip this step" becomes the primary "Continue" now there's nothing to skip.
+		$( '[data-rentiva-wizard-forward]' )
+			.attr( 'class', 'button button-primary' )
+			.text( rentivaAdmin.continueText + ' \u2192' );
+	}
+
+	function fail( message ) {
+		running = false;
+		failed  = true;
+		setBusy( false );
+		render();
+		$text.text( '' );
+		$error.find( '[data-rentiva-import-error-text]' ).text( message || rentivaAdmin.importFailedText );
+		$error.removeAttr( 'hidden' );
+		$error.find( '[data-rentiva-import-retry]' ).trigger( 'focus' );
+	}
+
+	function runNext() {
+		if ( nextIndex >= steps.length ) {
+			complete();
+			return;
+		}
+
+		render();
+
+		$.ajax( {
+			url: rentivaAdmin.ajaxUrl,
+			type: 'POST',
+			dataType: 'json',
+			data: {
+				action: 'rentiva_import_demo_step',
+				step: steps[ nextIndex ].id,
+				_ajax_nonce: nonce
+			}
+		} ).done( function ( response ) {
+			if ( ! response || ! response.success ) {
+				fail( response && response.data && response.data.message );
+				return;
+			}
+			if ( response.data && response.data.importedMessage ) {
+				importedMessage = response.data.importedMessage;
+			}
+			nextIndex++;
+			runNext();
+		} ).fail( function ( xhr ) {
+			var json = xhr.responseJSON;
+			fail( json && json.data && json.data.message );
+		} );
+	}
+
+	/**
+	 * @param {boolean} resume true to carry on from the failed step (Retry),
+	 *                         false to run the whole import from the start.
+	 */
+	function start( resume ) {
+		if ( running || ! steps.length ) {
+			return;
+		}
+		// The final check failing means earlier steps couldn't create
+		// something, so Retry re-runs them all (each one only fills in what's
+		// still missing) rather than just re-checking.
+		if ( ! resume || ( steps[ nextIndex ] && 'finish' === steps[ nextIndex ].id ) ) {
+			nextIndex = 0;
+		}
+		running = true;
+		failed  = false;
+		$error.attr( 'hidden', true );
+		$panel.removeAttr( 'hidden' );
+		setBusy( true );
+		runNext();
+	}
+
+	$form.on( 'submit', function ( event ) {
+		event.preventDefault();
+		start( false );
+	} );
+
+	$panel.on( 'click', '[data-rentiva-import-retry]', function ( event ) {
+		event.preventDefault();
+		start( true );
 	} );
 } )( jQuery );

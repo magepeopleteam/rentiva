@@ -2,24 +2,23 @@
 
 ## Requirements
 
-| Plugin | Role |
-|---|---|
-| WooCommerce | Cart, checkout, orders |
-| Booking and Rental Manager for WooCommerce | Rental items, pricing, availability, booking form |
-| Elementor | Powers the 9 homepage-section widgets (docs/elementor.md) |
+| Plugin | Required? | Role | Installed from |
+|---|---|---|---|
+| Elementor | Required | Powers the 9 homepage-section widgets (docs/elementor.md) | WordPress.org |
+| Booking and Rental Manager for WooCommerce (free) | Required | Rental items, pricing, availability, booking form | WordPress.org |
+| Booking and Rental Manager Pro | Optional | Premium add-on features | Upload the zip from your purchase |
+| WooCommerce | Optional | Only if you want WooCommerce cart/checkout instead of the booking plugin's native checkout | WordPress.org |
 
-Rentiva declares all three under `style.css`'s `Requires Plugins` header, so
-WordPress will prompt you to install/activate them from the themes screen
-if any are missing.
+Activating Rentiva opens **Rentiva → Setup**, whose Step 1 installs and
+activates each of these in place — **Install Now** for the WordPress.org
+plugins, **Upload & Install** for Pro — without leaving the screen.
 
 ## Steps
 
 1. Upload the `rentiva` folder to `wp-content/themes/`, or install the
    theme .zip via **Appearance → Themes → Add New → Upload Theme**.
-2. Install/activate WooCommerce, Booking and Rental Manager for WooCommerce,
-   and Elementor if you haven't already.
-3. Activate Rentiva.
-4. Follow docs/getting-started.md.
+2. Activate Rentiva — you land on **Rentiva → Setup**.
+3. Follow docs/getting-started.md.
 
 ## PHP/WordPress requirements
 

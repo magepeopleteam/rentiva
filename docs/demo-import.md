@@ -1,11 +1,44 @@
 # Demo importer
 
-**Where:** the welcome notice shown right after activating Rentiva, or
-**Rentiva → Setup**'s "Import Demo Content" button (also on its Dashboard
-widget) — either shows a success/error notice after running, and the Setup
-page additionally shows a persistent "Demo already imported on {date}"
-banner once `rentiva_demo_imported_at` (set at the end of
-`rentiva_import_demo_content()`) is populated.
+**Where:** the "Import Demo Content" button on Step 2 (Import) of the
+**Rentiva → Setup** wizard (`admin.php?page=rentiva-settings&step=demo`),
+which opens automatically right after activating Rentiva, or the same
+button on its Dashboard widget.
+
+**How it runs.** The import is a fixed list of small steps
+(`rentiva_get_demo_import_steps()`): one per category, locations, one per
+rental item, menus, one per homepage photo, then `finish`. Each step
+sideloads at most one photo, so no single request can hit a PHP
+execution-time limit on a slow host.
+
+- **Step 2 button (JS):** `assets/js/admin-setup.js` runs the steps one
+  AJAX request at a time (`wp_ajax_rentiva_import_demo_step`) with a live
+  progress bar and per-group checklist — no page reload. When done, Step 2's
+  badge, "Demo already imported" banner, and Skip/Continue button update in
+  place. If a request fails the import stops with a **Retry** button that
+  resumes from the failed step (or re-runs everything if the final check
+  failed).
+- **No JS / Dashboard widget:** the same form posts to `admin-post.php`,
+  which runs every step in one request (`rentiva_import_demo_content()`) and
+  returns to Step 2 with a notice.
+- **Activation auto-provisioning** (`rentiva_maybe_auto_provision_demo()`)
+  also runs `rentiva_import_demo_content()`.
+
+**Only when the booking plugin is really loaded.** Every entry point checks
+`rentiva_demo_import_ready()` — the `rbfw_item` post type *and* both
+taxonomies. Booking and Rental Manager deliberately skips registering its
+taxonomies under WP-CLI (`admin/taxonomy_register.php`) while still
+registering the post type, so an import from WP-CLI would otherwise create
+every item with no category or location. Auto-provisioning skips instead,
+and the Step 2 button imports correctly from wp-admin.
+
+**Marked done only when it is.** The `finish` step runs
+`rentiva_get_demo_import_problems()` — every demo category (with its
+image), location, and rental item (with its category, location, and photo)
+must really exist — and only then sets `rentiva_demo_imported_at`. If
+something is still missing it reports exactly what instead. Step 2 runs the
+same check on page load: a site an earlier import left incomplete shows an
+**Incomplete** badge and the list of problems.
 
 **What it does** (`inc/demo-import/importer.php`):
 
@@ -28,16 +61,21 @@ banner once `rentiva_demo_imported_at` (set at the end of
      the same setting the Elementor widgets read as their live `default`, so
      those sections show a real photo the moment they're opened.
 
-   Every sideload is gated on "not already set" — a category with an image,
-   an item with a featured image, or a `rentiva_settings` key that's already
-   populated is left alone, so re-running import (or running it against a
-   site whose admin has already picked different photos) never overwrites
-   anything. Also sets `rbfw_item_stock_quantity` to `10` on any demo item
-   still missing it — matching the plugin's own bundled demo importer —
-   so items never show as "out of stock" out of the box. Both the photo and
-   stock-quantity backfill run for existing demo items too (matched by
-   title), not only newly-created ones, so upgrading from an older version
-   of this importer still fills in whatever was missing.
+   Every sideload is gated on "no valid image yet" — a category, item, or
+   `rentiva_settings` key whose image still exists (attachment row *and*
+   file on disk, `rentiva_demo_attachment_is_valid()`) is left alone, so
+   re-running import (or running it against a site whose admin has already
+   picked different photos) never overwrites anything; a stale id whose
+   attachment or file is gone gets a fresh photo. Also sets
+   `rbfw_item_stock_quantity` to `10` on any demo item still missing it —
+   matching the plugin's own bundled demo importer — so items never show as
+   "out of stock" out of the box.
+
+   **Re-running import repairs.** Existing demo items (matched by exact
+   title) go through the same fill-what's-missing path as new ones: a
+   missing category or location term, `rbfw_categories`, item type, rates,
+   Feature List, stock, FAQs, or photo is filled in; anything already set —
+   including a price an admin changed — is kept.
 5. Creates 4 real, editable nav menus — "Primary Navigation", "Footer —
    Explore", "Footer — Company", "Footer — Support" — populated from the
    theme's own default nav items (`rentiva_default_primary_nav_items()` /
