@@ -15,7 +15,7 @@
    available afterwards, along with a compact "Rentiva Setup" Dashboard
    widget.
 3. Click **Import Demo Content** on **Rentiva → Setup** to create 6 rental
-   categories, 3 pickup locations, 4 demo rental items, and 4 real,
+   categories, 3 pickup locations, 8 demo rental items, and 4 real,
    editable nav menus (Primary Navigation, Footer — Explore/Company/
    Support) assigned to their theme locations — so the homepage, archive
    pages, header, and footer are all fully populated (and fully editable,

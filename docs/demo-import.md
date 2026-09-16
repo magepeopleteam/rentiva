@@ -11,25 +11,22 @@ banner once `rentiva_demo_imported_at` (set at the end of
 
 1. Creates the 6 demo categories and 3 demo locations if they don't already
    exist (matched by term name — running it twice never creates duplicates).
-2. Creates the 4 demo rental items if a published `rbfw_item` with the same
+2. Creates the 8 demo rental items if a published `rbfw_item` with the same
    title doesn't already exist.
 3. Sets each item's pricing meta (`rbfw_item_type`, `rbfw_enable_daily_rate`,
    `rbfw_daily_rate`, etc.) and, where applicable, the Feature List meta
    (`rbfw_feature_category`) for specs/included-items.
-4. Sideloads a real photo (via `rentiva_sideload_demo_photo()`, using
-   `download_url()` + `media_handle_sideload()` rather than
-   `media_sideload_image()`, since Unsplash's URLs carry no file extension
-   for the latter to key off) for:
-   - each of the 6 demo categories, at `600×700` into
-     `rentiva_category_image_id` term meta — matching the "Explore What You
-     Need" card crop;
-   - each of the 4 demo items, at `600×450`, set as the item's featured
-     image — matching the rental-card crop;
+4. Attaches a real photo (via `rentiva_sideload_demo_photo()`, which copies
+   the bundled file out of `assets/images/demo/` into a temp file and hands
+   it to `media_handle_sideload()`) for:
+   - each of the 6 demo categories, into `rentiva_category_image_id` term
+     meta — feeding the "Explore What You Need" cards;
+   - each of the 8 demo items, set as the item's featured image — feeding
+     the rental cards;
    - the 4 homepage-widget photos (Hero, Promo Banner, Why Rentiva,
-     Testimonial avatar), at each widget's own registered crop size, into
-     `rentiva_settings` (`hero_image_id` etc.) — the same setting the
-     Elementor widgets read as their live `default`, so those sections show
-     a real photo the moment they're opened.
+     Testimonial avatar), into `rentiva_settings` (`hero_image_id` etc.) —
+     the same setting the Elementor widgets read as their live `default`, so
+     those sections show a real photo the moment they're opened.
 
    Every sideload is gated on "not already set" — a category with an image,
    an item with a featured image, or a `rentiva_settings` key that's already
@@ -70,11 +67,11 @@ it can't be triggered by a stray GET request (CSRF-safe).
 
 **Requirements:** Booking and Rental Manager for WooCommerce must be active
 — the button/notice checks `rentiva_has_booking_plugin()` first and shows an
-error notice instead of silently doing nothing if it's missing. Photo
-sideloading needs outbound internet access to `images.unsplash.com`; if a
-fetch fails (offline, blocked, or a photo id no longer resolving),
-`rentiva_sideload_demo_photo()` returns `0` and the import continues
-without that one photo rather than failing the whole run.
+error notice instead of silently doing nothing if it's missing. Photos need
+no network access: all 18 are committed under `assets/images/demo/` and read
+from disk. If one is missing or unreadable, `rentiva_sideload_demo_photo()`
+returns `0` and the import continues without that one photo rather than
+failing the whole run.
 
 **Removing demo content:** delete the imported `rbfw_item` posts and terms
 from the plugin's own admin screens like any other content — the importer
