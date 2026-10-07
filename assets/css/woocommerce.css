@@ -395,6 +395,90 @@
 }
 
 /* ==========================================================================
+   Order received page (woocommerce/checkout/thankyou.php + order/order-details*.php
+   overrides). Card/row primitives (.rbfw-or-card, .rbfw-or-row, .rbfw-or-grid,
+   .rbfw-or-banner, .rbfw-or-summary, .rbfw-or-row-total, .rbfw-or-divider) come
+   from the plugin's css/rbfw_style.css, which loads on every front-end page —
+   only the few classes specific to this WooCommerce-template context live here.
+   ========================================================================== */
+
+.rbfw-or-item-qty {
+	color: #64748b;
+	font-weight: 500;
+}
+
+.rbfw-or-item-purchase-note {
+	margin-top: 10px;
+	padding-top: 10px;
+	border-top: 1px dashed #e2e8f0;
+	font-size: 13px;
+	color: #64748b;
+}
+
+.woocommerce-customer-details address {
+	font-style: normal;
+	font-size: 13.5px;
+	color: #0f172a;
+	line-height: 1.6;
+}
+
+.woocommerce-customer-details--phone,
+.woocommerce-customer-details--email {
+	margin: 4px 0 0;
+	font-size: 13.5px;
+	color: #64748b;
+}
+
+.rbfw-or-actions {
+	display: flex;
+	gap: 10px;
+}
+
+.rbfw-or-btn {
+	flex: 1;
+	text-align: center;
+	background: #fff;
+	border: 1.5px solid #e2e8f0;
+	border-radius: 10px;
+	padding: 13px;
+	font-size: 14px;
+	font-weight: 700;
+	color: #0f172a;
+	cursor: pointer;
+	text-decoration: none;
+	transition: border-color .15s ease, background .15s ease;
+}
+
+.rbfw-or-btn:hover {
+	border-color: var(--rentiva-primary, #1B5E3B);
+	color: var(--rentiva-primary, #1B5E3B);
+}
+
+.rbfw-or-btn.pay,
+.rbfw-or-btn.order-again {
+	background: var(--rentiva-primary, #1B5E3B);
+	border-color: var(--rentiva-primary, #1B5E3B);
+	color: #fff;
+}
+
+.rbfw-or-btn.pay:hover,
+.rbfw-or-btn.order-again:hover {
+	background: var(--rentiva-primary-dark, #154D2E);
+	border-color: var(--rentiva-primary-dark, #154D2E);
+	color: #fff;
+}
+
+@media only screen and (max-width: 600px) {
+	.woocommerce-customer-details .rbfw-or-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.rbfw-or-actions {
+		flex-direction: column;
+	}
+}
+
+/* ==========================================================================
    Mobile
    ========================================================================== */
 
