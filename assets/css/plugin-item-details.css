@@ -70,14 +70,19 @@
 	box-shadow: 0 8px 20px rgba(27, 94, 59, 0.22) !important;
 }
 
-/* Calendar "available date" row tint — a fourth literal, pale pink
-   (#FFF4F3, rbfw_style.css ~line 11323) rather than derived from the
-   primary colour. Reuses --rentiva-chip-bg, the same pale-green tint the
-   feature-list icon badges above already use. The plugin's own selector
-   includes an #id, so ours repeats it (plus an extra ancestor) to win on
-   specificity rather than just !important. */
+/* Calendar redesign: plain available days are no longer tinted at all —
+   only weekend columns (pale gray-blue) and off-days (pale red) get a
+   fill, so a bookable weekday reads as plain white/transparent. This used
+   to repaint every .av cell with --rentiva-chip-bg (pale green); the
+   plugin has since reclaimed this property for good by repeating its own
+   #rbfw-bikecarsd-calendar id (rbfw_style.css, .mp_right_section
+   #rbfw-bikecarsd-calendar#rbfw-bikecarsd-calendar .ui-datepicker table
+   td.av) — two IDs always outrank this selector's one, however many
+   ancestor classes get added here. Left in place, now a dead no-op (same
+   value either way), as a record of the old design rather than a live
+   override. */
 .mp_default_theme .mp_right_section #rbfw-bikecarsd-calendar .ui-datepicker table td.av {
-	background: var(--rentiva-chip-bg) !important;
+	background: transparent !important;
 }
 
 /* "Best Seller" badges (hero + booking-summary card) are deliberately left
